@@ -2,7 +2,7 @@
 SimFarm2030 aims to use climate data collected by the Met Office to model wheat production metrics using a Bayesian inference approach. This approach provides extreme flexibility, allowing the model to be applied not only to wheat data but essentially any time series, climate sensitive data. This approach also allows for a huge dynamic range in what can be predicted, with predictions possible from highly localised grids to national production metrics.
 
 ## Dependencies
-Most of the utilised packages can be found with an Anaconda python3 installation. The following are not included and can be pip installed (pip install <package>):
+Most of the utilised packages can be found with an Anaconda python3 installation. The following are not included and can be pip installed (pip install [package]):
   
   netCDF4
   
