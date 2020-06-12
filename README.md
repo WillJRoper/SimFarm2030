@@ -20,7 +20,7 @@ Plot Of Average Monthly Temp | Plot Of Daily Rainfall
 ------------ | -------------
 <img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/month_temps.gif" width="500" height="600">| <img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/day_rain.gif" width="500" height="600">
 
-### Here is a flow chart explaining preliminary worked carried out by Andrew Bowell (https://github.com/AnBowell/SimFarm2030) the process of adapting the FACYnation codes
+### Here is a flow chart explaining preliminary worked carried out by Andrew Bowell (https://github.com/AnBowell/SimFarm2030) and the process of adapting the FACYnation codes
 <p align="center">
 <img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/FlowChart/f2s.png">
 </p>
