@@ -3,9 +3,13 @@ SimFarm2030 aims to use climate data collected by the Met Office to model wheat 
 
 ## Dependencies
 Most of the utilised packages can be found with an Anaconda python3 installation. The following are not included and can be pip installed (pip install <package>):
+  
   netCDF4
+  
   ftplib 
+  
   fnmatch
+  
   seaborn
   
 Pystan is a little more involved, installation instruction can be found @:https://pystan.readthedocs.io/en/latest/getting_started.html
