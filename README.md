@@ -14,6 +14,8 @@ Most of the utilised packages can be found with an Anaconda python3 installation
   
 Pystan is a little more involved, installation instruction can be found @:https://pystan.readthedocs.io/en/latest/getting_started.html
 
+HDF5 file can be downloaded from: https://drive.google.com/file/d/1TXV8R4KmnVrmlC1PhgHGewbVDDTVULuO/view?usp=sharing
+
 ## Climate Outputs
 
 Plot Of Average Monthly Temp | Plot Of Daily Rainfall
