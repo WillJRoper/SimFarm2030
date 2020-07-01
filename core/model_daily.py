@@ -204,7 +204,7 @@ class cultivarModel:
 
     def get_weather_data(self, weather):
 
-        hdf = h5py.File('SimFarm2030_' + weather + '.hdf5', 'r')
+        hdf = h5py.File('../../data/SimFarm2030_' + weather + '.hdf5', 'r')
 
         # Loop over regions
         wthr = np.full((len(self.reg_lats), self.reg_yrs.shape[1], 366), -999)
@@ -239,7 +239,7 @@ class cultivarModel:
         if weather not in self.wthr_dict:
             self.get_weather_data(weather)
 
-        hdf = h5py.File('SimFarm2030_' + weather + '.hdf5', 'r')
+        hdf = h5py.File('../../data/SimFarm2030_' + weather + '.hdf5', 'r')
 
         # Get the mean weather data for each month of the year
         uk_monthly_mean = hdf['all_years_mean'][...]
@@ -424,7 +424,7 @@ class cultivarModel:
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels)
 
-        fig.savefig('model_performance/region_residuals_' + self.metric + '.png', dpi=300, bbox_inches='tight')
+        fig.savefig('../model_performance/region_residuals_' + self.metric + '.png', dpi=300, bbox_inches='tight')
 
         plt.close(fig)
 
@@ -455,7 +455,7 @@ class cultivarModel:
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels)
 
-        fig.savefig('model_performance/region_pcent_residuals_' + self.metric + '.png', dpi=300, bbox_inches='tight')
+        fig.savefig('../model_performance/region_pcent_residuals_' + self.metric + '.png', dpi=300, bbox_inches='tight')
 
         plt.close(fig)
 
@@ -476,7 +476,7 @@ class cultivarModel:
     def country_predict(self, year, tmod, pmod, mutmod, mupmod, cultivar):
 
         # Open file
-        hdf = h5py.File('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/Utilities/SimFarm2030.hdf5',
+        hdf = h5py.File('../../data/SimFarm2030.hdf5',
                         'r+')
 
         # Extract latitude grid
@@ -520,7 +520,7 @@ class cultivarModel:
         cbar = fig.colorbar(cax)
         cbar.ax.set_ylabel(self.metric + ' (' + self.metric_units + ')')
 
-        fig.savefig('country_predictions/prediction_country_map_' + cultivar + '_' + str(year) + '_'
+        fig.savefig('../country_predictions/prediction_country_map_' + cultivar + '_' + str(year) + '_'
                     + str(round(mutmod, 3)) + '_'
                     + str(round(mupmod, 3)) + '_'
                     + str(round(tmod, 3)) + '_'
@@ -579,7 +579,7 @@ class cultivarModel:
         ax3.set_ylabel(self.metric + ' (' + self.metric_units + 'month$^{-1}$)')
 
         # Save the figure
-        fig.savefig('responsecurves_' + self.metric + '.png', dpi=300, bbox_inches='tight')
+        fig.savefig('../model_performance/responsecurves_' + self.metric + '.png', dpi=300, bbox_inches='tight')
 
         return eval_t, eval_p, t_resp, p_resp, resp_grid
 
@@ -613,12 +613,12 @@ class cultivarModel:
                 g.axes[i, j].set_axis_off()
 
         # Save figure
-        plt.savefig('posteriorPriorComp_' + self.metric + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig('../model_performance/posteriorPriorComp_' + self.metric + '.png', dpi=300, bbox_inches='tight')
 
     def country_animate(self, yrmin=1900, yrmax=2018):
 
         # Open file
-        hdf = h5py.File('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/Utilities/SimFarm2030.hdf5',
+        hdf = h5py.File('../../data/SimFarm2030.hdf5',
                         'r+')
 
         lat = hdf['Latitude_grid'][...]
@@ -640,10 +640,10 @@ class cultivarModel:
                 temps[:, :, mthind] = hdf[key]['Monthly_mean_temperature_grid'][...]
                 rains[:, :, mthind] = hdf[key]['Monthly_mean_rainfall_grid'][...]
 
-            preds = simfarm.gauss2d_country(self.mean_params['norm'], temps, self.mean_params['mu_t'],
-                                            self.mean_params['sig_t'], rains, self.mean_params['mu_p'],
-                                            self.mean_params['sig_p'], self.mean_params['rho'],
-                                            dy=np.zeros_like(lat))
+            preds = self.gauss2d_country(self.mean_params['norm'], temps, self.mean_params['mu_t'],
+                                         self.mean_params['sig_t'], rains, self.mean_params['mu_p'],
+                                         self.mean_params['sig_p'], self.mean_params['rho'],
+                                         dy=np.zeros_like(lat))
             allpred[:, :, ind] = preds
             cntrywide_pred[ind] = preds[np.where(preds > 0)].mean()
             yrs[ind] = int(year)
@@ -669,15 +669,14 @@ class cultivarModel:
             cbar = fig.colorbar(cax)
             cbar.ax.set_ylabel(self.metric + ' Anomaly ' + '(' + self.metric_units + ')')
 
-            fig.savefig('country_predictions/prediction_country_map_anom_' + str(year) + '.png', dpi=300,
+            fig.savefig('../country_predictions/prediction_country_map_anom_' + str(year) + '.png', dpi=300,
                         bbox_inches='tight')
             fig.clf()
 
         hdf.close()
-        print('Full', time.time() - start)
 
-        os.system('convert -loop 1 -delay 50 country_predictions/prediction_country_map_anom_*.png '
-                  'country_predictions/prediction_country_map_anom_' + self.metric + '.gif')
+        os.system('convert -loop 1 -delay 50 ../country_predictions/prediction_country_map_anom_*.png '
+                  '../country_predictions/prediction_country_map_anom_' + self.metric + '.gif')
 
         # Set up figure
         fig = plt.figure()
@@ -697,13 +696,13 @@ class cultivarModel:
 
         ax.tick_params(axis='x', rotation=45)
 
-        fig.savefig('country_predictions/Country_wide_mean_' + self.metric + '.png', dpi=300,
+        fig.savefig('../country_predictions/Country_wide_mean_' + self.metric + '.png', dpi=300,
                     bbox_inches='tight')
 
     def region_all_years(self, regs=4, yrmin=1900, yrmax=2018):
 
         # Open file
-        hdf = h5py.File('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/Utilities/SimFarm2030.hdf5',
+        hdf = h5py.File('../../data/SimFarm2030.hdf5',
                         'r+')
 
         lat = hdf['Latitude_grid'][...]
@@ -728,7 +727,7 @@ class cultivarModel:
                 temps[:, :, mthind] = hdf[key]['Monthly_mean_temperature_grid'][...]
                 rains[:, :, mthind] = hdf[key]['Monthly_mean_rainfall_grid'][...]
 
-            preds = simfarm.gauss2d_country(self.mean_params['norm'], temps, self.mean_params['mu_t'],
+            preds = self.gauss2d_country(self.mean_params['norm'], temps, self.mean_params['mu_t'],
                                             self.mean_params['sig_t'], rains, self.mean_params['mu_p'],
                                             self.mean_params['sig_p'], self.mean_params['rho'],
                                             dy=np.zeros_like(lat))
@@ -798,7 +797,7 @@ class cultivarModel:
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels)
 
-        fig.savefig('country_predictions/Country_wide_mean_region_comp_' + self.metric + '.png', dpi=300,
+        fig.savefig('../country_predictions/Country_wide_mean_region_comp_' + self.metric + '.png', dpi=300,
                     bbox_inches='tight')
 
 
@@ -815,61 +814,58 @@ if __name__ == '__main__':
     # ftp_paths = ['/badc/ukcp18/data/land-rcm/uk/12km/rcp85/01/tas/mon/latest',
     #              '/badc/ukcp18/data/land-rcm/uk/12km/rcp85/01/pr/mon/latest']
     #
-    # destpaths = ['/Volumes/My Passport/SimFarm_daily/Rain/',
+    # destpaths = ['../data/Rain/',
     #              '/Volumes/My Passport/SimFarm_daily/Temp_max/',
     #              '/Volumes/My Passport/SimFarm_daily/Temp_min']
     #
     # for path, destpath in zip(ftp_paths, destpaths):
     #     cultivarModel.FTP_download(path, destpath)
 
-    # start = time.time()
-    # # Define data to train the model
-    # yields = np.loadtxt('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/Utilities/RawData/Yields.txt').T
-    # regions = np.loadtxt('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/Utilities/RawData/Regions.txt')
-    # region_lats = regions[:, 0]
-    # region_longs = regions[:, 1]
-    # years = np.loadtxt('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/Utilities/RawData/Years.txt',
-    #                    dtype=str).T
-    # sow_month = np.loadtxt('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/'
-    #                        'Utilities/RawData/sowmonth.txt').T
-    # ripe_time = np.loadtxt('/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/'
-    #                        'Utilities/RawData/ripedays.txt').T
-    # ripe_time[np.where(ripe_time == -999)] = np.mean(ripe_time[np.where(ripe_time != -999)])
+    start = time.time()
+    # Define data to train the model
+    yields = np.loadtxt('../example_data/Yields.txt').T
+    regions = np.loadtxt('../example_data/Regions.txt')
+    region_lats = regions[:, 0]
+    region_longs = regions[:, 1]
+    years = np.loadtxt('example_data/Years.txt',
+                       dtype=str).T
+    sow_month = np.loadtxt('../example_data/sowmonth.txt').T
+    ripe_time = np.loadtxt('../example_data/ripedays.txt').T
+    ripe_time[np.where(ripe_time == -999)] = np.mean(ripe_time[np.where(ripe_time != -999)])
+
+    # yields_med = np.median(yields, axis=1)
+
+    # yield1 = np.zeros((21, 4))
+    # for i, (ys, med) in enumerate(zip(yields, yields_med)):
+    #     for j, y in enumerate(ys):
+    #         yield1[i, j] = y - med
     #
-    # # yields_med = np.median(yields, axis=1)
+    # yields = yield1
     #
-    # # yield1 = np.zeros((21, 4))
-    # # for i, (ys, med) in enumerate(zip(yields, yields_med)):
-    # #     for j, y in enumerate(ys):
-    # #         yield1[i, j] = y - med
-    # #
-    # # yields = yield1
-    # #
-    # gm = pystan.StanModel(file='/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/'
-    #                            'Adapted_FACYNation/0.1/stan/2d-gaussian_with_correlation_anom_daily.stan')
-    #
-    # print('Model', time.time() - start)
-    # tstart = time.time()
-    # simfarm = cultivarModel(region_lats, region_longs, years, 'Solstice', sow_month, ripe_time, gm, yields,
-    #                         region_tol=0.25, n_gf=40, weather=['temperature', 'rainfall'], metric='Yield',
-    #                         metric_units='t Ha$^{-1}$')
-    # simfarm.train_model(chains=5, iter=1000, verbose=True, control={'max_treedepth': 13})
-    # print('Train', time.time() - tstart)
-    #
-    # pstart = time.time()
-    #
-    # # simfarm.region_all_years()
-    # # simfarm.country_animate()
-    # simfarm.post_prior_comp()
-    # simfarm.plot_response()
-    #
-    # # Write out object as pickle
-    # with open('cultivar_models/' + simfarm.cult + '_' + simfarm.metric + '_modeltestdaily.pck', 'wb') as pfile1:
-    #     pickle.dump(simfarm, pfile1)
-    #
-    # simfarm.region_predict()
+    gm = pystan.StanModel(file='../Stan_models/2d-gaussian_with_correlation_anom_daily.stan')
+
+    print('Model', time.time() - start)
+    tstart = time.time()
+    simfarm = cultivarModel(region_lats, region_longs, years, 'Solstice', sow_month, ripe_time, gm, yields,
+                            region_tol=0.25, n_gf=40, weather=['temperature', 'rainfall'], metric='Yield',
+                            metric_units='t Ha$^{-1}$')
+    simfarm.train_model(chains=5, iter=1000, verbose=True, control={'max_treedepth': 13})
+    print('Train', time.time() - tstart)
+
+    pstart = time.time()
+
+    # simfarm.region_all_years()
+    # simfarm.country_animate()
+    simfarm.post_prior_comp()
+    simfarm.plot_response()
 
     # Write out object as pickle
-    with open('cultivar_models/Solstice_Yield_modeltestdaily.pck', 'rb') as pfile1:
-        mod = pickle.load(pfile1)
+    with open('../cultivar_models/' + simfarm.cult + '_' + simfarm.metric + '_modeltestdaily.pck', 'wb') as pfile1:
+        pickle.dump(simfarm, pfile1)
+
+    simfarm.region_predict()
+
+    # # Write out object as pickle
+    # with open('cultivar_models/Solstice_Yield_modeltestdaily.pck', 'rb') as pfile1:
+    #     mod = pickle.load(pfile1)
 
