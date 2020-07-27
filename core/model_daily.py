@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import numba
 import pystan
 import pandas as pd
@@ -204,7 +203,7 @@ class cultivarModel:
 
     def get_weather_data(self, weather):
 
-        hdf = h5py.File('../../data/SimFarm2030_' + weather + '.hdf5', 'r')
+        hdf = h5py.File('../data/SimFarm2030_' + weather + '.hdf5', 'r')
 
         # Loop over regions
         wthr = np.full((len(self.reg_lats), self.reg_yrs.shape[1], 366), -999)
@@ -239,7 +238,7 @@ class cultivarModel:
         if weather not in self.wthr_dict:
             self.get_weather_data(weather)
 
-        hdf = h5py.File('../../data/SimFarm2030_' + weather + '.hdf5', 'r')
+        hdf = h5py.File('../data/SimFarm2030_' + weather + '.hdf5', 'r')
 
         # Get the mean weather data for each month of the year
         uk_monthly_mean = hdf['all_years_mean'][...]
@@ -469,14 +468,14 @@ class cultivarModel:
         # fig, ax = plt.subplots(figsize=(12, 4))
         # sns.violinplot(ax=ax, x='Region', y='Prediction', data=df)
         #
-        # plt.savefig('region_violin_' + self.metric + '.png', dpi=300, bbox_inches='tight')
+        # plt.savefig('../region_violin_' + self.metric + '.png', dpi=300, bbox_inches='tight')
 
         print('Region Prediction', time.time() - pstart)
 
     def country_predict(self, year, tmod, pmod, mutmod, mupmod, cultivar):
 
         # Open file
-        hdf = h5py.File('../../data/SimFarm2030.hdf5',
+        hdf = h5py.File('../data/SimFarm2030.hdf5',
                         'r+')
 
         # Extract latitude grid
@@ -618,7 +617,7 @@ class cultivarModel:
     def country_animate(self, yrmin=1900, yrmax=2018):
 
         # Open file
-        hdf = h5py.File('../../data/SimFarm2030.hdf5',
+        hdf = h5py.File('../data/SimFarm2030.hdf5',
                         'r+')
 
         lat = hdf['Latitude_grid'][...]
@@ -676,7 +675,7 @@ class cultivarModel:
         hdf.close()
 
         os.system('convert -loop 1 -delay 50 ../country_predictions/prediction_country_map_anom_*.png '
-                  '../country_predictions/prediction_country_map_anom_' + self.metric + '.gif')
+                  'country_predictions/prediction_country_map_anom_' + self.metric + '.gif')
 
         # Set up figure
         fig = plt.figure()
@@ -702,7 +701,7 @@ class cultivarModel:
     def region_all_years(self, regs=4, yrmin=1900, yrmax=2018):
 
         # Open file
-        hdf = h5py.File('../../data/SimFarm2030.hdf5',
+        hdf = h5py.File('../data/SimFarm2030.hdf5',
                         'r+')
 
         lat = hdf['Latitude_grid'][...]
@@ -814,7 +813,7 @@ if __name__ == '__main__':
     # ftp_paths = ['/badc/ukcp18/data/land-rcm/uk/12km/rcp85/01/tas/mon/latest',
     #              '/badc/ukcp18/data/land-rcm/uk/12km/rcp85/01/pr/mon/latest']
     #
-    # destpaths = ['../data/Rain/',
+    # destpaths = ['data/Rain/',
     #              '/Volumes/My Passport/SimFarm_daily/Temp_max/',
     #              '/Volumes/My Passport/SimFarm_daily/Temp_min']
     #
