@@ -15,7 +15,7 @@ from netCDF4 import Dataset
 import seaborn as sns
 import warnings
 import calendar
-warnings.filterwarnings("ignore")
+# warnings.filterwarnings("ignore")
 
 sns.set_style('whitegrid')
 sns.set_context("paper", rc={"font.size":12, "axes.titlesize":12, "axes.labelsize":12})
@@ -827,7 +827,7 @@ if __name__ == '__main__':
     regions = np.loadtxt('../example_data/Regions.txt')
     region_lats = regions[:, 0]
     region_longs = regions[:, 1]
-    years = np.loadtxt('example_data/Years.txt',
+    years = np.loadtxt('../example_data/Years.txt',
                        dtype=str).T
     sow_month = np.loadtxt('../example_data/sowmonth.txt').T
     ripe_time = np.loadtxt('../example_data/ripedays.txt').T
