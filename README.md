@@ -11,6 +11,14 @@ Most of the utilised packages can be found with an Anaconda python3 installation
   fnmatch
   
   seaborn
+
+  pandas
+
+  numba
+
+  matplotlib
+
+  h5py
   
 Pystan is a little more involved, installation instruction can be found @:https://pystan.readthedocs.io/en/latest/getting_started.html
 
