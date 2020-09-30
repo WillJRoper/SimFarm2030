@@ -22,8 +22,8 @@ sns.set_context("paper", rc={"font.size": 12, "axes.titlesize": 12, "axes.labels
 class cultivarModel:
 
     def __init__(self, cultivar, region_tol=0.25, weather=('temperature', 'rainfall'), metric='yield',
-                 metric_units='t/Ha', initial_guess=(1, 10.0, 5.0, 200, 200.0, 0),
-                 initial_spread=(10, 10, 20, 200, 200, 0.5)):
+                 metric_units='t/Ha', initial_guess=(1, 0.0, 1.0, 0, 100.0, 0),
+                 initial_spread=(10, 30, 50, 300, 400, 0.5)):
 
         start = time.time()
 
@@ -48,8 +48,6 @@ class cultivarModel:
         self.maxprob_params = {}
         self.fit = None
         self.model = None
-        self.tmodel = None
-        self.pmodel = None
         self.initial_guess = initial_guess
         self.initial_spread = initial_spread
         self.samples = {}
@@ -68,7 +66,6 @@ class cultivarModel:
             print("Rainfall Extracted")
 
         hdf.close()
-
 
     @staticmethod
     def extract_region(lat, long, region_lat, region_long, weather, tol):
@@ -256,19 +253,10 @@ class cultivarModel:
 
         return dy
 
-    @staticmethod
-    def gauss1d(x, norm, mu, sig):
-
-        exp_term = ((x - mu) / sig) ** 2
-
-        dy = norm * np.nansum(np.exp(-0.5 * exp_term), axis=1)
-
-        return dy
-
-    def log_likelihood_2d(self, theta, t, p, y, yerr,  mu_t, sig_t, mu_p, sig_p):
+    def log_likelihood(self, theta, t, p, y, yerr):
 
         # Extract initial guesses
-        norm, rho = theta
+        norm, mu_t, sig_t, mu_p, sig_p, rho = theta
 
         # Define model
         model = self.gauss2d(t, norm, mu_t, sig_t, p, mu_p, sig_p, rho)
@@ -277,189 +265,51 @@ class cultivarModel:
 
         return -0.5 * np.sum((y - model) ** 2 / sigma2)
 
-    def log_likelihood_1d(self, theta, x, y, yerr):
-
-        # Extract initial guesses
-        norm, mu, sig = theta
-
-        # Define model
-        model = self.gauss1d(x, norm, mu, sig)
-
-        sigma2 = yerr ** 2
-
-        return -0.5 * np.sum((y - model) ** 2 / sigma2)
-
-    def log_prior_2d(self, theta, inds):
+    def log_prior(self, theta):
 
         # Extract parameters from vector
-        norm, rho = theta
+        norm, mu_t, sig_t, mu_p, sig_p, rho = theta
 
         # The only parameters with a lower bound are norm and the sigmas
-        cond = (0 < norm < 5 and -1 <= rho <= 1)
+        cond = (0 < norm < 10 and -100 < mu_t < 100 and 0 < sig_t < 100
+                and -300 < mu_p < 300 and 0 < sig_p < 1000 and -1 <= rho <= 1)
         if cond:
 
             # # Define ln(prior) for each prior
-            norm_lnprob = np.log(stat.norm.pdf(norm, loc=self.initial_guess[inds[0]], scale=self.initial_spread[inds[0]]))
-            rho_lnprob = np.log(stat.norm.pdf(rho, loc=self.initial_guess[inds[1]], scale=self.initial_spread[1]))
+            norm_lnprob = np.log(stat.norm.pdf(norm, loc=self.initial_guess[0], scale=self.initial_spread[0]))
+            mut_lnprob = np.log(stat.norm.pdf(mu_t, loc=self.initial_guess[1], scale=self.initial_spread[1]))
+            sigt_lnprob = np.log(stat.norm.pdf(sig_t, loc=self.initial_guess[2], scale=self.initial_spread[2]))
+            mup_lnprob = np.log(stat.norm.pdf(mu_p, loc=self.initial_guess[3], scale=self.initial_spread[3]))
+            sigp_lnprob = np.log(stat.norm.pdf(sig_p, loc=self.initial_guess[4], scale=self.initial_spread[4]))
+            rho_lnprob = np.log(stat.norm.pdf(rho, loc=self.initial_guess[5], scale=self.initial_spread[5]))
 
-            return norm_lnprob + rho_lnprob
+            return norm_lnprob + mut_lnprob + sigt_lnprob + mup_lnprob + sigp_lnprob + rho_lnprob
             # return 0
         else:
             return -np.inf
 
-    def log_prior_1d(self, theta, inds):
-
-        # Extract parameters from vector
-        norm, mu, sig = theta
-
-        lims = [20, 40, 30, 400, 250, 1]
-
-        # The only parameters with a lower bound are norm and the sigmas
-        cond = (0 < norm < 20 and 0 < mu < lims[inds[1]] and 0 < sig < lims[inds[2]])
-        if cond:
-
-            # # # Define ln(prior) for each prior
-            # norm_lnprob = np.log(stat.norm.pdf(norm, loc=self.initial_guess[inds[0]], scale=self.initial_spread[inds[0]]))
-            # mu_lnprob = np.log(stat.norm.pdf(mu, loc=self.initial_guess[inds[1]], scale=self.initial_spread[inds[1]]))
-            # sig_lnprob = np.log(stat.norm.pdf(sig, loc=self.initial_guess[inds[2]], scale=self.initial_spread[inds[2]]))
-
-            # return norm_lnprob + mu_lnprob + sig_lnprob
-            return 0
-        else:
-            return -np.inf
-
-    def log_probability_2d(self, theta, t, p, y, yerr, inds,  mu_t, sig_t, mu_p, sig_p):
-        lp = self.log_prior_2d(theta, inds)
+    def log_probability(self, theta, t, p, y, yerr):
+        lp = self.log_prior(theta)
         if not np.isfinite(lp):
             return -np.inf
-        return lp + self.log_likelihood_2d(theta, t, p, y, yerr,  mu_t, sig_t, mu_p, sig_p)
-
-    def log_probability_1d(self, theta, x, y, yerr, inds):
-        lp = self.log_prior_1d(theta, inds)
-        if not np.isfinite(lp):
-            return -np.inf
-        return lp + self.log_likelihood_1d(theta, x, y, yerr)
+        return lp + self.log_likelihood(theta, t, p, y, yerr)
 
     def train_model(self, nsample=5000, nwalkers=500):
 
-        temp = self.temp
-        rain = self.precip
+        temp = self.temp_anom
+        rain = self.precip_anom
 
         yields = self.yield_data
         yerr = np.std(self.yield_data)
 
-        ndim = 3
+        ndim = len(self.initial_guess)
 
         p0 = np.random.randn(nwalkers, ndim)
 
         with Pool() as pool:
 
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_1d,
-                                            args=(temp, yields, yerr, (0, 1, 2)), pool=pool)
-
-            # Run 200 steps as a burn-in.
-            print("Burning in ...")
-            pos, prob, state = sampler.run_mcmc(p0, 200)
-
-            # Reset the chain to remove the burn-in samples.
-            sampler.reset()
-
-            print("Running MCMC ...")
-            pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True, rstate0=state)
-
-        # Print out the mean acceptance fraction. In general, acceptance_fraction
-        # has an entry for each walker so, in this case, it is a 250-dimensional
-        # vector.
-        af = sampler.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(af))
-        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
-                                    between 0.2 and 0.5
-                    If af < 0.2 decrease the a parameter
-                    If af > 0.5 increase the a parameter
-                    '''
-
-        print(af_msg)
-
-        flat_samples = sampler.get_chain(discard=1000, thin=100, flat=True)
-
-        # Extract fitted parameters
-        d = self.mean_params
-        maxprob_indice = np.argmax(prob)
-        self.maxprob_params = pos[maxprob_indice]
-        self.fitted_params = np.median(flat_samples, axis=0)
-        d["norm1"], d['mu_t'], d["sig_t"] = self.fitted_params
-
-        # Extract the samples
-        d = self.samples
-        d["norm1"], d['mu_t'], d["sig_t"] = [flat_samples[:, i] for i in range(ndim)]
-
-        # Extract the errors on the fitted parameters
-        self.param_errors = np.std(flat_samples, axis=0)
-        norm1_err, mu_t_err, sig_t_err = self.param_errors
-
-        print("================ Model Parameters ================")
-        print("norm = %.3f +/- %.3f" % (self.mean_params['norm1'], norm1_err))
-        print("mu_t = %.3f +/- %.3f" % (self.mean_params['mu_t'], mu_t_err))
-        print("sig_t = %.3f +/- %.3f" % (self.mean_params["sig_t"], sig_t_err))
-        
-        with Pool() as pool:
-
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_1d,
-                                            args=(rain, yields, yerr, (0, 3, 4)), pool=pool)
-
-            # Run 200 steps as a burn-in.
-            print("Burning in ...")
-            pos, prob, state = sampler.run_mcmc(p0, 200)
-
-            # Reset the chain to remove the burn-in samples.
-            sampler.reset()
-
-            print("Running MCMC ...")
-            pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True, rstate0=state)
-
-        # Print out the mean acceptance fraction. In general, acceptance_fraction
-        # has an entry for each walker so, in this case, it is a 250-dimensional
-        # vector.
-        af = sampler.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(af))
-        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
-                                    between 0.2 and 0.5
-                    If af < 0.2 decrease the a parameter
-                    If af > 0.5 increase the a parameter
-                    '''
-
-        print(af_msg)
-
-        flat_samples = sampler.get_chain(discard=1000, thin=100, flat=True)
-
-        # Extract fitted parameters
-        d = self.mean_params
-        maxprob_indice = np.argmax(prob)
-        self.maxprob_params = pos[maxprob_indice]
-        self.fitted_params = np.median(flat_samples, axis=0)
-        d["norm2"], d['mu_p'], d["sig_p"] = self.fitted_params
-
-        # Extract the samples
-        d = self.samples
-        d["norm2"], d['mu_p'], d["sig_p"] = [flat_samples[:, i] for i in range(ndim)]
-
-        # Extract the errors on the fitted parameters
-        self.param_errors = np.std(flat_samples, axis=0)
-        norm2_err, mu_p_err, sig_p_err = self.param_errors
-
-        print("================ Model Parameters ================")
-        print("norm = %.3f +/- %.3f" % (self.mean_params['norm2'], norm2_err))
-        print("mu_p = %.3f +/- %.3f" % (self.mean_params['mu_p'], mu_p_err))
-        print("sig_p = %.3f +/- %.3f" % (self.mean_params["sig_p"], sig_p_err))
-
-        ndim = 2
-
-        p0 = np.random.randn(nwalkers, ndim) * 0.0001 + np.array([self.initial_guess[0], self.initial_guess[5]])
-
-        with Pool() as pool:
-
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_2d,
-                                            args=(temp, rain, yields, yerr, (0, 5), d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"]), pool=pool, threads=8)
+            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability,
+                                            args=(temp, rain, yields, yerr), pool=pool)
 
             # Run 200 steps as a burn-in.
             print("Burning in ...")
@@ -487,26 +337,20 @@ class cultivarModel:
         print(af_msg)
 
         # Extract fitted parameters
-        d = self.maxprob_params
-        print(np.max(prob))
+        d = self.mean_params
         maxprob_indice = np.argmax(prob)
         self.fitted_params = pos[maxprob_indice]
-        d["norm"], d["rho"] = self.fitted_params
+        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d["rho"] = self.fitted_params
 
-        flat_samples = sampler.get_chain(discard=1000, thin=50, flat=True)
-
-        # Extract fitted parameters
-        d = self.mean_params
-        self.fitted_params = np.median(flat_samples, axis=0)
-        d["norm"], d["rho"] = self.fitted_params
+        flat_samples = sampler.get_chain(discard=1000, thin=15, flat=True)
 
         # Extract the samples
         d = self.samples
-        d["norm"], d["rho"] = [flat_samples[:, i] for i in range(ndim)]
+        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d["rho"] = [flat_samples[:, i] for i in range(ndim)]
 
         # Extract the errors on the fitted parameters
         self.param_errors = np.std(flat_samples, axis=0)
-        norm_err, rho_err = self.param_errors
+        norm_err, mu_t_err, sig_t_err, mu_p_err, sig_p_err, rho_err = self.param_errors
 
         print("================ Model Parameters ================")
         print("norm = %.3f +/- %.3f" % (self.mean_params['norm'], norm_err))
@@ -522,181 +366,76 @@ class cultivarModel:
     def train_and_validate_model(self, split=0.7, nsample=5000, nwalkers=500):
 
         # Compute the ratio to split by
-        size = self.temp.shape[0]
+        size = self.temp_anom.shape[0]
         predict_size = int(size * (1 - split))
 
         rand_inds = np.random.choice(np.arange(size), predict_size)
         okinds = np.zeros(size, dtype=bool)
         okinds[rand_inds] = True
 
-        train_temp = self.temp[~okinds, 6:]
-        train_rain = self.precip[~okinds, 6:]
+        train_temp = self.temp_anom[~okinds, :]
+        train_rain = self.precip_anom[~okinds, :]
         train_yields = self.yield_data[~okinds]
-        predict_temp = self.temp[okinds, 6:]
-        predict_rain = self.precip[okinds, 6:]
+        predict_temp = self.temp_anom[okinds, :]
+        predict_rain = self.precip_anom[okinds, :]
         predict_yields = self.yield_data[okinds]
         yerr = np.std(self.yield_data)
 
-        ndim = 3
+        ndim = len(self.initial_guess)
 
-        p0 = np.random.randn(nwalkers, ndim)
+        p0 = np.random.randn(nwalkers, ndim) * 0.0001 + self.initial_guess
 
         with Pool() as pool:
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_1d,
-                                            args=(train_temp, train_yields, yerr, (0, 1, 2)), pool=pool)
+
+            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability,
+                                            args=(train_temp, train_rain, train_yields, yerr), pool=pool, threads=8)
 
             # Run 200 steps as a burn-in.
             print("Burning in ...")
-            pos, prob, state = sampler.run_mcmc(p0, 200)
+            pos, prob, state = sampler.run_mcmc(p0, 500)
 
             # Reset the chain to remove the burn-in samples.
             sampler.reset()
 
             print("Running MCMC ...")
             pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True, rstate0=state)
-
-        # Print out the mean acceptance fraction. In general, acceptance_fraction
-        # has an entry for each walker so, in this case, it is a 250-dimensional
-        # vector.
-        af = sampler.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(af))
-        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
-                                            between 0.2 and 0.5
-                            If af < 0.2 decrease the a parameter
-                            If af > 0.5 increase the a parameter
-                            '''
-
-        print(af_msg)
-
-        self.tmodel = sampler
-
-        flat_samples = sampler.get_chain(discard=1000, thin=100, flat=True)
-
-        # Extract fitted parameters
-        d = self.mean_params
-        maxprob_indice = np.argmax(prob)
-        self.maxprob_params = pos[maxprob_indice]
-        self.fitted_params = np.median(flat_samples, axis=0)
-        d["norm1"], d['mu_t'], d["sig_t"] = self.fitted_params
-
-        # Extract the samples
-        d = self.samples
-        d["norm1"], d['mu_t'], d["sig_t"] = [flat_samples[:, i] for i in range(ndim)]
-
-        # Extract the errors on the fitted parameters
-        self.param_errors = np.std(flat_samples, axis=0)
-        norm1_err, mu_t_err, sig_t_err = self.param_errors
-
-        print("================ Model Parameters ================")
-        print("norm = %.3f +/- %.3f" % (self.mean_params['norm1'], norm1_err))
-        print("mu_t = %.3f +/- %.3f" % (self.mean_params['mu_t'], mu_t_err))
-        print("sig_t = %.3f +/- %.3f" % (self.mean_params["sig_t"], sig_t_err))
-
-        with Pool() as pool:
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_1d,
-                                            args=(train_rain, train_yields, yerr, (0, 3, 4)), pool=pool)
-
-            # Run 200 steps as a burn-in.
-            print("Burning in ...")
-            pos, prob, state = sampler.run_mcmc(p0, 200)
-
-            # Reset the chain to remove the burn-in samples.
-            sampler.reset()
-
-            print("Running MCMC ...")
-            pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True, rstate0=state)
-
-        # Print out the mean acceptance fraction. In general, acceptance_fraction
-        # has an entry for each walker so, in this case, it is a 250-dimensional
-        # vector.
-        af = sampler.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(af))
-        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
-                                            between 0.2 and 0.5
-                            If af < 0.2 decrease the a parameter
-                            If af > 0.5 increase the a parameter
-                            '''
-
-        print(af_msg)
-
-        self.pmodel = sampler
-
-        # Extract fitted parameters
-        d = self.mean_params
-        maxprob_indice = np.argmax(prob)
-        self.fitted_params = pos[maxprob_indice]
-        d["norm2"], d['mu_p'], d["sig_p"] = self.fitted_params
-
-        flat_samples = sampler.get_chain(discard=1000, thin=100, flat=True)
-
-        # Extract the samples
-        d = self.samples
-        d["norm2"], d['mu_p'], d["sig_p"] = [flat_samples[:, i] for i in range(ndim)]
-
-        # Extract the errors on the fitted parameters
-        self.param_errors = np.std(flat_samples, axis=0)
-        norm2_err, mu_p_err, sig_p_err = self.param_errors
-
-        print("================ Model Parameters ================")
-        print("norm = %.3f +/- %.3f" % (self.mean_params['norm2'], norm2_err))
-        print("mu_p = %.3f +/- %.3f" % (self.mean_params['mu_p'], mu_p_err))
-        print("sig_p = %.3f +/- %.3f" % (self.mean_params["sig_p"], sig_p_err))
-
-        ndim = 2
-
-        p0 = np.random.randn(nwalkers, ndim) * 0.0001 + np.array([self.initial_guess[0], self.initial_guess[5]])
-
-        with Pool() as pool:
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_2d,
-                                            args=(train_temp, train_rain, train_yields, yerr, (0, 5)),
-                                            pool=pool, threads=8)
-
-            # Run 200 steps as a burn-in.
-            print("Burning in ...")
-            pos, prob, state = sampler.run_mcmc(p0, 200)
-
-            # Reset the chain to remove the burn-in samples.
-            sampler.reset()
-
-            print("Running MCMC ...")
-            pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True, rstate0=state)
-
-        # Print out the mean acceptance fraction. In general, acceptance_fraction
-        # has an entry for each walker so, in this case, it is a 250-dimensional
-        # vector.
-        af = sampler.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(af))
-        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
-                                            between 0.2 and 0.5
-                            If af < 0.2 decrease the a parameter
-                            If af > 0.5 increase the a parameter
-                            '''
-
-        print(af_msg)
 
         self.model = sampler
+
+        # Print out the mean acceptance fraction. In general, acceptance_fraction
+        # has an entry for each walker so, in this case, it is a 250-dimensional
+        # vector.
+        af = sampler.acceptance_fraction
+        print("Mean acceptance fraction:", np.mean(af))
+        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
+                                    between 0.2 and 0.5
+                    If af < 0.2 decrease the a parameter
+                    If af > 0.5 increase the a parameter
+                    '''
+
+        print(af_msg)
 
         # Extract fitted parameters
         d = self.maxprob_params
         print(np.max(prob))
         maxprob_indice = np.argmax(prob)
         self.fitted_params = pos[maxprob_indice]
-        d["norm"], d["rho"] = self.fitted_params
+        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d["rho"] = self.fitted_params
 
-        flat_samples = sampler.get_chain(discard=1000, thin=50, flat=True)
+        flat_samples = sampler.get_chain(discard=1000, thin=15, flat=True)
 
         # Extract fitted parameters
         d = self.mean_params
         self.fitted_params = np.median(flat_samples, axis=0)
-        d["norm"], d["rho"] = self.fitted_params
+        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d["rho"] = self.fitted_params
 
         # Extract the samples
         d = self.samples
-        d["norm"], d["rho"] = [flat_samples[:, i] for i in range(ndim)]
+        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d["rho"] = [flat_samples[:, i] for i in range(ndim)]
 
         # Extract the errors on the fitted parameters
         self.param_errors = np.std(flat_samples, axis=0)
-        norm_err, rho_err = self.param_errors
+        norm_err, mu_t_err, sig_t_err, mu_p_err, sig_p_err, rho_err = self.param_errors
 
         print("================ Model Parameters ================")
         print("norm = %.3f +/- %.3f" % (self.mean_params['norm'], norm_err))
@@ -710,8 +449,6 @@ class cultivarModel:
         preds = self.gauss2d(predict_temp, self.mean_params['norm'], self.mean_params['mu_t'], self.mean_params['sig_t'],
                              predict_rain, self.mean_params['mu_p'], self.mean_params['sig_p'], self.mean_params["rho"])
         print(preds)
-
-        self.preds = preds
 
         # Calculate the percentage residual
         resi = (1 - preds / predict_yields) * 100
@@ -732,29 +469,17 @@ class cultivarModel:
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels)
 
-        fig.savefig("../model_performance/Validation/" + self.cult + ".png", bbox_inches="tight")
+        fig.savefig("../model_performance/validation_" + self.cult + ".png", bbox_inches="tight")
 
     def plot_walkers(self):
 
-        for i in range(3):
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            res = ax.plot(self.tmodel.chain[:, :, i].T, '-', color='k', alpha=0.3)
-            fig.savefig(f"../model_performance/Chains/samplerchain_t{i}_" + self.cult + ".png", bbox_inches="tight")
-            plt.close(fig)
+        ndim = len(self.initial_guess)
 
-        for i in range(3):
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            res = ax.plot(self.pmodel.chain[:, :, i].T, '-', color='k', alpha=0.3)
-            fig.savefig(f"../model_performance/Chains/samplerchain_p{i}_" + self.cult + ".png", bbox_inches="tight")
-            plt.close(fig)
-
-        for i in range(2):
+        for i in range(ndim):
             fig = plt.figure()
             ax = fig.add_subplot(111)
             res = ax.plot(self.model.chain[:, :, i].T, '-', color='k', alpha=0.3)
-            fig.savefig(f"../model_performance/Chains/samplerchain_{i}_" + self.cult + ".png", bbox_inches="tight")
+            fig.savefig(f"../model_performance/samplerchain_{i}_" + self.cult + ".png", bbox_inches="tight")
             plt.close(fig)
 
     def plot_response(self):
@@ -813,25 +538,15 @@ class cultivarModel:
 
     def post_prior_comp(self):
 
-        samps = np.zeros((self.samples["norm"].size, 6))
-        samps[:, 0] = self.samples["norm"]
-        samps[:, 1] = self.samples["mu_t"]
-        samps[:, 2] = self.samples["sig_t"]
-        samps[:, 3] = self.samples["mu_p"]
-        samps[:, 4] = self.samples["sig_p"]
-        samps[:, 5] = self.samples["rho"]
-
         labels = [r'norm', r'$\mu_t$', r'$\sigma_t$', r'$\mu_p$', r'$\sigma_p$', r'$\rho$']
-        fig = corner.corner(samps, show_titles=True, labels=labels,
+        fig = corner.corner(self.model.get_chain(discard=1000, thin=15, flat=True), show_titles=True, labels=labels,
                             plot_datapoints=True, quantiles=[0.16, 0.5, 0.84])
 
-        fig.savefig("../model_performance/Corners/corner_" + self.cult + ".png", bbox_inches="tight")
+        fig.savefig("../model_performance/corner_" + self.cult + ".png", bbox_inches="tight")
 
         plt.close(fig)
 
     def country_predict(self, year, tmod, pmod, mutmod, mupmod, cultivar):
-
-        # NOTE: Need to add noise to comparison maps to show where differences are statistically significant.
 
         # Open file
         hdf = h5py.File('../SimFarm2030.hdf5', 'r+')
