@@ -24,13 +24,12 @@ https://drive.google.com/file/d/10GBNGBfMGCEAaAXK3sY68W4eCYcUS0mP/view?usp=shari
 
 https://drive.google.com/file/d/14swnAaInBR1eZcOl2V3lMdHzLVuF5LdU/view?usp=sharing
 
-## Climate Outputs
+## Running the model
 
-Plot Of Average Monthly Temp | Plot Of Daily Rainfall
------------- | -------------
-<img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/month_temps.gif" width="500" height="600">| <img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/day_rain.gif" width="500" height="600">
+To run the latest version of the model clone this repo and from that directory:
 
-### Here is a flow chart explaining preliminary worked carried out by Andrew Bowell (https://github.com/AnBowell/SimFarm2030) and the process of adapting the FACYnation codes
-<p align="center">
-<img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/FlowChart/f2s.png">
-</p>
+``` 
+cd core
+python main_daily_3d.py All     # to train and validate on all datasets within example_data or...
+python main_daily_3d.py Claire  # to train and validate on the Claire cultivar, this can be any cultivar contained in example_data
+```
