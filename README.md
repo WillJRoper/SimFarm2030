@@ -26,7 +26,7 @@ https://drive.google.com/file/d/14swnAaInBR1eZcOl2V3lMdHzLVuF5LdU/view?usp=shari
 
 ## Running the model
 
-To run the latest version of the model clone this repo and from that directory:
+To run the latest version of the model, clone this repo and from that directory:
 
 ``` 
 cd core
