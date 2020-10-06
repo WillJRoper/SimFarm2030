@@ -8,8 +8,12 @@ import os
 
 # Extract cultivar from command line input
 cult = sys.argv[1]
-files = os.listdir("../example_data")
-files.remove('.DS_Store')
+
+if cult == "All":
+    files = os.listdir("../example_data")
+    files.remove('.DS_Store')
+else:
+    files = [cult + "_Data.csv", ]
 
 for f in files:
 

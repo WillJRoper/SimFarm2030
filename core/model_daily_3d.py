@@ -468,6 +468,11 @@ class cultivarModel:
         self.predict_yields = self.yield_data[okinds]
         self.yerr = np.std(self.yield_data)
 
+        self.predict_years = self.reg_yrs[okinds]
+        self.predict_lat = self.reg_lats[okinds]
+        self.predict_long = self.reg_longs[okinds]
+        self.predict_sow_month = self.sow_months[okinds]
+
         ndim = len(self.initial_guess)
 
         p0 = np.random.randn(nwalkers, ndim) * 0.001 + self.initial_guess
