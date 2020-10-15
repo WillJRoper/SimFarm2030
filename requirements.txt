@@ -1,0 +1,9 @@
+netCDF4
+ftplib 
+fnmatch
+seaborn
+pandas
+numba
+matplotlib
+h5py
+emcee
