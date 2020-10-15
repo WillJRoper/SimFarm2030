@@ -2,7 +2,7 @@
 SimFarm2030 aims to use climate data collected by the Met Office to model wheat production metrics using a Bayesian inference approach. This approach provides extreme flexibility, allowing the model to be applied not only to wheat data but essentially any time series, climate sensitive data. This approach also allows for a huge dynamic range in what can be predicted, with predictions possible from highly localised grids to national production metrics.
 
 ## Dependencies
-Most of the utilised packages can be found with an Anaconda python3 installation. The following are not included and can be pip installed (pip install [package]):
+Most of the utilised packages can be found with an Anaconda python3 installation. The following are not included and can be pip installed (`pip install [package]`):
   
   netCDF4
   
@@ -20,15 +20,24 @@ Most of the utilised packages can be found with an Anaconda python3 installation
 
   h5py
   
-Pystan is a little more involved, installation instruction can be found @:https://pystan.readthedocs.io/en/latest/getting_started.html
+  emcee
+  
+Pystan (required to run the old pystan version of the code) is a little more involved, installation instruction can be found @:https://pystan.readthedocs.io/en/latest/getting_started.html
 
-## Climate Outputs
+HDF5 files can be downloaded from: 
 
-Plot Of Average Monthly Temp | Plot Of Daily Rainfall
------------- | -------------
-<img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/month_temps.gif" width="500" height="600">| <img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/day_rain.gif" width="500" height="600">
+https://drive.google.com/file/d/1nrf1RVgU4n-13NprK3oDwg5RA-cL_5Md/view?usp=sharing
 
-### Here is a flow chart explaining preliminary worked carried out by Andrew Bowell (https://github.com/AnBowell/SimFarm2030) and the process of adapting the FACYnation codes
-<p align="center">
-<img src="https://raw.githubusercontent.com/AnBowell/SimFarm2030/master/Example_Images/FlowChart/f2s.png">
-</p>
+https://drive.google.com/file/d/10GBNGBfMGCEAaAXK3sY68W4eCYcUS0mP/view?usp=sharing
+
+https://drive.google.com/file/d/14swnAaInBR1eZcOl2V3lMdHzLVuF5LdU/view?usp=sharing
+
+## Running the model
+
+To run the latest version of the model, clone this repo and from that directory:
+
+``` 
+cd core
+python main_daily_3d.py All     # to train and validate on all datasets within example_data or...
+python main_daily_3d.py Claire  # to train and validate on the Claire cultivar, this can be any cultivar contained in example_data
+```

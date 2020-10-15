@@ -1,0 +1,4 @@
+*.hdf5
+model_performance/*
+cultivar_models/*
+Climate_Data/*
