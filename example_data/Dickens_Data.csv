@@ -1,14 +1,14 @@
-﻿Region,Region County,Lat,Long,Year,Sow Month,Ripe Time,Yield
-Aberdeen,Aber.,57.1497,-2.0943,2003,10-Jan,0,0
+Region,Region County,Lat,Long,Year,Sow Month,Ripe Time,Yield
+Aberdeen,Aber.,57.1497,-2.0943,2003,10-Jan,,
 Alkerton,Oxon,52.0834,-1.4545,2013,10-Sep,323,9.66
 Alkerton,Oxon,52.0834,-1.4545,2014,10-Aug,312,15.22
 Alkerton,Oxon,52.0834,-1.4545,2015,22-Oct,313,13.63
 Alkerton,Oxon,52.0834,-1.4545,2016,15-Oct,305,9.59
-ANNAN,DUMF,54.9902,-3.2598,2002,10-Jan,0,0
-Anstruth,Fife,56.223,-2.7005,2013,30-Oct,0,7.63
-ASHF'D,KENT,51.1465,0.875,2002,10-Jan,0,0
-Attlebro,Norfk,52.5181,1.0155,2006,10-Jan,0,0
-Attlebro,Norfk,52.5181,1.0155,2008,10-Jan,0,0
+ANNAN,DUMF,54.9902,-3.2598,2002,10-Jan,,
+Anstruth,Fife,56.223,-2.7005,2013,30-Oct,,7.63
+ASHF'D,KENT,51.1465,0.875,2002,10-Jan,,
+Attlebro,Norfk,52.5181,1.0155,2006,10-Jan,,
+Attlebro,Norfk,52.5181,1.0155,2008,10-Jan,,
 Attlebro,Norfk,52.5181,1.0155,2012,10-Jan,281,9.71
 Auchnagatt,Aberdn,57.466,-2.117,2014,28-Sep,339,11.01
 Auchnagatt,Aberdn,57.466,-2.117,2015,24-Sep,360,9.8
@@ -18,430 +18,430 @@ Balgonie,Fife,56.1843,-3.1244,2013,15-Oct,318,10.49
 Balgonie,Fife,56.1843,-3.1244,2015,27-Sep,346,12.01
 Balgonie,Fife,56.1843,-3.1244,2016,27-Nov,335,10.66
 Balgonie,Fife,56.1843,-3.1244,2017,10-Jan,333,11.98
-Bannister,Essex,51.8599,0.4633,2010,10-Sep,0,0
-Barnston,Essex,51.8533,0.3865,2004,10-Jan,0,0
-Barnston,Essex,51.8533,0.3865,2005,10-Jan,0,0
-Barnston,Essex,51.8533,0.3865,2007,10-Jan,0,0
+Bannister,Essex,51.8599,0.4633,2010,10-Sep,,
+Barnston,Essex,51.8533,0.3865,2004,10-Jan,,
+Barnston,Essex,51.8533,0.3865,2005,10-Jan,,
+Barnston,Essex,51.8533,0.3865,2007,10-Jan,,
 Barnston,Essex,51.8533,0.3865,2015,10-Oct,286,10.05
-Barthorpe,North Yorkshire,54.0264,-0.8172,2005,10-Jan,0,0
-Barthorpe,NYorks,54.0264,-0.8172,2011,27-Sep,0,0
+Barthorpe,North Yorkshire,54.0264,-0.8172,2005,10-Jan,,
+Barthorpe,NYorks,54.0264,-0.8172,2011,27-Sep,,
 Barthorpe,NYorks,54.0264,-0.8172,2012,10-Jan,321,10.28
 Barthorpe,NYorks,54.0264,-0.8172,2014,10-Jan,308,10.7
-Barthorpe,NYorks,54.0264,-0.8172,2015,27-Sep,0,11.5
-Baumber,Lincolnshire,53.2523,-0.1713,2005,10-Jan,0,0
-Baumber,Lincs,53.2523,-0.1713,2006,10-Jan,0,0
-Baumber,Lincs,53.2523,-0.1713,2008,21-Oct,0,0
-Baumber,Lincs,53.2523,-0.1713,2009,21-Oct,0,0
-Baumber,Lincs,53.2523,-0.1713,2017,27-Oct,0,10.23
-Beausale,Warwick,52.3342,-1.6477,2007,10-Jan,0,0
-Beausale,Warwick,52.3342,-1.6477,2008,13-Oct,0,0
-Beausale,Warwick,52.3342,-1.6477,2009,13-Oct,0,0
+Barthorpe,NYorks,54.0264,-0.8172,2015,27-Sep,,11.5
+Baumber,Lincolnshire,53.2523,-0.1713,2005,10-Jan,,
+Baumber,Lincs,53.2523,-0.1713,2006,10-Jan,,
+Baumber,Lincs,53.2523,-0.1713,2008,21-Oct,,
+Baumber,Lincs,53.2523,-0.1713,2009,21-Oct,,
+Baumber,Lincs,53.2523,-0.1713,2017,27-Oct,,10.23
+Beausale,Warwick,52.3342,-1.6477,2007,10-Jan,,
+Beausale,Warwick,52.3342,-1.6477,2008,13-Oct,,
+Beausale,Warwick,52.3342,-1.6477,2009,13-Oct,,
 Bedfield,Sufflk,52.2532,1.2502,2014,30-Sep,298,13.99
 Bedfield,Sufflk,52.2532,1.2502,2015,27-Sep,309,13.46
-Bedfield,Sufflk,52.2532,1.2502,2016,28-Sep,0,11.81
-Bedfield,Sufflk,52.2532,1.2502,2017,28-Sep,0,11.41
-Binbrook,NLincs,53.429,-0.1807,2008,10-Jan,0,0
-Bowsden,Northumberland,55.6729,-2.0135,2004,10-Jan,0,0
-Bowsden,Northumberland,55.6729,-2.0135,2005,10-Jan,0,0
-Bowsden,Nrthum,55.6729,-2.0135,2006,10-Jan,0,0
-Bowsdn,Nrthum,55.6729,-2.0135,2007,10-Jan,0,0
-Bowsdn,Nrthum,55.6729,-2.0135,2008,10-Jan,0,0
-Bramham,West Yorkshire,53.8785,-1.3504,2004,10-Jan,0,0
+Bedfield,Sufflk,52.2532,1.2502,2016,28-Sep,,11.81
+Bedfield,Sufflk,52.2532,1.2502,2017,28-Sep,,11.41
+Binbrook,NLincs,53.428999999999995,-0.1807,2008,10-Jan,,
+Bowsden,Northumberland,55.6729,-2.0135,2004,10-Jan,,
+Bowsden,Northumberland,55.6729,-2.0135,2005,10-Jan,,
+Bowsden,Nrthum,55.6729,-2.0135,2006,10-Jan,,
+Bowsdn,Nrthum,55.6729,-2.0135,2007,10-Jan,,
+Bowsdn,Nrthum,55.6729,-2.0135,2008,10-Jan,,
+Bramham,West Yorkshire,53.8785,-1.3504,2004,10-Jan,,
 Brechin,Angus,56.7333,-2.6553,2016,25-Sep,343,9.68
 Brechin,Angus,56.7333,-2.6553,2017,28-Sep,339,8.79
-Broughtn,Hants,53.1635,-2.9972,2012,10-Jan,0,10.35
-Broughtn,Hants,53.1635,-2.9972,2014,24-Oct,0,12.75
-Broughtn,Hants,53.1635,-2.9972,2015,22-Oct,0,12.8
-Broughtn,Hants,53.1635,-2.9972,2017,10-Nov,0,12.36
-Bstoke,Hants,51.2665,-1.0924,2012,10-Jan,0,7.49
-Bugthorpe,Nyorks,54.0116,-0.8236,2008,10-Jan,0,0
-Bugthorpe,NYorks,54.0116,-0.8236,2010,29-Sep,0,0
+Broughtn,Hants,53.1635,-2.9972,2012,10-Jan,,10.35
+Broughtn,Hants,53.1635,-2.9972,2014,24-Oct,,12.75
+Broughtn,Hants,53.1635,-2.9972,2015,22-Oct,,12.8
+Broughtn,Hants,53.1635,-2.9972,2017,10-Nov,,12.36
+Bstoke,Hants,51.2665,-1.0924,2012,10-Jan,,7.49
+Bugthorpe,Nyorks,54.0116,-0.8236,2008,10-Jan,,
+Bugthorpe,NYorks,54.0116,-0.8236,2010,29-Sep,,
 Burdon,Sundland,54.8568,-1.3988,2017,25-Sep,321,10.11
-Burkham,Hants,51.1769,-1.0711,2014,10-Nov,0,11.21
-Burkham,Hants,51.1769,-1.0711,2016,16-Oct,0,9.21
-BuryStE,Sufflk,52.2429,0.7105,2006,10-Jan,0,0
-BuryStE,Sufflk,52.2429,0.7105,2008,10-Jan,0,0
+Burkham,Hants,51.1769,-1.0711,2014,10-Nov,,11.21
+Burkham,Hants,51.1769,-1.0711,2016,16-Oct,,9.21
+BuryStE,Sufflk,52.2429,0.7105,2006,10-Jan,,
+BuryStE,Sufflk,52.2429,0.7105,2008,10-Jan,,
 Callow,Herefd,52.0051,-2.7385,2017,23-Sep,314,12.3
-Cambridge,Cambs.,52.2053,0.1218,2003,10-Jan,0,0
-Canterbury,Kent,51.2802,1.0789,2003,10-Jan,0,0
+Cambridge,Cambs.,52.2053,0.1218,2003,10-Jan,,
+Canterbury,Kent,51.2802,1.0789,2003,10-Jan,,
 Cawood,North Yorkshire,53.8333,-1.1316,2015,10-Mar,315,17.13
 Cawood,NYorks,53.8333,-1.1316,2016,10-Jan,307,13.64
-Cawood,NYorks,53.8333,-1.1316,2017,30-Sep,0,12.19
-Caythorpe,Lincolnshire,53.0216,-0.6046,2004,10-Jan,0,0
-Caythorpe,Lincolnshire,53.0216,-0.6046,2005,10-Jan,0,0
-Ccreevy,Down,53.79448,-6.076,2007,10-Jan,0,0
-Ccreevy,Down,53.79448,-6.076,2010,10-Aug,0,0
-Ccreevy,Down,53.79448,-6.076,2012,10-Jan,0,0
-Ccreevy,Down,53.79448,-6.076,2014,15-Oct,0,10.15
-CIRENC,GLOS,51.7185,-1.9682,2002,10-Jan,0,0
-Cirencester,Glos.,51.7185,-1.9682,2003,10-Jan,0,0
-Coates,Gloucestershire,52.5613,-2.0325,2004,10-Jan,0,0
-Coates,Gloucs,52.5613,-2.0325,2017,14-Oct,0,10.6
-COLDSM,BORD,55.6513,-2.2534,2002,10-Jan,0,0
-Coniston,E Riding of Yorkshire,54.3432,-3.0716,2004,10-Jan,0,0
-COUPAR,P KINR,56.5479,-3.2655,2002,10-Jan,0,0
-Coupar Angus,Perth/Kinr.,56.5479,-3.2655,2003,10-Jan,0,0
+Cawood,NYorks,53.8333,-1.1316,2017,30-Sep,,12.19
+Caythorpe,Lincolnshire,53.0216,-0.6046,2004,10-Jan,,
+Caythorpe,Lincolnshire,53.0216,-0.6046,2005,10-Jan,,
+Ccreevy,Down,53.79448000000001,-6.0760000000000005,2007,10-Jan,,
+Ccreevy,Down,53.79448000000001,-6.0760000000000005,2010,10-Aug,,
+Ccreevy,Down,53.79448000000001,-6.0760000000000005,2012,10-Jan,,
+Ccreevy,Down,53.79448000000001,-6.0760000000000005,2014,15-Oct,,10.15
+CIRENC,GLOS,51.7185,-1.9682,2002,10-Jan,,
+Cirencester,Glos.,51.7185,-1.9682,2003,10-Jan,,
+Coates,Gloucestershire,52.5613,-2.0325,2004,10-Jan,,
+Coates,Gloucs,52.5613,-2.0325,2017,14-Oct,,10.6
+COLDSM,BORD,55.6513,-2.2534,2002,10-Jan,,
+Coniston,E Riding of Yorkshire,54.3432,-3.0716,2004,10-Jan,,
+COUPAR,P KINR,56.5479,-3.2655,2002,10-Jan,,
+Coupar Angus,Perth/Kinr.,56.5479,-3.2655,2003,10-Jan,,
 Cowbridge,Glamorgan,51.4621,-3.4496,2017,10-Jul,297,11.59
-Crambe,Nyorks,54.0746,-0.8814,2006,10-Jan,0,0
-Crambe,Nyorks,54.0746,-0.8814,2007,10-Jan,0,0
-Cranwell,Lincs,53.036,-0.4677,2007,10-Jan,0,0
-Crawly,Hants,51.1091,-1.3898,2010,10-Mar,0,0
-Crawly,Hants,51.1091,-1.3898,2011,27-Sep,0,0
-CROFT,N YRKS,54.4835,-1.5551,2002,10-Jan,0,0
-Croft,NYorks,54.4835,-1.5551,2009,10-Feb,0,0
-Croft,NYorks,54.4835,-1.5551,2010,23-Sep,0,0
-Croft,Teesside,54.4835,-1.5551,2011,27-Sep,0,0
+Crambe,Nyorks,54.0746,-0.8814,2006,10-Jan,,
+Crambe,Nyorks,54.0746,-0.8814,2007,10-Jan,,
+Cranwell,Lincs,53.036,-0.4677,2007,10-Jan,,
+Crawly,Hants,51.1091,-1.3898,2010,10-Mar,,
+Crawly,Hants,51.1091,-1.3898,2011,27-Sep,,
+CROFT,N YRKS,54.4835,-1.5551,2002,10-Jan,,
+Croft,NYorks,54.4835,-1.5551,2009,10-Feb,,
+Croft,NYorks,54.4835,-1.5551,2010,23-Sep,,
+Croft,Teesside,54.4835,-1.5551,2011,27-Sep,,
 Croft,Teesside,54.4835,-1.5551,2012,10-Jan,331,8.74
-Croft,Teesside,54.4835,-1.5551,2013,10-Jun,0,9.8
+Croft,Teesside,54.4835,-1.5551,2013,10-Jun,,9.8
 Croft,Teesside,54.4835,-1.5551,2014,27-Sep,317,12.75
 Croft,Teesside,54.4835,-1.5551,2015,25-Sep,332,13.84
 Croft,NYorks,54.4835,-1.5551,2017,24-Sep,325,12.84
-Croft on Tees,N Yorks.,54.4835,-1.5551,2003,10-Jan,0,0
-Croft on Tees,North Yorkshire,54.4835,-1.5551,2004,10-Jan,0,0
-C'thorpe,Lincs,53.0216,-0.6046,2006,10-Jan,0,0
+Croft on Tees,N Yorks.,54.4835,-1.5551,2003,10-Jan,,
+Croft on Tees,North Yorkshire,54.4835,-1.5551,2004,10-Jan,,
+C'thorpe,Lincs,53.0216,-0.6046,2006,10-Jan,,
 Deopham,Norfk,52.5593,1.0225,2017,27-Sep,304,11.87
-Didbrook,Gloucestershire,51.982,-1.9244,2005,10-Jan,0,0
-Didbrook,Gloucs,51.982,-1.9244,2007,10-Jan,0,0
-Didbrook,Gloucs,51.982,-1.9244,2008,10-Mar,0,0
-Didbrook,Gloucs,51.982,-1.9244,2009,10-Mar,0,0
-Didbrook,Gloucs,51.982,-1.9244,2010,13-Oct,0,0
-Didbrook,Gloucs,51.982,-1.9244,2011,10-Dec,0,0
-Didbrook,Gloucs,51.982,-1.9244,2012,10-Jan,0,9.1
-Didbrook,Gloucs,51.982,-1.9244,2016,30-Sep,0,11.62
-DownP,Down,54.3288,-5.7157,2007,10-Jan,0,0
-DownP,Down,54.3288,-5.7157,2008,10-Jan,0,0
-DownP,Down,54.3288,-5.7157,2011,19-Oct,0,0
-Duggleby,North Yorkshire,54.0928,-0.6573,2004,10-Jan,0,0
-DUNMOW,ESSEX,51.8729,0.3578,2002,10-Jan,0,0
-Dunmow,Essex,51.8729,0.3578,2006,10-Jan,0,0
-Dunmow,Essex,51.8729,0.3578,2011,10-Jul,0,0
-Dunmow,Essex,51.8729,0.3578,2012,10-Jan,0,11.45
-Duns,Sc. Bord.,55.7778,-2.3435,2003,10-Jan,0,0
-Dyce,Aberdn,57.2035,-2.1902,2008,10-Sep,0,0
-Dyce,Aberdn,57.2035,-2.1902,2009,10-Sep,0,0
+Didbrook,Gloucestershire,51.982,-1.9244,2005,10-Jan,,
+Didbrook,Gloucs,51.982,-1.9244,2007,10-Jan,,
+Didbrook,Gloucs,51.982,-1.9244,2008,10-Mar,,
+Didbrook,Gloucs,51.982,-1.9244,2009,10-Mar,,
+Didbrook,Gloucs,51.982,-1.9244,2010,13-Oct,,
+Didbrook,Gloucs,51.982,-1.9244,2011,10-Dec,,
+Didbrook,Gloucs,51.982,-1.9244,2012,10-Jan,,9.1
+Didbrook,Gloucs,51.982,-1.9244,2016,30-Sep,,11.62
+DownP,Down,54.3288,-5.7157,2007,10-Jan,,
+DownP,Down,54.3288,-5.7157,2008,10-Jan,,
+DownP,Down,54.3288,-5.7157,2011,19-Oct,,
+Duggleby,North Yorkshire,54.0928,-0.6573,2004,10-Jan,,
+DUNMOW,ESSEX,51.8729,0.3578,2002,10-Jan,,
+Dunmow,Essex,51.8729,0.3578,2006,10-Jan,,
+Dunmow,Essex,51.8729,0.3578,2011,10-Jul,,
+Dunmow,Essex,51.8729,0.3578,2012,10-Jan,,11.45
+Duns,Sc. Bord.,55.7778,-2.3435,2003,10-Jan,,
+Dyce,Aberdn,57.2035,-2.1902,2008,10-Sep,,
+Dyce,Aberdn,57.2035,-2.1902,2009,10-Sep,,
 East Mllng,Kent,51.2885,0.4383,2017,10-Dec,271,9.42
-Edgmond,Shrops,52.77,-2.4104,2010,10-Aug,0,0
+Edgmond,Shrops,52.77,-2.4104,2010,10-Aug,,
 Edgmond,Shrops,52.77,-2.4104,2013,26-Oct,303,10.26
 Edgmond,Shrops,52.77,-2.4104,2017,10-Dec,291,8.98
-EDINB,LOTH'N,55.9533,-3.1883,2002,10-Jan,0,0
-Elgin,Moray,57.6495,-3.3185,2003,10-Jan,0,0
-Elgin,Moray,57.6495,-3.3185,2004,10-Jan,0,0
-Elgin,Moray,57.6495,-3.3185,2005,10-Jan,0,0
-Elgin,Moray,57.6495,-3.3185,2006,10-Jan,0,0
+EDINB,LOTH'N,55.9533,-3.1883,2002,10-Jan,,
+Elgin,Moray,57.6495,-3.3185,2003,10-Jan,,
+Elgin,Moray,57.6495,-3.3185,2004,10-Jan,,
+Elgin,Moray,57.6495,-3.3185,2005,10-Jan,,
+Elgin,Moray,57.6495,-3.3185,2006,10-Jan,,
 Elgin,Moray,57.6495,-3.3185,2017,20-Oct,313,11.21
-Elie,Fife,52.3995,-0.2624,2014,10-Oct,0,10.81
-Elie,Fife,52.3995,-0.2624,2015,13-Oct,0,12.88
-Elie,Fife,52.3995,-0.2624,2016,14-Oct,0,10.65
-Ellon,Aberdn,57.3646,-2.073,2010,29-Sep,0,0
-Ellon,Aberdn,57.3646,-2.073,2011,13-Oct,0,0
+Elie,Fife,52.3995,-0.2624,2014,10-Oct,,10.81
+Elie,Fife,52.3995,-0.2624,2015,13-Oct,,12.88
+Elie,Fife,52.3995,-0.2624,2016,14-Oct,,10.65
+Ellon,Aberdn,57.3646,-2.073,2010,29-Sep,,
+Ellon,Aberdn,57.3646,-2.073,2011,13-Oct,,
 Ellon,Aberdn,57.3646,-2.073,2012,10-Jan,343,7.23
 Ellon,Aberdn,57.3646,-2.073,2013,10-Oct,327,8.1
-Elmswell,Sufflk,52.237,0.9125,2011,22-Oct,0,0
-Elmswell,Sufflk,52.237,0.9125,2012,10-Jan,0,10.97
+Elmswell,Sufflk,52.236999999999995,0.9125,2011,22-Oct,,
+Elmswell,Sufflk,52.236999999999995,0.9125,2012,10-Jan,,10.97
 Elmswell,East Yorks ,54.0175,-0.4814,2015,29-Sep,332,13.46
-Elmswell,Sufflk,52.237,0.9125,2015,10-Mar,0,8.21
+Elmswell,Sufflk,52.236999999999995,0.9125,2015,10-Mar,,8.21
 Elmswell,EYorks,54.0175,-0.4814,2016,29-Sep,317,11.71
-Elmswell,Sufflk,52.237,0.9125,2016,10-Aug,0,7.98
-Errol,Prth&K,56.3919,-3.2127,2009,28-Sep,0,0
-Errol,Prth&K,56.3919,-3.2127,2010,27-Sep,0,0
-Errol,Prth&K,56.3919,-3.2127,2011,13-Oct,0,0
-Eyton upon the Weald Moors,Shropshire,52.73,-2.5191,2004,10-Jan,0,0
-FAKEN,NORF,52.8313,0.8493,2002,10-Jan,0,0
-Fakenham,Norf.,52.8313,0.8493,2003,10-Jan,0,0
-Framling,Sufflk,52.2221,1.3421,2006,10-Jan,0,0
-Framling,Sufflk,52.2221,1.3421,2007,10-Jan,0,0
-Framling,Sufflk,52.2221,1.3421,2008,10-Feb,0,0
-Framling,Sufflk,52.2221,1.3421,2009,10-Feb,0,0
-Framling,Sufflk,52.2221,1.3421,2010,10-Sep,0,0
-Framling,Sufflk,52.2221,1.3421,2011,14-Oct,0,0
+Elmswell,Sufflk,52.236999999999995,0.9125,2016,10-Aug,,7.98
+Errol,Prth&K,56.3919,-3.2127,2009,28-Sep,,
+Errol,Prth&K,56.3919,-3.2127,2010,27-Sep,,
+Errol,Prth&K,56.3919,-3.2127,2011,13-Oct,,
+Eyton upon the Weald Moors,Shropshire,52.73,-2.5191,2004,10-Jan,,
+FAKEN,NORF,52.8313,0.8493,2002,10-Jan,,
+Fakenham,Norf.,52.8313,0.8493,2003,10-Jan,,
+Framling,Sufflk,52.2221,1.3421,2006,10-Jan,,
+Framling,Sufflk,52.2221,1.3421,2007,10-Jan,,
+Framling,Sufflk,52.2221,1.3421,2008,10-Feb,,
+Framling,Sufflk,52.2221,1.3421,2009,10-Feb,,
+Framling,Sufflk,52.2221,1.3421,2010,10-Sep,,
+Framling,Sufflk,52.2221,1.3421,2011,14-Oct,,
 Framling,Sufflk,52.2221,1.3421,2012,10-Jan,319,12.45
-Framling,Sufflk,52.2221,1.3421,2013,16-Oct,0,10.92
-Framlingham,Suffolk,52.2221,1.3421,2003,10-Jan,0,0
-Framlingham,Suffolk,52.2221,1.3421,2004,10-Jan,0,0
-Framlingham,Suffolk,52.2221,1.3421,2005,10-Jan,0,0
+Framling,Sufflk,52.2221,1.3421,2013,16-Oct,,10.92
+Framlingham,Suffolk,52.2221,1.3421,2003,10-Jan,,
+Framlingham,Suffolk,52.2221,1.3421,2004,10-Jan,,
+Framlingham,Suffolk,52.2221,1.3421,2005,10-Jan,,
 Fridaythorpe,NYorks,54.0203,-0.6659,2017,10-Apr,319,10.55
-Frisby,Leics,52.7525,-0.9713,2006,10-Jan,0,0
-Frisby,Leics,52.7525,-0.9713,2007,10-Jan,0,0
-Frisby,Leics,52.7525,-0.9713,2008,10-Jan,0,0
-Frisby,Leics,52.7525,-0.9713,2010,28-Sep,0,0
-Frisby,Leics,52.7525,-0.9713,2011,10-Dec,0,0
-Frisby,Leics,52.7525,-0.9713,2012,10-Jan,0,5.41
-Frisby,Leics,52.7525,-0.9713,2013,10-Sep,0,12.84
+Frisby,Leics,52.7525,-0.9713,2006,10-Jan,,
+Frisby,Leics,52.7525,-0.9713,2007,10-Jan,,
+Frisby,Leics,52.7525,-0.9713,2008,10-Jan,,
+Frisby,Leics,52.7525,-0.9713,2010,28-Sep,,
+Frisby,Leics,52.7525,-0.9713,2011,10-Dec,,
+Frisby,Leics,52.7525,-0.9713,2012,10-Jan,,5.41
+Frisby,Leics,52.7525,-0.9713,2013,10-Sep,,12.84
 Frisby,Leics,52.7525,-0.9713,2014,10-May,293,14.22
 Frisby,Leics,52.7525,-0.9713,2015,10-Jan,306,15.08
 Frisby,Leics,52.7525,-0.9713,2016,10-Jan,308,11.8
-Frisby,Leics,52.7525,-0.9713,2017,10-May,0,12.05
-Frisby on the Wreake,Leicestershire,52.7525,-0.9713,2004,10-Jan,0,0
-Frisby on the Wreake,Leicestershire,52.7525,-0.9713,2005,10-Jan,0,0
+Frisby,Leics,52.7525,-0.9713,2017,10-May,,12.05
+Frisby on the Wreake,Leicestershire,52.7525,-0.9713,2004,10-Jan,,
+Frisby on the Wreake,Leicestershire,52.7525,-0.9713,2005,10-Jan,,
 Frsthrp,Lincs,53.244,-0.2114,2017,10-Jul,298,11.88
-Gedding,Sufflk,52.1854,0.8525,2007,10-Jan,0,0
-Girton,Cambridgeshire,52.241,0.0814,2004,10-Jan,0,0
-Girton,Cambs,52.241,0.0814,2009,29-Sep,0,0
-Girton,Cambs,52.241,0.0814,2010,28-Sep,0,0
-Girton,Cambs,52.241,0.0814,2011,19-Oct,0,0
-Great Dunmow,Essex,51.8729,0.3578,2003,10-Jan,0,0
-GSturton,Lincs,53.2729,-0.6666,2011,10-Dec,0,0
-GSturton,Lincs,53.2729,-0.6666,2012,10-Jan,0,7.9
-GSturton,Lincs,53.2729,-0.6666,2015,22-Oct,0,11.26
-GSturton,Lincs,53.2729,-0.6666,2016,10-Sep,0,10.51
-Haddington,East Lothian,55.9587,-2.7749,2003,10-Jan,0,0
-Hailes,Gloucs,51.9746,-1.9336,2014,12-Mar,0,11.48
-Hailes,Gloucs,51.9746,-1.9336,2015,10-Jan,0,9.73
-Hasely,Warwick,52.3091,-1.6641,2010,10-Jan,0,0
-Hasely,Warwick,52.3091,-1.6641,2011,27-Sep,0,0
-Headley Hall,North Yorkshire,53.8689,-1.32557,2005,10-Jan,0,0
-Hemingby,Lincolnshire,53.2535,-0.1494,2004,10-Jan,0,0
-High Mowthorpe,North Yorkshire,54.1075,-0.6435,2005,10-Jan,0,0
-Hinstock,Shrops,52.836,-2.4575,2012,10-Jan,321,10.87
-Histon,Cambridgeshire,52.2513,0.1185,2005,10-Jan,0,0
-Histon,Cambs,52.2513,0.1185,2006,10-Jan,0,0
-Histon,Cambs,52.2513,0.1185,2007,10-Jan,0,0
-Hlegh,Ches,53.3537,-2.4508,2013,10-Oct,0,12.97
+Gedding,Sufflk,52.1854,0.8525,2007,10-Jan,,
+Girton,Cambridgeshire,52.24100000000001,0.0814,2004,10-Jan,,
+Girton,Cambs,52.24100000000001,0.0814,2009,29-Sep,,
+Girton,Cambs,52.24100000000001,0.0814,2010,28-Sep,,
+Girton,Cambs,52.24100000000001,0.0814,2011,19-Oct,,
+Great Dunmow,Essex,51.8729,0.3578,2003,10-Jan,,
+GSturton,Lincs,53.2729,-0.6666,2011,10-Dec,,
+GSturton,Lincs,53.2729,-0.6666,2012,10-Jan,,7.9
+GSturton,Lincs,53.2729,-0.6666,2015,22-Oct,,11.26
+GSturton,Lincs,53.2729,-0.6666,2016,10-Sep,,10.51
+Haddington,East Lothian,55.9587,-2.7749,2003,10-Jan,,
+Hailes,Gloucs,51.9746,-1.9336,2014,12-Mar,,11.48
+Hailes,Gloucs,51.9746,-1.9336,2015,10-Jan,,9.73
+Hasely,Warwick,52.3091,-1.6641,2010,10-Jan,,
+Hasely,Warwick,52.3091,-1.6641,2011,27-Sep,,
+Headley Hall,North Yorkshire,53.8689,-1.3255700000000001,2005,10-Jan,,
+Hemingby,Lincolnshire,53.2535,-0.1494,2004,10-Jan,,
+High Mowthorpe,North Yorkshire,54.1075,-0.6435,2005,10-Jan,,
+Hinstock,Shrops,52.836000000000006,-2.4575,2012,10-Jan,321,10.87
+Histon,Cambridgeshire,52.2513,0.1185,2005,10-Jan,,
+Histon,Cambs,52.2513,0.1185,2006,10-Jan,,
+Histon,Cambs,52.2513,0.1185,2007,10-Jan,,
+Hlegh,Ches,53.3537,-2.4508,2013,10-Oct,,12.97
 Hlegh,Ches,53.3537,-2.4508,2014,10-Oct,308,10.6
 Hlegh,Ches,53.3537,-2.4508,2015,10-Feb,319,11.72
 Hlegh,Ches,53.3537,-2.4508,2016,10-Dec,303,10.15
-Holbeach,Lincs,52.804,0.0134,2008,14-Oct,0,0
-Holbeach,Lincs,52.804,0.0134,2009,14-Oct,0,0
-Holbeach,Lincs,52.804,0.0134,2011,16-Oct,0,0
-HORN,LINCS,53.2073,-0.1124,2002,10-Jan,0,0
-Horncastle,Lincs.,53.2073,-0.1124,2003,10-Jan,0,0
-Hull,ER Yorks.,53.7676,-0.3274,2003,10-Jan,0,0
-Hull,Eyorks,53.7676,-0.3274,2007,10-Jan,0,0
-Humbie,East Lothian,55.8551,-2.8648,2004,10-Jan,0,0
-Humbie,East Lothian,55.8551,-2.8648,2005,10-Jan,0,0
-Humbie,ELoth,55.8551,-2.8648,2006,10-Jan,0,0
-Humbie,ELoth,55.8551,-2.8648,2007,10-Jan,0,0
-Humbie,Eloth,55.8551,-2.8648,2008,10-Feb,0,0
-Humbie,Eloth,55.8551,-2.8648,2009,10-Feb,0,0
-Humbie,Eloth,55.8551,-2.8648,2010,10-May,0,0
-Humbie,Eloth,55.8551,-2.8648,2011,30-Dec,0,0
+Holbeach,Lincs,52.803999999999995,0.0134,2008,14-Oct,,
+Holbeach,Lincs,52.803999999999995,0.0134,2009,14-Oct,,
+Holbeach,Lincs,52.803999999999995,0.0134,2011,16-Oct,,
+HORN,LINCS,53.2073,-0.1124,2002,10-Jan,,
+Horncastle,Lincs.,53.2073,-0.1124,2003,10-Jan,,
+Hull,ER Yorks.,53.7676,-0.3274,2003,10-Jan,,
+Hull,Eyorks,53.7676,-0.3274,2007,10-Jan,,
+Humbie,East Lothian,55.8551,-2.8648,2004,10-Jan,,
+Humbie,East Lothian,55.8551,-2.8648,2005,10-Jan,,
+Humbie,ELoth,55.8551,-2.8648,2006,10-Jan,,
+Humbie,ELoth,55.8551,-2.8648,2007,10-Jan,,
+Humbie,Eloth,55.8551,-2.8648,2008,10-Feb,,
+Humbie,Eloth,55.8551,-2.8648,2009,10-Feb,,
+Humbie,Eloth,55.8551,-2.8648,2010,10-May,,
+Humbie,Eloth,55.8551,-2.8648,2011,30-Dec,,
 Humbie,Eloth,55.8551,-2.8648,2012,10-Jan,347,8.09
-Humbie,Eloth,55.8551,-2.8648,2013,10-Jun,0,11.23
-Humbie,ELoth,55.8551,-2.8648,2014,30-Sep,0,12.95
+Humbie,Eloth,55.8551,-2.8648,2013,10-Jun,,11.23
+Humbie,ELoth,55.8551,-2.8648,2014,30-Sep,,12.95
 Humbie,Eloth,55.8551,-2.8648,2015,26-Sep,350,15.84
 Humbie,ELoth,55.8551,-2.8648,2016,29-Sep,344,12.17
-Huntwrth,Somset,51.1044,-2.9837,2011,18-Oct,0,0
-Hythe,Kent,51.0717,1.0819,2006,10-Jan,0,0
-Hythe,Kent,51.0717,1.0819,2007,10-Jan,0,0
-Hythe,Kent,51.0717,1.0819,2008,27-Sep,0,0
-Hythe,Kent,51.0717,1.0819,2009,27-Sep,0,0
-Hythe,Kent,51.0717,1.0819,2011,10-Jan,0,0
+Huntwrth,Somset,51.1044,-2.9837,2011,18-Oct,,
+Hythe,Kent,51.0717,1.0819,2006,10-Jan,,
+Hythe,Kent,51.0717,1.0819,2007,10-Jan,,
+Hythe,Kent,51.0717,1.0819,2008,27-Sep,,
+Hythe,Kent,51.0717,1.0819,2009,27-Sep,,
+Hythe,Kent,51.0717,1.0819,2011,10-Jan,,
 Ickleton,Essex,52.0707,0.1743,2012,10-Jan,304,10.37
 Ickleton,Essex,52.0707,0.1743,2013,11-Aug,276,10.42
 Ickleton,Essex,52.0707,0.1743,2014,10-Oct,291,12.43
 Ickleton,Cambs,52.0707,0.1743,2015,10-Aug,298,9.14
 Ickleton,Cambs,52.0707,0.1743,2016,10-Oct,299,11.12
 Ickleton,Cambs,52.0707,0.1743,2017,13-Oct,280,7.12
-Ince Blundell,Merseyside,53.5239,-3.0258,2004,10-Jan,0,0
-Ince Blundell,Merseyside,53.5239,-3.0258,2005,10-Jan,0,0
-InceBld,Mersey,53.5239,-3.0258,2006,10-Jan,0,0
-ItchnSk,Hants,51.0881,-1.2018,2015,10-Feb,0,9.81
-K LYNN,NORF,52.7517,0.4023,2002,10-Jan,0,0
+Ince Blundell,Merseyside,53.5239,-3.0258,2004,10-Jan,,
+Ince Blundell,Merseyside,53.5239,-3.0258,2005,10-Jan,,
+InceBld,Mersey,53.5239,-3.0258,2006,10-Jan,,
+ItchnSk,Hants,51.0881,-1.2018,2015,10-Feb,,9.81
+K LYNN,NORF,52.7517,0.4023,2002,10-Jan,,
 Kelso,ScBord,55.6,-2.4322,2017,10-Mar,322,11.21
-Kettering,Northants.,52.3963,-0.7302,2003,10-Jan,0,0
-KETT'G,NHANTS,52.3963,-0.7302,2002,10-Jan,0,0
-Keysoe,Beds.,52.2517,-0.4249,2003,10-Jan,0,0
-Kinghorn,Fife,56.0712,-3.1743,2010,25-Sep,0,0
-Kinghorn,Fife,56.0712,-3.1743,2011,10-Oct,0,0
-King's Lynn,Norf.,52.7517,0.4023,2003,10-Jan,0,0
-Kingsbridge,Devon,50.2839,-3.7775,2004,10-Jan,0,0
-Kingston,Devon,51.41259,-3.927,2003,10-Jan,0,0
-K'STON,DEVON,51.41259,-3.927,2002,10-Jan,0,0
-LACEBY,LINCS,53.5419,-0.1692,2002,10-Jan,0,0
-Laurencekirk,Aberdeenshire,56.8313,-2.4725,2004,10-Jan,0,0
-Laurnkrk,Aberdn,56.8313,-2.4725,2006,10-Jan,0,0
-Laurnkrk,Aberdn,56.8313,-2.4725,2007,10-Jan,0,0
-Laurnkrk,Aberdn,56.8313,-2.4725,2008,16-Oct,0,0
-Laurnkrk,Aberdn,56.8313,-2.4725,2009,16-Oct,0,0
-Laurnkrk,Aberdn,56.8313,-2.4725,2010,29-Sep,0,0
-Lawrencekirk,Aberdeenshire,56.8313,-2.4725,2005,10-Jan,0,0
-Lillesdn,Somset,51.0091,-2.9924,2009,11-Apr,0,0
-Lillesdn,Somset,51.0091,-2.9924,2010,28-Oct,0,0
-Limavad,Lderry,55.0455,-6.9337,2007,10-Jan,0,0
-Limavad,Lderry,55.0455,-6.9337,2008,10-Jan,0,0
-Limavad,Lderry,55.0455,-6.9337,2010,15-Oct,0,0
-Limavad,Lderry,55.0455,-6.9337,2012,10-Jan,0,9.6
-Limavad,Lderry,55.0455,-6.9337,2014,14-Oct,0,11.5
+Kettering,Northants.,52.3963,-0.7302,2003,10-Jan,,
+KETT'G,NHANTS,52.3963,-0.7302,2002,10-Jan,,
+Keysoe,Beds.,52.2517,-0.4249,2003,10-Jan,,
+Kinghorn,Fife,56.0712,-3.1743,2010,25-Sep,,
+Kinghorn,Fife,56.0712,-3.1743,2011,10-Oct,,
+King's Lynn,Norf.,52.7517,0.4023,2003,10-Jan,,
+Kingsbridge,Devon,50.2839,-3.7775,2004,10-Jan,,
+Kingston,Devon,51.41259,-3.927,2003,10-Jan,,
+K'STON,DEVON,51.41259,-3.927,2002,10-Jan,,
+LACEBY,LINCS,53.5419,-0.1692,2002,10-Jan,,
+Laurencekirk,Aberdeenshire,56.8313,-2.4725,2004,10-Jan,,
+Laurnkrk,Aberdn,56.8313,-2.4725,2006,10-Jan,,
+Laurnkrk,Aberdn,56.8313,-2.4725,2007,10-Jan,,
+Laurnkrk,Aberdn,56.8313,-2.4725,2008,16-Oct,,
+Laurnkrk,Aberdn,56.8313,-2.4725,2009,16-Oct,,
+Laurnkrk,Aberdn,56.8313,-2.4725,2010,29-Sep,,
+Lawrencekirk,Aberdeenshire,56.8313,-2.4725,2005,10-Jan,,
+Lillesdn,Somset,51.0091,-2.9924,2009,11-Apr,,
+Lillesdn,Somset,51.0091,-2.9924,2010,28-Oct,,
+Limavad,Lderry,55.0455,-6.9337,2007,10-Jan,,
+Limavad,Lderry,55.0455,-6.9337,2008,10-Jan,,
+Limavad,Lderry,55.0455,-6.9337,2010,15-Oct,,
+Limavad,Lderry,55.0455,-6.9337,2012,10-Jan,,9.6
+Limavad,Lderry,55.0455,-6.9337,2014,14-Oct,,11.5
 Limavad,Lderry,55.0455,-6.9337,2015,14-Oct,332,13.44
 Limavad,Lderry,55.0455,-6.9337,2016,20-Oct,309,10.9
 Limavad,Lderry,55.0455,-6.9337,2017,24-Oct,293,12.26
-Limavady,Londonderry,55.0455,-6.9337,2003,10-Jan,0,0
-Limavady,Lderry,55.0455,-6.9337,2006,10-Jan,0,0
-LIMA'Y,LDERRY,55.0455,-6.9337,2002,10-Jan,0,0
-Little Saxham,Suffolk,52.2421,0.6353,2004,10-Jan,0,0
-Little Staughton,Bedfordshire,52.2504,-0.3821,2004,10-Jan,0,0
-Little Staughton,Bedfordshire,52.2504,-0.3821,2005,10-Jan,0,0
-Lockbie,Dumfrs,55.1222,-3.349,2006,10-Jan,0,0
-Lockerbie,Dumf/Gal.,55.1222,-3.349,2003,10-Jan,0,0
-Lockerbie,Dumfries and Galloway,55.1222,-3.349,2004,10-Jan,0,0
-Lockerbie,Dumfries and Galloway,55.1222,-3.349,2005,10-Jan,0,0
-LStaugh,Beds,52.2504,-0.3821,2006,10-Jan,0,0
+Limavady,Londonderry,55.0455,-6.9337,2003,10-Jan,,
+Limavady,Lderry,55.0455,-6.9337,2006,10-Jan,,
+LIMA'Y,LDERRY,55.0455,-6.9337,2002,10-Jan,,
+Little Saxham,Suffolk,52.2421,0.6353,2004,10-Jan,,
+Little Staughton,Bedfordshire,52.2504,-0.3821,2004,10-Jan,,
+Little Staughton,Bedfordshire,52.2504,-0.3821,2005,10-Jan,,
+Lockbie,Dumfrs,55.1222,-3.3489999999999998,2006,10-Jan,,
+Lockerbie,Dumf/Gal.,55.1222,-3.3489999999999998,2003,10-Jan,,
+Lockerbie,Dumfries and Galloway,55.1222,-3.3489999999999998,2004,10-Jan,,
+Lockerbie,Dumfries and Galloway,55.1222,-3.3489999999999998,2005,10-Jan,,
+LStaugh,Beds,52.2504,-0.3821,2006,10-Jan,,
 Luthermr,Aberdn,56.8063,-2.5565,2012,10-Jan,337,9.04
 Luthermr,Aberdn,56.8063,-2.5565,2013,11-Aug,290,8.29
 Luthermr,Aberdn,56.8063,-2.5565,2014,10-Dec,309,9.86
 Luthermr,Aberdn,56.8063,-2.5565,2015,10-Jan,340,9.08
-Lymm,Ches,53.3817,-2.48,2007,10-Jan,0,0
-Lymm,Ches,53.3817,-2.48,2008,10-Jan,0,0
-Lymm,Ches,53.3817,-2.48,2010,14-Oct,0,0
+Lymm,Ches,53.3817,-2.48,2007,10-Jan,,
+Lymm,Ches,53.3817,-2.48,2008,10-Jan,,
+Lymm,Ches,53.3817,-2.48,2010,14-Oct,,
 Lymm,Ches,53.3817,-2.48,2012,10-Jan,313,9.92
-Malton,N Yorks.,54.1368,-0.7979,2003,10-Jan,0,0
-ME MOW,LEICS,52.7664,-0.8871,2002,10-Jan,0,0
-Melton Mowbray,Leics,52.7664,-0.8871,2003,10-Jan,0,0
-Mendlesham,Sufflk,52.2492,1.0798,2014,30-Oct,0,12.11
-Mendlesham,Sufflk,52.2492,1.0798,2015,30-Sep,0,11.6
-Middridge,Darltn,54.6309,-1.6145,2008,10-Jan,0,0
-Morley,Nofk,52.5547,1.0396,2006,10-Jan,0,0
+Malton,N Yorks.,54.1368,-0.7979,2003,10-Jan,,
+ME MOW,LEICS,52.7664,-0.8871,2002,10-Jan,,
+Melton Mowbray,Leics,52.7664,-0.8871,2003,10-Jan,,
+Mendlesham,Sufflk,52.2492,1.0798,2014,30-Oct,,12.11
+Mendlesham,Sufflk,52.2492,1.0798,2015,30-Sep,,11.6
+Middridge,Darltn,54.6309,-1.6145,2008,10-Jan,,
+Morley,Nofk,52.5547,1.0396,2006,10-Jan,,
 Morley,Norfk,52.5547,1.0396,2014,10-Jul,295,13.15
 Morley,Norfk,52.5547,1.0396,2015,10-Feb,304,12.81
-Morley,Norfk,52.5547,1.0396,2016,25-Sep,0,10.85
-Morley St Botolph,Norfolk,52.5547,1.0396,2004,10-Jan,0,0
-Morpeth,Northumb.,55.1687,-1.6875,2003,10-Jan,0,0
-MORP'H,NORTHD,55.1687,-1.6875,2002,10-Jan,0,0
+Morley,Norfk,52.5547,1.0396,2016,25-Sep,,10.85
+Morley St Botolph,Norfolk,52.5547,1.0396,2004,10-Jan,,
+Morpeth,Northumb.,55.1687,-1.6875,2003,10-Jan,,
+MORP'H,NORTHD,55.1687,-1.6875,2002,10-Jan,,
 Moulton,Lincs,52.2887,-0.8534,2013,10-Dec,300,9.9
 Moulton,Lincs,52.2887,-0.8534,2014,10-Aug,302,12.22
-Nether Wallop,Hants,51.1263,-1.569,2016,13-Oct,0,11.41
-Newch,Kent,52.1494,0.9316,2010,25-Sep,0,0
-Newchurch,Kent,52.1494,0.9316,2005,10-Jan,0,0
-Newport,Shrops,51.5842,-2.9977,2011,10-Aug,0,0
+Nether Wallop,Hants,51.1263,-1.569,2016,13-Oct,,11.41
+Newch,Kent,52.1494,0.9316,2010,25-Sep,,
+Newchurch,Kent,52.1494,0.9316,2005,10-Jan,,
+Newport,Shrops,51.5842,-2.9977,2011,10-Aug,,
 North Dalton,EYorks,53.9571,-0.578,2017,10-Apr,319,13.31
-OLD'M,ABER,57.33492,-2.3199,2002,10-Jan,0,0
-Ormskirk,Lancs.,53.5689,-2.8851,2003,10-Jan,0,0
-OTLEY,SUFF,52.1513,1.2202,2002,10-Jan,0,0
-Ottham,Eyorks,51.2522,-0.6401,2008,10-Jan,0,0
-Perth,Prth&K,56.395,-3.4308,2007,10-Jan,0,0
-Perth,Prth&K,56.395,-3.4308,2008,10-Jan,0,0
+OLD'M,ABER,57.33492,-2.3199,2002,10-Jan,,
+Ormskirk,Lancs.,53.5689,-2.8851,2003,10-Jan,,
+OTLEY,SUFF,52.1513,1.2202,2002,10-Jan,,
+Ottham,Eyorks,51.2522,-0.6401,2008,10-Jan,,
+Perth,Prth&K,56.395,-3.4308,2007,10-Jan,,
+Perth,Prth&K,56.395,-3.4308,2008,10-Jan,,
 Petham,Kent,51.223,1.0459,2012,10-Jan,307,11.53
 Petham,Kent,51.223,1.0459,2014,17-Oct,286,10.87
 Petham,Kent,51.223,1.0459,2016,10-Apr,302,10.57
 Pinchbeck,Lincs,52.8137,-0.1588,2016,10-Nov,294,10.81
-Pottn,Aberdn,57.232,-2.0912,2007,10-Jan,0,0
-Quham,Norfk,52.4453,0.984,2007,10-Jan,0,0
-Quidenham,Norfolk,52.4453,0.984,2004,10-Jan,0,0
-Quidenham,Norfolk,52.4453,0.984,2005,10-Jan,0,0
-Ragnal,Nottinghamshire,53.2556,-0.7963,2004,10-Jan,0,0
-Ragnall,Nottinghamshire,53.2556,-0.7963,2005,10-Jan,0,0
-Ragnall,Notts,53.2556,-0.7963,2006,10-Jan,0,0
-Redwrth,Darltn,54.6054,-1.6293,2006,10-Jan,0,0
-Redwrth,Darltn,54.6054,-1.6293,2007,10-Jan,0,0
-Rhynd,Perth and Kinross,56.3653,-3.3657,2004,10-Jan,0,0
-Rhynd,Perth & Kinross,56.3653,-3.3657,2005,10-Jan,0,0
-Rhynd,Prth&K,56.3653,-3.3657,2006,10-Jan,0,0
-Rudston,EYorks,54.0895,-0.3231,2006,10-Jan,0,0
-Rudston,EYorks,54.0895,-0.3231,2007,10-Jan,0,0
-Rudston,EYorks,54.0895,-0.3231,2009,10-Oct,0,0
+Pottn,Aberdn,57.232,-2.0912,2007,10-Jan,,
+Quham,Norfk,52.4453,0.9840000000000001,2007,10-Jan,,
+Quidenham,Norfolk,52.4453,0.9840000000000001,2004,10-Jan,,
+Quidenham,Norfolk,52.4453,0.9840000000000001,2005,10-Jan,,
+Ragnal,Nottinghamshire,53.2556,-0.7963,2004,10-Jan,,
+Ragnall,Nottinghamshire,53.2556,-0.7963,2005,10-Jan,,
+Ragnall,Notts,53.2556,-0.7963,2006,10-Jan,,
+Redwrth,Darltn,54.6054,-1.6293,2006,10-Jan,,
+Redwrth,Darltn,54.6054,-1.6293,2007,10-Jan,,
+Rhynd,Perth and Kinross,56.3653,-3.3657,2004,10-Jan,,
+Rhynd,Perth & Kinross,56.3653,-3.3657,2005,10-Jan,,
+Rhynd,Prth&K,56.3653,-3.3657,2006,10-Jan,,
+Rudston,EYorks,54.0895,-0.3231,2006,10-Jan,,
+Rudston,EYorks,54.0895,-0.3231,2007,10-Jan,,
+Rudston,EYorks,54.0895,-0.3231,2009,10-Oct,,
 Saltoun,ELoth,55.8976,-2.8646,2017,29-Sep,344,11.93
-Sancton,EYorks,53.842,-0.6317,2012,10-Jan,0,8.62
+Sancton,EYorks,53.842,-0.6317,2012,10-Jan,,8.62
 Sancton,EYorks,53.842,-0.6317,2014,10-Nov,303,10.45
-Sandringm,Norfk,52.8269,0.5186,2011,13-Oct,0,0
-SClims,Cornwl,50.5472,-4.316,2016,20-Oct,0,10.06
-SLEAF,LINCS,53.0003,-0.4096,2002,10-Jan,0,0
-Sleaford,Lincs.,53.0003,-0.4096,2003,10-Jan,0,0
-SPALD,LINCS,52.7901,-0.1537,2002,10-Jan,0,0
-Spalding,Lincs.,52.7901,-0.1537,2003,10-Jan,0,0
-Spalding,Lincolnshire,52.7901,-0.1537,2004,10-Jan,0,0
-Spalding,Lincolnshire,52.7901,-0.1537,2005,10-Jan,0,0
-Spalding,Lincs,52.7901,-0.1537,2006,10-Jan,0,0
-Spalding,Lincs,52.7901,-0.1537,2007,10-Jan,0,0
-Spalding,Lincs,52.7901,-0.1537,2015,10-Mar,0,8.97
+Sandringm,Norfk,52.8269,0.5186,2011,13-Oct,,
+SClims,Cornwl,50.5472,-4.316,2016,20-Oct,,10.06
+SLEAF,LINCS,53.0003,-0.4096,2002,10-Jan,,
+Sleaford,Lincs.,53.0003,-0.4096,2003,10-Jan,,
+SPALD,LINCS,52.7901,-0.1537,2002,10-Jan,,
+Spalding,Lincs.,52.7901,-0.1537,2003,10-Jan,,
+Spalding,Lincolnshire,52.7901,-0.1537,2004,10-Jan,,
+Spalding,Lincolnshire,52.7901,-0.1537,2005,10-Jan,,
+Spalding,Lincs,52.7901,-0.1537,2006,10-Jan,,
+Spalding,Lincs,52.7901,-0.1537,2007,10-Jan,,
+Spalding,Lincs,52.7901,-0.1537,2015,10-Mar,,8.97
 Spalding,Lincs,52.7901,-0.1537,2017,10-Jul,287,12.51
-StBosw,ScBord,55.5708,-2.6475,2010,10-Jan,0,0
+StBosw,ScBord,55.5708,-2.6475,2010,10-Jan,,
 StBosw,ScBord,55.5708,-2.6475,2012,10-Jan,344,7.28
 StBosw,ScBord,55.5708,-2.6475,2013,10-Sep,320,9.49
 StBosw,ScBord,55.5708,-2.6475,2014,30-Sep,322,12.13
 StBosw,ScBord,55.5708,-2.6475,2015,25-Sep,339,13.74
 StBosw,ScBord,55.5708,-2.6475,2016,27-Nov,340,11.48
-Stchwrth,Cambs,52.1992,0.3994,2010,14-Oct,0,0
-Stchwrth,Cambs,52.1992,0.3994,2011,21-Oct,0,0
+Stchwrth,Cambs,52.1992,0.3994,2010,14-Oct,,
+Stchwrth,Cambs,52.1992,0.3994,2011,21-Oct,,
 Stchwrth,Cambs,52.1992,0.3994,2012,10-Jan,298,8.73
-Stowmarket,Suffolk,52.1889,0.9977,2005,10-Jan,0,0
+Stowmarket,Suffolk,52.1889,0.9977,2005,10-Jan,,
 Stowmrkt,Sufflk,52.1889,0.9977,2013,17-Oct,298,9.95
-Swindon,Wilts.,51.5558,-1.7797,2003,10-Jan,0,0
-Swindon,Wilts.,51.5558,-1.7797,2004,10-Jan,0,0
-Tadcaster,N Yorks.,53.8836,-1.2609,2003,10-Jan,0,0
-TADC'R,N YRKS,53.8836,-1.2609,2002,10-Jan,0,0
-Telford,Shrops.,52.6784,-2.4453,2003,10-Jan,0,0
-Telford,Shropshire,52.6784,-2.4453,2005,10-Jan,0,0
-Telford,Shrops,52.6784,-2.4453,2006,10-Jan,0,0
-Telford,Shrops,52.6784,-2.4453,2007,10-Jan,0,0
-T'FORD,SHROPS,52.6784,-2.4453,2002,10-Jan,0,0
+Swindon,Wilts.,51.5558,-1.7797,2003,10-Jan,,
+Swindon,Wilts.,51.5558,-1.7797,2004,10-Jan,,
+Tadcaster,N Yorks.,53.8836,-1.2609,2003,10-Jan,,
+TADC'R,N YRKS,53.8836,-1.2609,2002,10-Jan,,
+Telford,Shrops.,52.6784,-2.4453,2003,10-Jan,,
+Telford,Shropshire,52.6784,-2.4453,2005,10-Jan,,
+Telford,Shrops,52.6784,-2.4453,2006,10-Jan,,
+Telford,Shrops,52.6784,-2.4453,2007,10-Jan,,
+T'FORD,SHROPS,52.6784,-2.4453,2002,10-Jan,,
 Thaxted,Essex,51.9533,0.3446,2016,10-Sep,291,12.57
 Thaxted,Essex,51.9533,0.3446,2017,10-Aug,275,11.72
-Thwing,EYorks,54.1158,-0.3903,2008,10-Jan,0,0
+Thwing,EYorks,54.1158,-0.3903,2008,10-Jan,,
 Tibthorpe,EYorks,53.9836,-0.5368,2016,10-Mar,323,11.69
-Todngton,Gloucs,51.9485,-0.5324,2006,10-Jan,0,0
-TRawstn,Dorset,50.8575,-2.0897,2006,10-Jan,0,0
-TRawstn,Dorset,50.8575,-2.0897,2007,10-Jan,0,0
-Ulceby,NLincs,53.618,-0.3306,2007,10-Jan,0,0
-Ulceby,NLincs,53.618,-0.3306,2009,10-Sep,0,0
-Ulceby,NLincs,53.618,-0.3306,2010,24-Sep,0,0
-Ulceby,NLincs,53.618,-0.3306,2011,10-Nov,0,0
+Todngton,Gloucs,51.9485,-0.5324,2006,10-Jan,,
+TRawstn,Dorset,50.8575,-2.0897,2006,10-Jan,,
+TRawstn,Dorset,50.8575,-2.0897,2007,10-Jan,,
+Ulceby,NLincs,53.618,-0.3306,2007,10-Jan,,
+Ulceby,NLincs,53.618,-0.3306,2009,10-Sep,,
+Ulceby,NLincs,53.618,-0.3306,2010,24-Sep,,
+Ulceby,NLincs,53.618,-0.3306,2011,10-Nov,,
 Ulceby,NLincs,53.618,-0.3306,2012,10-Jan,321,7.02
 Ulceby,NLincs,53.618,-0.3306,2013,10-Feb,319,10.94
 Ulceby,NLincs,53.618,-0.3306,2014,28-Sep,312,11.9
 Ulceby,NLincs,53.618,-0.3306,2015,10-Mar,325,11.6
 Ulceby,Lincs,53.618,-0.3306,2016,10-Nov,315,10.91
 Ulceby,Lincs,53.618,-0.3306,2017,26-Oct,286,10.81
-Up Somborne,Hampshire,51.0884,-1.4321,2004,10-Jan,0,0
-Up Somborne,Hampshire,51.0884,-1.4321,2005,10-Jan,0,0
-UpSomb,Hants,51.0884,-1.4321,2006,10-Jan,0,0
-UpSomb,Hants,51.0884,-1.4321,2007,10-Jan,0,0
-WARM'R,WILTS,51.2046,0.191,2002,10-Jan,0,0
-Warwick,Warks.,52.2823,-1.5849,2003,10-Jan,0,0
-Warwick,Warwickshire,52.2823,-1.5849,2004,10-Jan,0,0
-Waterbeach,Cambs.,52.2656,0.191,2003,10-Jan,0,0
-Waterbeach,Cambridgeshire,52.2656,0.191,2004,10-Jan,0,0
-Waterbeach,Cambridgeshire,52.2656,0.191,2005,10-Jan,0,0
-W'BCH,CAMBS,52.66622,-2.1811,2002,10-Jan,0,0
-WCharlt,Devon,50.2697,-3.7556,2006,10-Jan,0,0
-WCharlt,Devon,50.2697,-3.7556,2008,10-Feb,0,0
-WCharlt,Devon,50.2697,-3.7556,2009,10-Feb,0,0
-WCharlt,Devon,50.2697,-3.7556,2010,10-Jan,0,0
-WCharlt,Devon,50.2697,-3.7556,2011,10-Jul,0,0
-WCharlt,Devon,50.2697,-3.7556,2013,19-Oct,0,11.54
-WCharlt,Devon,50.2697,-3.7556,2014,10-Sep,0,10.64
-WCharlt,Devon,50.2697,-3.7556,2015,20-Oct,0,11.42
-WCharlt,Devon,50.2697,-3.7556,2016,13-Oct,0,9.85
-Welbourn,Lincs,53.0754,-0.5588,2008,29-Sep,0,0
-Welbourn,Lincs,53.0754,-0.5588,2009,29-Sep,0,0
-Welbourn,Lincs,53.0754,-0.5588,2010,25-Sep,0,0
-Welbourn,Lincs,53.0754,-0.5588,2011,10-May,0,0
+Up Somborne,Hampshire,51.0884,-1.4321,2004,10-Jan,,
+Up Somborne,Hampshire,51.0884,-1.4321,2005,10-Jan,,
+UpSomb,Hants,51.0884,-1.4321,2006,10-Jan,,
+UpSomb,Hants,51.0884,-1.4321,2007,10-Jan,,
+WARM'R,WILTS,51.2046,0.191,2002,10-Jan,,
+Warwick,Warks.,52.2823,-1.5849,2003,10-Jan,,
+Warwick,Warwickshire,52.2823,-1.5849,2004,10-Jan,,
+Waterbeach,Cambs.,52.2656,0.191,2003,10-Jan,,
+Waterbeach,Cambridgeshire,52.2656,0.191,2004,10-Jan,,
+Waterbeach,Cambridgeshire,52.2656,0.191,2005,10-Jan,,
+W'BCH,CAMBS,52.666219999999996,-2.1811,2002,10-Jan,,
+WCharlt,Devon,50.2697,-3.7556,2006,10-Jan,,
+WCharlt,Devon,50.2697,-3.7556,2008,10-Feb,,
+WCharlt,Devon,50.2697,-3.7556,2009,10-Feb,,
+WCharlt,Devon,50.2697,-3.7556,2010,10-Jan,,
+WCharlt,Devon,50.2697,-3.7556,2011,10-Jul,,
+WCharlt,Devon,50.2697,-3.7556,2013,19-Oct,,11.54
+WCharlt,Devon,50.2697,-3.7556,2014,10-Sep,,10.64
+WCharlt,Devon,50.2697,-3.7556,2015,20-Oct,,11.42
+WCharlt,Devon,50.2697,-3.7556,2016,13-Oct,,9.85
+Welbourn,Lincs,53.0754,-0.5588,2008,29-Sep,,
+Welbourn,Lincs,53.0754,-0.5588,2009,29-Sep,,
+Welbourn,Lincs,53.0754,-0.5588,2010,25-Sep,,
+Welbourn,Lincs,53.0754,-0.5588,2011,10-May,,
 Welbourn,Lincs,53.0754,-0.5588,2012,10-Jan,330,10.05
 Welbourn,Lincs,53.0754,-0.5588,2013,28-Sep,318,11.02
 Welbourn,Lincs,53.0754,-0.5588,2014,30-Sep,303,11.41
 Welbourn,Lincs,53.0754,-0.5588,2015,24-Sep,321,10.05
 Welbourn,Lincs,53.0754,-0.5588,2016,10-Jan,319,11.72
 Welbourn,Lincs,53.0754,-0.5588,2017,24-Sep,314,12.43
-West Charleton,Devon,50.2697,-3.7556,2005,10-Jan,0,0
-Weston,Lincs,51.3474,-0.0832,2012,10-Jan,0,9.41
-Whitsome,Scottish Borders,55.7484,-2.217,2004,10-Jan,0,0
-Whitsome,Scottish Borders,55.7484,-2.217,2005,10-Jan,0,0
-WIM SG,DORSET,50.9071,-1.9552,2002,10-Jan,0,0
-Wimborne St Giles,Dorset,50.9071,-1.9552,2004,10-Jan,0,0
-Wimbourne St Giles,Dorset,50.9071,-1.9552,2003,10-Jan,0,0
-Winchester,Hants.,51.0598,-1.3101,2003,10-Jan,0,0
-Winchr,Hants,51.0598,-1.3101,2008,10-Mar,0,0
-Winchr,Hants,51.0598,-1.3101,2009,10-Mar,0,0
-WINC'R,HANTS,51.0598,-1.3101,2002,10-Jan,0,0
-Winterbourne Whitechurch,Dorset,50.8007,-2.2317,2005,10-Jan,0,0
-Withernsea,EYorks,53.7313,0.0329,2016,30-Sep,0,13.69
-WK'SOP,NOTTS,53.3093,-1.1227,2002,10-Jan,0,0
-WNewton,EYorks,53.8229,-0.1805,2010,17-Oct,0,0
-Wolfertn,Norfk,52.8279,0.456,2006,10-Jan,0,0
-Wolfertn,Norfk,52.8279,0.456,2007,10-Jan,0,0
-Wolfertn,Norfk,52.8279,0.456,2008,10-Sep,0,0
-Wolfertn,Norfk,52.8279,0.456,2009,10-Sep,0,0
-Wolfertn,Norfk,52.8279,0.456,2012,10-Jan,0,9.27
-Wolfertn,Norfk,52.8279,0.456,2014,10-Aug,0,10.97
-Wolfertn,Norfk,52.8279,0.456,2015,10-Feb,0,12.23
-Wolfertn,Norfk,52.8279,0.456,2016,27-Nov,0,9.57
-Wolfertn,Norfk,52.8279,0.456,2017,10-Jul,0,10.1
-Wolferton,Norfolk,52.8279,0.456,2004,10-Jan,0,0
-Wolferton,Norfolk,52.8279,0.456,2005,10-Jan,0,0
-Woolpit,Sufflk,52.2248,0.8879,2009,16-Oct,0,0
-Woolpit,Sufflk,52.2248,0.8879,2010,14-Oct,0,0
-Worksop,Notts.,53.3093,-1.1227,2003,10-Jan,0,0
-Wye,Kent,51.1819,0.9379,2004,10-Jan,0,0
+West Charleton,Devon,50.2697,-3.7556,2005,10-Jan,,
+Weston,Lincs,51.3474,-0.0832,2012,10-Jan,,9.41
+Whitsome,Scottish Borders,55.7484,-2.217,2004,10-Jan,,
+Whitsome,Scottish Borders,55.7484,-2.217,2005,10-Jan,,
+WIM SG,DORSET,50.9071,-1.9552,2002,10-Jan,,
+Wimborne St Giles,Dorset,50.9071,-1.9552,2004,10-Jan,,
+Wimbourne St Giles,Dorset,50.9071,-1.9552,2003,10-Jan,,
+Winchester,Hants.,51.0598,-1.3101,2003,10-Jan,,
+Winchr,Hants,51.0598,-1.3101,2008,10-Mar,,
+Winchr,Hants,51.0598,-1.3101,2009,10-Mar,,
+WINC'R,HANTS,51.0598,-1.3101,2002,10-Jan,,
+Winterbourne Whitechurch,Dorset,50.8007,-2.2317,2005,10-Jan,,
+Withernsea,EYorks,53.7313,0.0329,2016,30-Sep,,13.69
+WK'SOP,NOTTS,53.3093,-1.1227,2002,10-Jan,,
+WNewton,EYorks,53.8229,-0.1805,2010,17-Oct,,
+Wolfertn,Norfk,52.8279,0.456,2006,10-Jan,,
+Wolfertn,Norfk,52.8279,0.456,2007,10-Jan,,
+Wolfertn,Norfk,52.8279,0.456,2008,10-Sep,,
+Wolfertn,Norfk,52.8279,0.456,2009,10-Sep,,
+Wolfertn,Norfk,52.8279,0.456,2012,10-Jan,,9.27
+Wolfertn,Norfk,52.8279,0.456,2014,10-Aug,,10.97
+Wolfertn,Norfk,52.8279,0.456,2015,10-Feb,,12.23
+Wolfertn,Norfk,52.8279,0.456,2016,27-Nov,,9.57
+Wolfertn,Norfk,52.8279,0.456,2017,10-Jul,,10.1
+Wolferton,Norfolk,52.8279,0.456,2004,10-Jan,,
+Wolferton,Norfolk,52.8279,0.456,2005,10-Jan,,
+Woolpit,Sufflk,52.2248,0.8879,2009,16-Oct,,
+Woolpit,Sufflk,52.2248,0.8879,2010,14-Oct,,
+Worksop,Notts.,53.3093,-1.1227,2003,10-Jan,,
+Wye,Kent,51.1819,0.9379,2004,10-Jan,,
 Wye,Kent,51.1819,0.9379,2015,28-Oct,280,11.32
-WYMOND,NORF,52.5694,1.1153,2002,10-Jan,0,0
-Wymondham,Norf.,52.5694,1.1153,2003,10-Jan,0,0
-YngsEnd,Essex,51.8468,0.523,2009,16-Oct,0,0
+WYMOND,NORF,52.5694,1.1153,2002,10-Jan,,
+Wymondham,Norf.,52.5694,1.1153,2003,10-Jan,,
+YngsEnd,Essex,51.8468,0.523,2009,16-Oct,,
