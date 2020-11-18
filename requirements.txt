@@ -1,9 +1,11 @@
 netCDF4
-ftplib 
-fnmatch
+#ftplib 
+#fnmatch
 seaborn
 pandas
 numba
 matplotlib
 h5py
 emcee
+corner
+pystan
