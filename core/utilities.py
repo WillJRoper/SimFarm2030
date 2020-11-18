@@ -1,8 +1,23 @@
+from datetime import datetime
 import numpy as np
 import pandas as pd
 from ftplib import FTP, error_perm
 import fnmatch
 import os
+
+# list of expected sow date formats AA
+MONTH_DAY_NUMS = '%d/%m'
+MONTH_DAY_WORDS = '%d-%b'
+
+
+def parse_date(date_string):
+    for format_ in (MONTH_DAY_NUMS, MONTH_DAY_WORDS):
+        try:
+            return datetime.strptime(date_string, format_)
+        except ValueError:
+            continue
+    else:
+        raise ValueError(f'Unknown date format {date_string}')
 
 
 def extract_data(path):
@@ -17,9 +32,9 @@ def extract_data(path):
     data.fillna((data["Ripe Time"].mean()), inplace=True)
 
     # Set up a new data frame to extract day and month from sow date with split value columns
-    new = data["Sow Month"].str.split("/", n=1, expand=True)
-    sow_day = new[0]
-    sow_mth_ini = new[1]
+    date = parse_date(data['Sow Month'])
+    sow_day = date.day
+    sow_mth_ini = date.month
 
     # Format months
     sow_mths = []
