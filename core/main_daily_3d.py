@@ -6,17 +6,20 @@ import sys
 import os
 
 
+def get_non_hidden_filepaths():
+    return [
+        f for f in os.listdir('../example_data')
+        if not f.startswith('.')
+    ]
+
+
 # Extract cultivar from command line input
-if len(sys.argv) > 1:
-    cult = sys.argv[1]
-    files = [cult + "_Data.csv", ]
+cult = sys.argv[1]
+
+if cult == "All":
+    files = get_non_hidden_filepaths()
 else:
-    try:
-        files = os.listdir("../example_data")
-        files.remove('.DS_Store')
-    except ValueError:
-        files = []
-        print("No .DS_Store to remove")
+    files = [cult + "_Data.csv", ]
 
 for f in files:
 
