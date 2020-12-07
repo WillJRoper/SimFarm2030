@@ -44,20 +44,123 @@ def extract_data(path):
     sow_day = data["Sow Day"].values
     sow_month = data["Sow Month"].values
 
-    # Get extreme outliers
-    lim = np.mean(yields) * 0.75
-    okinds = yields > lim
+    # # Get extreme outliers
+    # lim = np.mean(yields) * 0.75
+    # okinds = yields > lim
+    #
+    # print("Removed", yields[~okinds].size, "outliers with yields < %.3f" % lim, "Tons / Hectare")
 
-    print("Removed", yields[~okinds].size, "outliers with yields < %.3f" % lim, "Tons / Hectare")
+    # # Eliminate extreme outliers
+    # lats = lats[okinds]
+    # longs = longs[okinds]
+    # years = years[okinds]
+    # ripe_time = ripe_time[okinds]
+    # yields = yields[okinds]
+    # sow_day = sow_day[okinds]
+    # sow_month = sow_month[okinds]
 
-    # Eliminate extreme outliers
-    lats = lats[okinds]
-    longs = longs[okinds]
-    years = years[okinds]
-    ripe_time = ripe_time[okinds]
-    yields = yields[okinds]
-    sow_day = sow_day[okinds]
-    sow_month = sow_month[okinds]
+    print("Training on", yields.size, "Regions (data points)")
+
+    return lats, longs, years, ripe_time, yields, sow_day, sow_month
+
+
+def extract_data_allwheat(yield_path, ripetime_path):
+
+    #  Open the csv file
+    y_data = pd.read_csv(yield_path)
+    y_data.sort_values("Region")
+    rt_data = pd.read_csv(ripetime_path)
+    rt_data.sort_values("Region")
+
+    data = {"Lat": [], "Long": [], "Year": [],
+            "Sow Month": [], "Ripe Time": [], "Yield": []}
+
+    ignore_keys = ["Region", "Region County"]
+    ignore_keys.extend(list(data.keys()))
+
+    lats = y_data["Lat"]
+    longs = y_data["Long"]
+    years = y_data["Year"]
+    sow_months = y_data["Sow Month"]
+
+    for (columnName, columnData) in y_data.iteritems():
+
+        print(columnName)
+
+        if columnName in ignore_keys:
+            continue
+
+        print("Adding", columnName, "yields")
+
+        data["Lat"].extend(lats)
+        data["Long"].extend(longs)
+        data["Year"].extend(years)
+        data["Sow Month"].extend(sow_months)
+        data["Yield"].extend(columnData)
+
+    for (columnName, columnData) in rt_data.iteritems():
+
+        print(columnName)
+
+        if columnName in ignore_keys:
+            continue
+
+        print("Adding", columnName, "ripe times")
+
+        data["Ripe Time"].extend(columnData)
+
+    data = pd.DataFrame(data, columns=("Lat", "Long", "Year", "Sow Month",
+                                       "Ripe Time", "Yield"))
+
+    # Remove NaN entries
+    data.dropna(subset=["Yield"], inplace=True)
+
+    # Replace missing ripe times
+    data.fillna((data["Ripe Time"].mean()), inplace=True)
+
+    # Set up a new data frame to extract day and month from
+    # sow date with split value columns
+    new = data["Sow Month"].str.split("/", n=1, expand=True)
+    sow_day = new[0]
+    sow_mth_ini = new[1]
+
+    # Format months
+    sow_mths = []
+    for s in sow_mth_ini:
+        s_str = str(s)
+        if len(s_str) == 1:
+            sow_mths.append("0" + s_str)
+        else:
+            sow_mths.append(s_str)
+
+    # Make separate columns from new data frame
+    data["Sow Day"] = np.int16(sow_day)
+    data.drop(columns=["Sow Month"], inplace=True)
+    data["Sow Month"] = sow_mths
+
+    #  Extract columns into numpy arrays
+    lats = data["Lat"].values
+    longs = data["Long"].values
+    years = data["Year"].values
+    ripe_time = np.int32(data["Ripe Time"].values)
+    yields = data["Yield"].values
+    sow_day = data["Sow Day"].values
+    sow_month = data["Sow Month"].values
+
+    # # Get extreme outliers
+    # lim = np.mean(yields) * 0.75
+    # okinds = yields > lim
+    #
+    # print("Removed", yields[~okinds].size, "outliers with yields < %.3f" % lim, "Tons / Hectare")
+
+    # # Eliminate extreme outliers
+    # lats = lats[okinds]
+    # longs = longs[okinds]
+    # years = years[okinds]
+    # ripe_time = ripe_time[okinds]
+    # yields = yields[okinds]
+    # sow_day = sow_day[okinds]
+    # sow_month = sow_month[okinds]
 
     print("Training on", yields.size, "Regions (data points)")
 

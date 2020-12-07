@@ -1,39 +1,50 @@
-import numpy as np
-import scipy.stats as stat
-import h5py
-import corner
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import utilities
-import os
-from multiprocessing import Pool
-import emcee
-import seaborn as sns
-import warnings
-import time
-import pandas as pd
 import datetime
-from calendar import monthrange
+import os
+import time
+import warnings
+from multiprocessing import Pool
 
+import corner
+import emcee
+import h5py
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+import utilities
+from scipy.optimize import curve_fit
 
 warnings.filterwarnings("ignore")
 os.environ["OMP_NUM_THREADS"] = "1"
 
 sns.set_style("whitegrid")
-sns.set_context("paper", rc={"font.size": 12, "axes.titlesize": 12, "axes.labelsize": 12})
+sns.set_context("paper", rc={"font.size": 12, "axes.titlesize": 12,
+                             "axes.labelsize": 12})
 
 
 class cultivarModel:
 
-    def __init__(self, cultivar, region_tol=0.25, weather=("temperature", "rainfall", "sunshine"), metric="yield",
-                 metric_units="t/Ha", extract_flag=False, initial_guess=(10, 3375, 380, 705, 220, 1500, 150, 0, 0, 0),
-                 initial_spread=(15, 500, 300, 400, 300, 600, 300, 1, 1, 1)):
+    def __init__(self, cultivar, region_tol=0.25,
+                 weather=("temperature", "rainfall", "sunshine"),
+                 metric="yield",
+                 metric_units="t/Ha", extract_flag=False, initial_guess=(
+            1200, 100, 700, 150, 1500, 150, -0.1, 0.1, -0.1),
+                 initial_spread=(200, 150, 200, 150, 250, 150, 2, 2, 2)):
 
         start = time.time()
 
         # Get the inputs
-        data = utilities.extract_data("../example_data/" + cultivar + "_Data.csv")
-        region_lats, region_longs, years, ripe_days, yields, sow_day, sow_month = data
+        if cultivar != "All":
+            data = utilities.extract_data("../example_data/"
+                                          + cultivar + "_Data.csv")
+            region_lats, region_longs, years, \
+            ripe_days, yields, sow_day, sow_month = data
+        else:
+            yield_path = "../All_Cultivars_Spreadsheets/Yield.csv"
+            ripetime_path = "../All_Cultivars_Spreadsheets/Ripe Time.csv"
+            data = utilities.extract_data_allwheat(yield_path, ripetime_path)
+            region_lats, region_longs, years, \
+            ripe_days, yields, sow_day, sow_month = data
 
         self.reg_lats = region_lats
         self.reg_longs = region_longs
@@ -62,65 +73,113 @@ class cultivarModel:
         self.metric = metric
         self.metric_units = metric_units
 
+        self.norm = 16
+
+        # Internal variables for speed
+        self.norm_coeff = np.log(1 / ((2 * np.pi) ** (1 / 2)))
+        self.log_initial_spread = [np.log(i) for i in initial_spread]
+
         # Open file
         try:
 
-            hdf = h5py.File("../Climate_Data/Region_Climate_" + self.cult + ".hdf5", "r")
+            hdf = h5py.File(
+                "../Climate_Data/Region_Climate_" + self.cult + ".hdf5", "r")
 
-            self.temp_anom, self.temp = hdf["Temperature_Anomaly"][...], hdf["Temperature"][...]
-            self.temp[self.temp <= 0] = np.nan
+            self.temp_max, self.temp_min = hdf["Temperature_Maximum"][...], \
+                                           hdf["Temperature_Minimum"][...]
             print("Temperature Extracted")
-            self.precip_anom, self.precip = hdf["Rainfall_Anomaly"][...], hdf["Rainfall"][...]
+            self.precip_anom, self.precip = hdf["Rainfall_Anomaly"][...], \
+                                            hdf["Rainfall"][...]
             print("Rainfall Extracted")
-            self.sun_anom, self.sun = hdf["Sunshine_Anomaly"][...], hdf["Sunshine"][...]
+            self.sun_anom, self.sun = hdf["Sunshine_Anomaly"][...], \
+                                      hdf["Sunshine"][...]
             print("Sunshine Extracted")
 
             hdf.close()
 
         except KeyError:
             extract_flag = True
+            print("Key not found")
         except OSError:
             extract_flag = True
+            print("File not found")
 
         if extract_flag:
+            self.temp_max = self.get_temp("tempmax")
+            self.temp_min = self.get_temp("tempmin")
 
-            self.temp_anom, self.temp = self.get_weather_anomaly(weather[0])
-            self.temp[self.temp <= 0] = np.nan
+            # Apply conditions from
+            # https://ndawn.ndsu.nodak.edu/help-wheat-growing-degree-days.html
+            self.temp_max[self.temp_max < 0] = 0
+            self.temp_min[self.temp_min < 0] = 0
+
             print("Temperature Extracted")
-            self.precip_anom, self.precip = self.get_weather_anomaly(weather[1])
+            self.precip_anom, self.precip = self.get_weather_anomaly(
+                weather[1])
             print("Rainfall Extracted")
-            self.sun_anom, self.sun = self.get_weather_anomaly_monthly(weather[2])
+            self.sun_anom, self.sun = self.get_weather_anomaly_monthly(
+                weather[2])
             print("Sunshine Extracted")
 
-            hdf = h5py.File("../Climate_Data/Region_Climate_" + self.cult + ".hdf5", "w")
+            hdf = h5py.File(
+                "../Climate_Data/Region_Climate_" + self.cult + ".hdf5", "w")
 
-            hdf.create_dataset("Temperature", shape=self.temp.shape, dtype=self.temp.dtype,
-                               data=self.temp, compression="gzip")
-            hdf.create_dataset("Temperature_Anomaly", shape=self.temp_anom.shape, dtype=self.temp_anom.dtype,
-                               data=self.temp_anom, compression="gzip")
-            hdf.create_dataset("Rainfall", shape=self.precip.shape, dtype=self.precip.dtype,
+            hdf.create_dataset("Temperature_Maximum",
+                               shape=self.temp_max.shape,
+                               dtype=self.temp_max.dtype,
+                               data=self.temp_max, compression="gzip")
+            hdf.create_dataset("Temperature_Minimum",
+                               shape=self.temp_min.shape,
+                               dtype=self.temp_min.dtype,
+                               data=self.temp_min, compression="gzip")
+            hdf.create_dataset("Rainfall", shape=self.precip.shape,
+                               dtype=self.precip.dtype,
                                data=self.precip, compression="gzip")
-            hdf.create_dataset("Rainfall_Anomaly", shape=self.precip_anom.shape, dtype=self.precip_anom.dtype,
+            hdf.create_dataset("Rainfall_Anomaly",
+                               shape=self.precip_anom.shape,
+                               dtype=self.precip_anom.dtype,
                                data=self.precip_anom, compression="gzip")
-            hdf.create_dataset("Sunshine", shape=self.sun.shape, dtype=self.sun.dtype,
+            hdf.create_dataset("Sunshine", shape=self.sun.shape,
+                               dtype=self.sun.dtype,
                                data=self.sun, compression="gzip")
-            hdf.create_dataset("Sunshine_Anomaly", shape=self.sun_anom.shape, dtype=self.sun_anom.dtype,
+            hdf.create_dataset("Sunshine_Anomaly", shape=self.sun_anom.shape,
+                               dtype=self.sun_anom.dtype,
                                data=self.sun_anom, compression="gzip")
 
             hdf.close()
 
         # Compute thermal days and total rainfall
-        self.therm_days = np.nansum(self.temp, axis=1)
+        self.therm_days = self.gdd_calc(self.temp_min, self.temp_max)
         self.tot_precip = np.nansum(self.precip, axis=1)
         self.tot_sun = np.nansum(self.sun, axis=1)
 
         print("Input extracted:", time.time() - start)
 
     @staticmethod
+    def gdd_calc(tempmin, tempmax):
+
+        gdd = np.zeros(tempmin.shape[0])
+        for ind in range(tempmin.shape[1]):
+
+            tmaxs = tempmax[:, ind]
+            tmins = tempmin[:, ind]
+
+            if np.sum(tmaxs) == np.sum(tmins) == 0:
+                break
+
+            tmaxs[np.logical_and(gdd < 395, tmaxs > 21)] = 21
+            tmaxs[np.logical_and(gdd >= 395, tmaxs > 35)] = 35
+
+            gdd += (tmaxs - tmins) / 2
+
+        return gdd
+
+    @staticmethod
     def extract_region(lat, long, region_lat, region_long, weather, tol):
 
         # Get the boolean array for points within tolerence
-        bool_cond = np.logical_and(np.abs(lat - region_lat) < tol, np.abs(long - region_long) < tol)
+        bool_cond = np.logical_and(np.abs(lat - region_lat) < tol,
+                                   np.abs(long - region_long) < tol)
 
         # Get the extracted region
         ex_reg = weather[bool_cond]
@@ -135,24 +194,14 @@ class cultivarModel:
             return np.mean(ex_reg)
 
     @staticmethod
-    def gauss2d_country(norm, t, mu_t, sig_t, p, mu_p, sig_p, rho, dy=0):
-
-        for mon in range(0, 12):
-            dy += norm * np.exp(-(1 / (2 - 2 * np.square(rho))) * (np.square((t[:, :, mon] - mu_t) / sig_t) +
-                                                                   np.square((p[:, :, mon] - mu_p) / sig_p)
-                                                                   - 2 * rho * (t[:, :, mon] - mu_t) * (
-                                                                               p[:, :, mon] - mu_p)
-                                                                   / (sig_t * sig_p)))
-        return dy
-
-    @staticmethod
     def gauss2d_resp(t, norm, mu_t, sig_t, p, mu_p, sig_p, rho):
 
         t_term = ((t - mu_t) / sig_t) ** 2
         p_term = ((p - mu_p) / sig_p) ** 2
         tp_term = 2 * rho * (t - mu_t) * (p - mu_p) / (sig_t * sig_p)
 
-        dy = norm * np.exp(-(1 / (2 - 2 * rho * rho)) * (t_term + p_term - tp_term))
+        dy = norm * np.exp(-(1 / (2 - 2 * rho * rho))
+                           * (t_term + p_term - tp_term))
 
         return dy
 
@@ -162,7 +211,8 @@ class cultivarModel:
         sow_dict = {}
 
         # Loop over regions
-        for regind, (lat, long, sow_yr) in enumerate(zip(self.reg_lats, self.reg_longs, self.sow_year)):
+        for regind, (lat, long, sow_yr) in enumerate(
+                zip(self.reg_lats, self.reg_longs, self.sow_year)):
 
             # Initialise this regions entry
             sow_dict.setdefault(str(lat) + "." + str(long), {})
@@ -171,19 +221,20 @@ class cultivarModel:
             sow_day = self.sow_days[regind]
             sow_month = self.sow_months[regind]
             ripe_time = self.ripe_days[regind]
-            sow_date = datetime.date(year=sow_yr, month=int(sow_month), day=int(sow_day))
+            sow_date = datetime.date(year=sow_yr, month=int(sow_month),
+                                     day=int(sow_day))
 
             # Initialise this region"s dictionary entry
             hdf_keys = np.empty(ripe_time + 1, dtype=object)
 
             # Loop over months between sowing and ripening
             for nday in range(ripe_time + 1):
-
                 # Compute the correct month number for this month
                 key_date = sow_date + datetime.timedelta(days=nday)
 
                 # Append this key to the dictionary under this region in chronological order
-                hdf_keys[nday] = str(key_date.year) + "_%03d" % key_date.month + "_%04d" % key_date.day
+                hdf_keys[nday] = str(
+                    key_date.year) + "_%03d" % key_date.month + "_%04d" % key_date.day
 
             # Assign keys to dictionary
             sow_dict[str(lat) + "." + str(long)][str(sow_yr)] = hdf_keys
@@ -196,7 +247,8 @@ class cultivarModel:
         sow_dict = {}
 
         # Loop over regions
-        for regind, (lat, long, sow_yr) in enumerate(zip(self.reg_lats, self.reg_longs, self.sow_year)):
+        for regind, (lat, long, sow_yr) in enumerate(
+                zip(self.reg_lats, self.reg_longs, self.sow_year)):
 
             # Initialise this regions entry
             sow_dict.setdefault(str(lat) + "." + str(long), {})
@@ -205,14 +257,14 @@ class cultivarModel:
             sow_day = self.sow_days[regind]
             sow_month = self.sow_months[regind]
             ripe_time = self.ripe_days[regind]
-            sow_date = datetime.date(year=sow_yr, month=int(sow_month), day=int(sow_day))
+            sow_date = datetime.date(year=sow_yr, month=int(sow_month),
+                                     day=int(sow_day))
 
             # Initialise this region"s dictionary entry
             hdf_keys = []
 
             # Loop over months between sowing and ripening
             for ndays in range(ripe_time + 1):
-
                 # Compute the correct month number for this month
                 key_date = sow_date + datetime.timedelta(days=ndays)
 
@@ -220,7 +272,8 @@ class cultivarModel:
                 hdf_keys.append(str(key_date.year) + "_%03d" % key_date.month)
 
             # Assign keys to dictionary
-            sow_dict[str(lat) + "." + str(long)][str(sow_yr)] = np.unique(hdf_keys)
+            sow_dict[str(lat) + "." + str(long)][str(sow_yr)] = np.unique(
+                hdf_keys)
 
         return sow_dict
 
@@ -234,27 +287,43 @@ class cultivarModel:
         lats = hdf["Latitude_grid"][...]
         longs = hdf["Longitude_grid"][...]
 
+        done_wthr = {}
+
         # Loop over regions
         anom = np.full((len(self.reg_lats), 400), np.nan)
         wthr = np.full((len(self.reg_lats), 400), np.nan)
-        for llind, (lat, long, year) in enumerate(zip(self.reg_lats, self.reg_longs, self.sow_year)):
+        for llind, (lat, long, year) in enumerate(
+                zip(self.reg_lats, self.reg_longs, self.sow_year)):
 
             hdf_keys = self.reg_keys[str(lat) + "." + str(long)][str(year)]
+
+            if str(lat) + "_" + str(long) + "_" + str(year) in done_wthr:
+                if tuple(hdf_keys) in done_wthr[
+                    str(lat) + "_" + str(long) + "_" + str(year)]:
+                    print("Already extracted",
+                          str(lat) + "_" + str(long) + "_" + str(year))
+                    wthr[llind, :] = \
+                    done_wthr[str(lat) + "_" + str(long) + "_" + str(year)][
+                        tuple(hdf_keys)]
+                    continue
 
             # Initialise arrays to hold results
             key_ind = 0
             for key in hdf_keys:
-
                 year, month, day = key.split("_")
 
                 wthr_grid = hdf[key]["daily_grid"][...]
 
-                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid, self.tol)
+                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid,
+                                             self.tol)
 
                 # If year is within list of years extract the relevant data
                 wthr[llind, key_ind] = ex_reg
                 anom[llind, key_ind] = ex_reg - uk_monthly_mean[int(day) - 1]
                 key_ind += 1
+
+            done_wthr.setdefault(str(lat) + "_" + str(long) + "_" + str(year),
+                                 {})[tuple(hdf_keys)] = wthr[llind, :]
 
         # Assign weather data to variable
         self.wthr_anom_dict[weather] = anom
@@ -262,6 +331,53 @@ class cultivarModel:
         hdf.close()
 
         return anom, wthr
+
+    def get_temp(self, weather):
+
+        hdf = h5py.File("../SimFarm2030_" + weather + ".hdf5", "r")
+
+        lats = hdf["Latitude_grid"][...]
+        longs = hdf["Longitude_grid"][...]
+
+        done_wthr = {}
+
+        # Loop over regions
+        wthr = np.zeros((len(self.reg_lats), 400))
+        for llind, (lat, long, year) in enumerate(
+                zip(self.reg_lats, self.reg_longs, self.sow_year)):
+
+            hdf_keys = self.reg_keys[str(lat) + "." + str(long)][str(year)]
+
+            if str(lat) + "_" + str(long) + "_" + str(year) in done_wthr:
+                if tuple(hdf_keys) in done_wthr[
+                    str(lat) + "_" + str(long) + "_" + str(year)]:
+                    print("Already extracted",
+                          str(lat) + "_" + str(long) + "_" + str(year))
+                    wthr[llind, :] = \
+                    done_wthr[str(lat) + "_" + str(long) + "_" + str(year)][
+                        tuple(hdf_keys)]
+                    continue
+
+            # Initialise arrays to hold results
+            key_ind = 0
+            for key in hdf_keys:
+                year, month, day = key.split("_")
+
+                wthr_grid = hdf[key]["daily_grid"][...]
+
+                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid,
+                                             self.tol)
+
+                # If year is within list of years extract the relevant data
+                wthr[llind, key_ind] = ex_reg
+                key_ind += 1
+
+            done_wthr.setdefault(str(lat) + "_" + str(long) + "_" + str(year),
+                                 {})[tuple(hdf_keys)] = wthr[llind, :]
+
+        hdf.close()
+
+        return wthr
 
     def get_weather_anomaly_monthly(self, weather):
 
@@ -276,19 +392,20 @@ class cultivarModel:
         # Loop over regions
         anom = np.full((len(self.reg_lats), 15), np.nan)
         wthr = np.full((len(self.reg_lats), 15), np.nan)
-        for llind, (lat, long, year) in enumerate(zip(self.reg_lats, self.reg_longs, self.sow_year)):
+        for llind, (lat, long, year) in enumerate(
+                zip(self.reg_lats, self.reg_longs, self.sow_year)):
 
             hdf_keys = self.reg_mth_keys[str(lat) + "." + str(long)][str(year)]
 
             # Initialise arrays to hold results
             key_ind = 0
             for key in hdf_keys:
-
                 year, month = key.split("_")
 
                 wthr_grid = hdf[key]["monthly_grid"][...]
 
-                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid, self.tol)
+                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid,
+                                             self.tol)
 
                 # If year is within list of years extract the relevant data
                 wthr[llind, key_ind] = ex_reg
@@ -309,31 +426,50 @@ class cultivarModel:
         p_term = ((p - mu_p) / sig_p) ** 2
         tp_term = 2 * rho * (t - mu_t) * (p - mu_p) / (sig_t * sig_p)
 
-        dy = norm * np.exp(-0.5 / (1 - rho * rho) * (t_term + p_term - tp_term))
+        dy = norm * np.exp(
+            -0.5 / (1 - rho * rho) * (t_term + p_term - tp_term))
 
         return dy
 
     @staticmethod
-    def gauss3d(norm, t, mu_t, sig_t, p, mu_p, sig_p, s, mu_s, sig_s, rho_tp, rho_ts, rho_ps):
+    def gauss3d(norm, t, mu_t, sig_t, p, mu_p, sig_p, s, mu_s, sig_s, rho_tp,
+                rho_ts, rho_ps):
 
-        dy = norm * np.exp(-(0.5 * 1 / (1 - np.square(rho_tp) - np.square(rho_ts) - np.square(rho_ps)
-                                        + 2 * rho_tp * rho_ts * rho_ps))
+        dy = norm * np.exp(-(0.5 * 1 / (
+                    1 - np.square(rho_tp) - np.square(rho_ts) - np.square(
+                rho_ps)
+                    + 2 * rho_tp * rho_ts * rho_ps))
                            * (np.square((t - mu_t) / sig_t)
-                              + np.square((p - mu_p) / sig_p) + np.square((s - mu_s) / sig_s)
-                              + 2 * ((t - mu_t) * (p - mu_p) * (rho_ts * rho_ps - rho_tp) / (sig_t * sig_p)
-                                     + (t - mu_t) * (s - mu_s) * (rho_tp * rho_ts - rho_ps)
-                                     / (sig_t * sig_s) + (p - mu_p) * (s - mu_s)
-                                     * (rho_tp * rho_ts - rho_ps) / (sig_s * sig_p))))
+                              + np.square((p - mu_p) / sig_p) + np.square(
+                    (s - mu_s) / sig_s)
+                              + 2 * ((t - mu_t) * (p - mu_p) * (
+                            rho_ts * rho_ps - rho_tp) / (sig_t * sig_p)
+                                     + (t - mu_t) * (s - mu_s) * (
+                                                 rho_tp * rho_ts - rho_ps)
+                                     / (sig_t * sig_s) + (p - mu_p) * (
+                                                 s - mu_s)
+                                     * (rho_tp * rho_ts - rho_ps) / (
+                                                 sig_s * sig_p))))
 
         return dy
+
+    @staticmethod
+    def normpdf(x, loc, scale, logscale, coeff):
+
+        u = (x - loc) / scale
+
+        y = coeff - logscale - (u * u / 2)
+
+        return y
 
     def log_likelihood_3d(self, theta, t, p, s, y, yerr):
 
         # Extract parameter values
-        norm, mu_t, sig_t, mu_p, sig_p, mu_s, sig_s, rho_tp, rho_ts, rho_ps = theta
+        mu_t, sig_t, mu_p, sig_p, mu_s, sig_s, rho_tp, rho_ts, rho_ps = theta
 
         # Define model
-        model = self.gauss3d(norm, t, mu_t, sig_t, p, mu_p, sig_p, s, mu_s, sig_s, rho_tp, rho_ts, rho_ps)
+        model = self.gauss3d(self.norm, t, mu_t, sig_t, p, mu_p, sig_p,
+                             s, mu_s, sig_s, rho_tp, rho_ts, rho_ps)
 
         sigma2 = yerr ** 2
 
@@ -342,29 +478,65 @@ class cultivarModel:
     def log_prior_3d(self, theta):
 
         # Extract parameter values
-        norm, mu_t, sig_t, mu_p, sig_p, mu_s, sig_s, rho_tp, rho_ts, rho_ps = theta
+        mu_t, sig_t, mu_p, sig_p, mu_s, sig_s, rho_tp, rho_ts, rho_ps = theta
 
         # The only parameters with a lower bound are norm and the sigmas
-        cond = (0 < norm < 20
-                and 2000 < mu_t < 4050 and 0 < sig_t < 10000
-                and 350 < mu_p < 1700 and 0 < sig_p < 10000
-                and 1000 < mu_s < 2000 and 0 < sig_s < 10000
-                and -1 <= rho_tp <= 1 and -1 <= rho_ts <= 1 and -1 <= rho_ps <= 1)
+        cond = (500 < mu_t < 2000 and 0 < sig_t < 5000
+                and 300 < mu_p < 2000 and 0 < sig_p < 5000
+                and 500 < mu_s < 2500 and 0 < sig_s < 5000
+                and -1 <= rho_tp <= 1 and -1 <= rho_ts <= 1
+                and -1 <= rho_ps <= 1)
         if cond:
 
-            # # Define ln(prior) for each prior
-            norm_lnprob = np.log(stat.norm.pdf(norm, loc=self.initial_guess[0], scale=self.initial_spread[0]))
-            mut_lnprob = np.log(stat.norm.pdf(mu_t, loc=self.initial_guess[1], scale=self.initial_spread[1]))
-            sigt_lnprob = np.log(stat.norm.pdf(sig_t, loc=self.initial_guess[2], scale=self.initial_spread[2]))
-            mup_lnprob = np.log(stat.norm.pdf(mu_p, loc=self.initial_guess[3], scale=self.initial_spread[3]))
-            sigp_lnprob = np.log(stat.norm.pdf(sig_p, loc=self.initial_guess[4], scale=self.initial_spread[4]))
-            mus_lnprob = np.log(stat.norm.pdf(mu_s, loc=self.initial_guess[5], scale=self.initial_spread[5]))
-            sigs_lnprob = np.log(stat.norm.pdf(sig_s, loc=self.initial_guess[6], scale=self.initial_spread[6]))
-            rhotp_lnprob = np.log(stat.norm.pdf(rho_tp, loc=self.initial_guess[7], scale=self.initial_spread[7]))
-            rhots_lnprob = np.log(stat.norm.pdf(rho_ts, loc=self.initial_guess[8], scale=self.initial_spread[8]))
-            rhops_lnprob = np.log(stat.norm.pdf(rho_ps, loc=self.initial_guess[9], scale=self.initial_spread[9]))
+            # Define ln(prior) for each prior
+            mut_lnprob = self.normpdf(mu_t,
+                                      loc=self.initial_guess[0],
+                                      scale=self.initial_spread[0],
+                                      logscale=self.log_initial_spread[0],
+                                      coeff=self.norm_coeff)
+            sigt_lnprob = self.normpdf(sig_t,
+                                       loc=self.initial_guess[1],
+                                       scale=self.initial_spread[1],
+                                       logscale=self.log_initial_spread[1],
+                                       coeff=self.norm_coeff)
+            mup_lnprob = self.normpdf(mu_p,
+                                      loc=self.initial_guess[2],
+                                      scale=self.initial_spread[2],
+                                      logscale=self.log_initial_spread[2],
+                                      coeff=self.norm_coeff)
+            sigp_lnprob = self.normpdf(sig_p,
+                                       loc=self.initial_guess[3],
+                                       scale=self.initial_spread[3],
+                                       logscale=self.log_initial_spread[3],
+                                       coeff=self.norm_coeff)
+            mus_lnprob = self.normpdf(mu_s,
+                                      loc=self.initial_guess[4],
+                                      scale=self.initial_spread[4],
+                                      logscale=self.log_initial_spread[4],
+                                      coeff=self.norm_coeff)
+            sigs_lnprob = self.normpdf(sig_s,
+                                       loc=self.initial_guess[5],
+                                       scale=self.initial_spread[5],
+                                       logscale=self.log_initial_spread[5],
+                                       coeff=self.norm_coeff)
+            rhotp_lnprob = self.normpdf(rho_tp,
+                                        loc=self.initial_guess[6],
+                                        scale=self.initial_spread[6],
+                                        logscale=self.log_initial_spread[6],
+                                        coeff=self.norm_coeff)
+            rhots_lnprob = self.normpdf(rho_ts,
+                                        loc=self.initial_guess[7],
+                                        scale=self.initial_spread[7],
+                                        logscale=self.log_initial_spread[7],
+                                        coeff=self.norm_coeff)
+            rhops_lnprob = self.normpdf(rho_ps,
+                                        loc=self.initial_guess[8],
+                                        scale=self.initial_spread[8],
+                                        logscale=self.log_initial_spread[8],
+                                        coeff=self.norm_coeff)
 
-            return norm_lnprob + mut_lnprob + sigt_lnprob + mup_lnprob + sigp_lnprob + mus_lnprob + sigs_lnprob \
+            return mut_lnprob + sigt_lnprob + mup_lnprob \
+                   + sigp_lnprob + mus_lnprob + sigs_lnprob \
                    + rhotp_lnprob + rhots_lnprob + rhops_lnprob
             # return 0
         else:
@@ -390,18 +562,22 @@ class cultivarModel:
         p0 = np.random.randn(nwalkers, ndim) * 0.0001 + self.initial_guess
 
         with Pool() as pool:
-            sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_3d,
-                                            args=(temp, rain, sun, yields, yerr), pool=pool, threads=8)
+            sampler = emcee.EnsembleSampler(nwalkers, ndim,
+                                            self.log_probability_3d,
+                                            args=(
+                                            temp, rain, sun, yields, yerr),
+                                            pool=pool, threads=8)
 
             # Run 200 steps as a burn-in.
             print("Burning in ...")
-            pos, prob, state = sampler.run_mcmc(p0, 200)
+            pos, prob, state = sampler.run_mcmc(p0, 1000)
 
             # Reset the chain to remove the burn-in samples.
             sampler.reset()
 
             print("Running MCMC ...")
-            pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True, rstate0=state)
+            pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True,
+                                                rstate0=state)
 
         self.model = sampler
 
@@ -410,12 +586,12 @@ class cultivarModel:
         # vector.
         af = sampler.acceptance_fraction
         print("Mean acceptance fraction:", np.mean(af))
-        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
+        af_msg = """As a rule of thumb, the acceptance fraction (af) should be 
                                     between 0.2 and 0.5
                     If af < 0.2 decrease the a parameter
                     If af > 0.5 increase the a parameter
-                    '''
-        
+                    """
+
         print(af_msg)
 
         flat_samples = sampler.get_chain(discard=1000, thin=100, flat=True)
@@ -426,27 +602,32 @@ class cultivarModel:
         maxprob_indice = np.argmax(prob)
         self.maxprob_params = pos[maxprob_indice]
         self.fitted_params = np.median(flat_samples, axis=0)
-        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d['mu_s'], d["sig_s"], d["rho_tp"], d["rho_ts"], d["rho_ps"] = self.fitted_params
+        d["mu_t"], d["sig_t"], d["mu_p"], d["sig_p"], d["mu_s"], d["sig_s"], d[
+            "rho_tp"], d["rho_ts"], d["rho_ps"] = self.fitted_params
 
         # Extract the samples
         d = self.samples
-        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d['mu_s'], d["sig_s"], d["rho_tp"], d["rho_ts"], d["rho_ps"] = [flat_samples[:, i] for i in range(ndim)]
+        d["mu_t"], d["sig_t"], d["mu_p"], d["sig_p"], d["mu_s"], d["sig_s"], d[
+            "rho_tp"], d["rho_ts"], d["rho_ps"] = [flat_samples[:, i] for i in
+                                                   range(ndim)]
 
         # Extract the errors on the fitted parameters
         self.param_errors = np.std(flat_samples, axis=0)
-        norm_err, mu_t_err, sig_t_err, mu_p_err, sig_p_err, mu_s_err, sig_s_err, rho_tp_err, rho_ts_err, rho_ps_err = self.param_errors
+        mu_t_err, sig_t_err, mu_p_err, sig_p_err, mu_s_err, sig_s_err, rho_tp_err, rho_ts_err, rho_ps_err = self.param_errors
 
         print("================ Model Parameters ================")
-        print("norm = %.3f +/- %.3f" % (self.mean_params['norm'], norm_err))
-        print("mu_t = %.3f +/- %.3f" % (self.mean_params['mu_t'], mu_t_err))
+        print("mu_t = %.3f +/- %.3f" % (self.mean_params["mu_t"], mu_t_err))
         print("sig_t = %.3f +/- %.3f" % (self.mean_params["sig_t"], sig_t_err))
-        print("mu_p = %.3f +/- %.3f" % (self.mean_params['mu_p'], mu_p_err))
+        print("mu_p = %.3f +/- %.3f" % (self.mean_params["mu_p"], mu_p_err))
         print("sig_p = %.3f +/- %.3f" % (self.mean_params["sig_p"], sig_p_err))
-        print("mu_s = %.3f +/- %.3f" % (self.mean_params['mu_s'], mu_s_err))
+        print("mu_s = %.3f +/- %.3f" % (self.mean_params["mu_s"], mu_s_err))
         print("sig_s = %.3f +/- %.3f" % (self.mean_params["sig_s"], sig_s_err))
-        print("rho_tp = %.3f +/- %.3f" % (self.mean_params["rho_tp"], rho_tp_err))
-        print("rho_ts = %.3f +/- %.3f" % (self.mean_params["rho_ts"], rho_ts_err))
-        print("rho_ps = %.3f +/- %.3f" % (self.mean_params["rho_ps"], rho_ps_err))
+        print("rho_tp = %.3f +/- %.3f" % (
+        self.mean_params["rho_tp"], rho_tp_err))
+        print("rho_ts = %.3f +/- %.3f" % (
+        self.mean_params["rho_ts"], rho_ts_err))
+        print("rho_ps = %.3f +/- %.3f" % (
+        self.mean_params["rho_ps"], rho_ps_err))
 
     def train_and_validate_model(self, split=0.7, nsample=5000, nwalkers=500):
 
@@ -477,19 +658,22 @@ class cultivarModel:
 
         p0 = np.random.randn(nwalkers, ndim) * 0.001 + self.initial_guess
 
-        sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability_3d,
+        sampler = emcee.EnsembleSampler(nwalkers, ndim,
+                                        self.log_probability_3d,
                                         args=(self.train_temp, self.train_rain,
-                                              self.train_sun, self.train_yields, self.yerr))
+                                              self.train_sun,
+                                              self.train_yields, self.yerr))
 
         # Run 200 steps as a burn-in.
         print("Burning in ...")
-        pos, prob, state = sampler.run_mcmc(p0, 200)
+        pos, prob, state = sampler.run_mcmc(p0, 1000)
 
         # Reset the chain to remove the burn-in samples.
         sampler.reset()
 
         print("Running MCMC ...")
-        pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True, rstate0=state)
+        pos, prob, state = sampler.run_mcmc(p0, nsample, progress=True,
+                                            rstate0=state)
 
         self.model = sampler
 
@@ -498,11 +682,11 @@ class cultivarModel:
         # vector.
         af = sampler.acceptance_fraction
         print("Mean acceptance fraction:", np.mean(af))
-        af_msg = '''As a rule of thumb, the acceptance fraction (af) should be 
+        af_msg = """As a rule of thumb, the acceptance fraction (af) should be 
                                     between 0.2 and 0.5
                     If af < 0.2 decrease the a parameter
                     If af > 0.5 increase the a parameter
-                    '''
+                    """
 
         print(af_msg)
 
@@ -514,35 +698,44 @@ class cultivarModel:
         maxprob_indice = np.argmax(prob)
         self.maxprob_params = pos[maxprob_indice]
         self.fitted_params = np.median(flat_samples, axis=0)
-        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d['mu_s'], d["sig_s"], d["rho_tp"], d["rho_ts"], d["rho_ps"] = self.fitted_params
+        d["mu_t"], d["sig_t"], d["mu_p"], d["sig_p"], d["mu_s"], d["sig_s"], d[
+            "rho_tp"], d["rho_ts"], d["rho_ps"] = self.fitted_params
 
         # Extract the samples
         d = self.samples
-        d["norm"], d['mu_t'], d["sig_t"], d['mu_p'], d["sig_p"], d['mu_s'], d["sig_s"], d["rho_tp"], d["rho_ts"], d["rho_ps"] = [flat_samples[:, i] for i in range(ndim)]
+        d["mu_t"], d["sig_t"], d["mu_p"], d["sig_p"], d["mu_s"], d["sig_s"], d[
+            "rho_tp"], d["rho_ts"], d["rho_ps"] = [flat_samples[:, i] for i in
+                                                   range(ndim)]
 
         # Extract the errors on the fitted parameters
         self.param_errors = np.std(flat_samples, axis=0)
-        norm_err, mu_t_err, sig_t_err, mu_p_err, sig_p_err, mu_s_err, sig_s_err, rho_tp_err, rho_ts_err, rho_ps_err = self.param_errors
+        mu_t_err, sig_t_err, mu_p_err, sig_p_err, mu_s_err, sig_s_err, rho_tp_err, rho_ts_err, rho_ps_err = self.param_errors
 
         print("================ Model Parameters ================")
-        print("norm = %.3f +/- %.3f" % (self.mean_params['norm'], norm_err))
-        print("mu_t = %.3f +/- %.3f" % (self.mean_params['mu_t'], mu_t_err))
+        print("mu_t = %.3f +/- %.3f" % (self.mean_params["mu_t"], mu_t_err))
         print("sig_t = %.3f +/- %.3f" % (self.mean_params["sig_t"], sig_t_err))
-        print("mu_p = %.3f +/- %.3f" % (self.mean_params['mu_p'], mu_p_err))
+        print("mu_p = %.3f +/- %.3f" % (self.mean_params["mu_p"], mu_p_err))
         print("sig_p = %.3f +/- %.3f" % (self.mean_params["sig_p"], sig_p_err))
-        print("mu_s = %.3f +/- %.3f" % (self.mean_params['mu_s'], mu_s_err))
+        print("mu_s = %.3f +/- %.3f" % (self.mean_params["mu_s"], mu_s_err))
         print("sig_s = %.3f +/- %.3f" % (self.mean_params["sig_s"], sig_s_err))
-        print("rho_tp = %.3f +/- %.3f" % (self.mean_params["rho_tp"], rho_tp_err))
-        print("rho_ts = %.3f +/- %.3f" % (self.mean_params["rho_ts"], rho_ts_err))
-        print("rho_ps = %.3f +/- %.3f" % (self.mean_params["rho_ps"], rho_ps_err))
+        print("rho_tp = %.3f +/- %.3f" % (
+        self.mean_params["rho_tp"], rho_tp_err))
+        print("rho_ts = %.3f +/- %.3f" % (
+        self.mean_params["rho_ts"], rho_ts_err))
+        print("rho_ps = %.3f +/- %.3f" % (
+        self.mean_params["rho_ps"], rho_ps_err))
 
         # Calculate the predicted results
-        preds = self.gauss3d(self.mean_params['norm'], self.predict_temp, self.mean_params['mu_t'],
-                             self.mean_params['sig_t'], self.predict_rain, self.mean_params['mu_p'],
-                             self.mean_params['sig_p'], self.predict_sun, self.mean_params['mu_s'],
-                             self.mean_params['sig_s'], self.mean_params["rho_tp"], 
-                             self.mean_params["rho_ts"], self.mean_params["rho_ps"])
-        print(preds)
+        preds = self.gauss3d(self.norm, self.predict_temp,
+                             self.mean_params["mu_t"],
+                             self.mean_params["sig_t"], self.predict_rain,
+                             self.mean_params["mu_p"],
+                             self.mean_params["sig_p"], self.predict_sun,
+                             self.mean_params["mu_s"],
+                             self.mean_params["sig_s"],
+                             self.mean_params["rho_tp"],
+                             self.mean_params["rho_ts"],
+                             self.mean_params["rho_ps"])
 
         self.preds = preds
 
@@ -568,7 +761,8 @@ class cultivarModel:
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels)
 
-        fig.savefig("../model_performance/Validation/" + self.cult + "_3d.png", bbox_inches="tight")
+        fig.savefig("../model_performance/Validation/" + self.cult + "_3d.png",
+                    bbox_inches="tight")
 
     def plot_walkers(self):
 
@@ -577,8 +771,11 @@ class cultivarModel:
         for i in range(ndim):
             fig = plt.figure()
             ax = fig.add_subplot(111)
-            res = ax.plot(self.model.chain[:, :, i].T, "-", color="k", alpha=0.3)
-            fig.savefig(f"../model_performance/Chains/samplerchain_{i}_" + self.cult + "_daily_3d.png", bbox_inches="tight")
+            res = ax.plot(self.model.chain[:, :, i].T, "-", color="k",
+                          alpha=0.3)
+            fig.savefig(
+                f"../model_performance/Chains/samplerchain_{i}_" + self.cult + "_daily_3d.png",
+                bbox_inches="tight")
             plt.close(fig)
 
     def plot_response(self):
@@ -594,40 +791,60 @@ class cultivarModel:
         ps_pp, ps_ss = np.meshgrid(eval_p, eval_s)
 
         # Compute temperature response
-        t_resp = self.gauss3d(self.mean_params['norm'], eval_t, self.mean_params['mu_t'],
-                             self.mean_params['sig_t'], 0, self.mean_params['mu_p'],
-                             self.mean_params['sig_p'], 0, self.mean_params['mu_s'],
-                             self.mean_params['sig_s'], self.mean_params["rho_tp"],
-                             self.mean_params["rho_ts"], self.mean_params["rho_ps"])
+        t_resp = self.gauss3d(self.norm, eval_t, self.mean_params["mu_t"],
+                              self.mean_params["sig_t"], 0,
+                              self.mean_params["mu_p"],
+                              self.mean_params["sig_p"], 0,
+                              self.mean_params["mu_s"],
+                              self.mean_params["sig_s"],
+                              self.mean_params["rho_tp"],
+                              self.mean_params["rho_ts"],
+                              self.mean_params["rho_ps"])
 
         # Compute precipitation response
-        p_resp = self.gauss3d(self.mean_params['norm'], 0, self.mean_params['mu_t'],
-                             self.mean_params['sig_t'], eval_p, self.mean_params['mu_p'],
-                             self.mean_params['sig_p'], 0, self.mean_params['mu_s'],
-                             self.mean_params['sig_s'], self.mean_params["rho_tp"],
-                             self.mean_params["rho_ts"], self.mean_params["rho_ps"])
+        p_resp = self.gauss3d(self.norm, 0, self.mean_params["mu_t"],
+                              self.mean_params["sig_t"], eval_p,
+                              self.mean_params["mu_p"],
+                              self.mean_params["sig_p"], 0,
+                              self.mean_params["mu_s"],
+                              self.mean_params["sig_s"],
+                              self.mean_params["rho_tp"],
+                              self.mean_params["rho_ts"],
+                              self.mean_params["rho_ps"])
 
         # Compute sunshine response
-        s_resp = self.gauss3d(self.mean_params['norm'], 0, self.mean_params['mu_t'],
-                             self.mean_params['sig_t'], 0, self.mean_params['mu_p'],
-                             self.mean_params['sig_p'], eval_s, self.mean_params['mu_s'],
-                             self.mean_params['sig_s'], self.mean_params["rho_tp"],
-                             self.mean_params["rho_ts"], self.mean_params["rho_ps"])
-
+        s_resp = self.gauss3d(self.norm, 0, self.mean_params["mu_t"],
+                              self.mean_params["sig_t"], 0,
+                              self.mean_params["mu_p"],
+                              self.mean_params["sig_p"], eval_s,
+                              self.mean_params["mu_s"],
+                              self.mean_params["sig_s"],
+                              self.mean_params["rho_tp"],
+                              self.mean_params["rho_ts"],
+                              self.mean_params["rho_ps"])
 
         # Compute the response grids
-        resp_grid_tp = self.gauss2d_resp(tp_tt, self.mean_params["norm"], self.mean_params["mu_t"],
-                                         self.mean_params["sig_t"], tp_pp, self.mean_params["mu_p"],
-                                         self.mean_params["sig_p"], self.mean_params["rho_tp"])
-        resp_grid_ts = self.gauss2d_resp(ts_tt, self.mean_params["norm"], self.mean_params["mu_t"],
-                                         self.mean_params["sig_t"], ts_ss, self.mean_params["mu_s"],
-                                         self.mean_params["sig_s"], self.mean_params["rho_ts"])
-        resp_grid_ps = self.gauss2d_resp(ps_pp, self.mean_params["norm"], self.mean_params["mu_p"],
-                                         self.mean_params["sig_p"], ps_ss, self.mean_params["mu_s"],
-                                         self.mean_params["sig_s"], self.mean_params["rho_ps"])
+        resp_grid_tp = self.gauss2d_resp(tp_tt, self.norm,
+                                         self.mean_params["mu_t"],
+                                         self.mean_params["sig_t"], tp_pp,
+                                         self.mean_params["mu_p"],
+                                         self.mean_params["sig_p"],
+                                         self.mean_params["rho_tp"])
+        resp_grid_ts = self.gauss2d_resp(ts_tt, self.norm,
+                                         self.mean_params["mu_t"],
+                                         self.mean_params["sig_t"], ts_ss,
+                                         self.mean_params["mu_s"],
+                                         self.mean_params["sig_s"],
+                                         self.mean_params["rho_ts"])
+        resp_grid_ps = self.gauss2d_resp(ps_pp, self.norm,
+                                         self.mean_params["mu_p"],
+                                         self.mean_params["sig_p"], ps_ss,
+                                         self.mean_params["mu_s"],
+                                         self.mean_params["sig_s"],
+                                         self.mean_params["rho_ps"])
 
         # Set up figure
-        fig = plt.figure(figsize=(9, 12))
+        fig = plt.figure(figsize=(16, 12))
         gs = gridspec.GridSpec(3, 6)
         gs.update(wspace=0.4, hspace=0.3)
         ax1 = fig.add_subplot(gs[:2, :2])
@@ -651,44 +868,147 @@ class cultivarModel:
         cbar3 = fig.colorbar(cba3, cax=cax3, orientation="horizontal")
 
         # Label colorbars
-        cbar1.ax.set_xlabel(self.metric + " (" + self.metric_units + "month$^{-1}$)", fontsize=10, color='k', labelpad=5)
-        cbar1.ax.xaxis.set_label_position('top')
-        cbar1.ax.tick_params(axis='x', labelsize=10, color='k', labelcolor='k')
-        cbar2.ax.set_xlabel(self.metric + " (" + self.metric_units + "month$^{-1}$)", fontsize=10, color='k', labelpad=5)
-        cbar2.ax.xaxis.set_label_position('top')
-        cbar2.ax.tick_params(axis='x', labelsize=10, color='k', labelcolor='k')
-        cbar3.ax.set_xlabel(self.metric + " (" + self.metric_units + "month$^{-1}$)", fontsize=10, color='k', labelpad=5)
-        cbar3.ax.xaxis.set_label_position('top')
-        cbar3.ax.tick_params(axis='x', labelsize=10, color='k', labelcolor='k')
+        cbar1.ax.set_xlabel(
+            self.metric + " (" + self.metric_units + "month$^{-1}$)",
+            fontsize=10, color="k", labelpad=5)
+        cbar1.ax.xaxis.set_label_position("top")
+        cbar1.ax.tick_params(axis="x", labelsize=10, color="k", labelcolor="k")
+        cbar2.ax.set_xlabel(
+            self.metric + " (" + self.metric_units + "month$^{-1}$)",
+            fontsize=10, color="k", labelpad=5)
+        cbar2.ax.xaxis.set_label_position("top")
+        cbar2.ax.tick_params(axis="x", labelsize=10, color="k", labelcolor="k")
+        cbar3.ax.set_xlabel(
+            self.metric + " (" + self.metric_units + "month$^{-1}$)",
+            fontsize=10, color="k", labelpad=5)
+        cbar3.ax.xaxis.set_label_position("top")
+        cbar3.ax.tick_params(axis="x", labelsize=10, color="k", labelcolor="k")
 
         ax4.plot(eval_t, t_resp)
         ax5.plot(eval_p, p_resp)
         ax6.plot(eval_s, s_resp)
 
         # Label axes
-        ax1.set_xlabel(r"Thermal days ($^\circ$C days)")
+        ax1.set_xlabel(r"GDD ($^\circ$C days)")
         ax1.set_ylabel(r"$\sum P$ (mm)")
-        ax2.set_xlabel(r"Thermal days ($^\circ$C days)")
+        ax2.set_xlabel(r"GDD ($^\circ$C days)")
         ax2.set_ylabel(r"$\sum S$ (hrs)")
-        ax3.set_xlabel(r"$\sum P$ (hrs)")
-        ax3.set_ylabel(r"$\sum S$ (mm)")
-        ax4.set_xlabel(r"Thermal days ($^\circ$C days)")
-        ax4.set_ylabel(self.metric + " (" + self.metric_units + "month$^{-1}$)")
+        ax3.set_xlabel(r"$\sum P$ (mm)")
+        ax3.set_ylabel(r"$\sum S$ (hrs)")
+        ax4.set_xlabel(r"GDD ($^\circ$C days)")
+        ax4.set_ylabel(
+            self.metric + " (" + self.metric_units + "month$^{-1}$)")
         ax5.set_xlabel(r"$\sum P$ (mm)")
-        ax5.set_ylabel(self.metric + " (" + self.metric_units + "month$^{-1}$)")
+        ax5.set_ylabel(
+            self.metric + " (" + self.metric_units + "month$^{-1}$)")
         ax6.set_xlabel(r"$\sum S$ (hrs)")
-        ax6.set_ylabel(self.metric + " (" + self.metric_units + "month$^{-1}$)")
+        ax6.set_ylabel(
+            self.metric + " (" + self.metric_units + "month$^{-1}$)")
 
         # Save the figure
-        fig.savefig("../Response_functions/response_" + self.cult + "_daily_3d.png", dpi=300, bbox_inches="tight")
+        fig.savefig(
+            "../Response_functions/response_" + self.cult + "_daily_3d.png",
+            dpi=300, bbox_inches="tight")
 
     def post_prior_comp(self):
 
-        labels = [r"norm", r"$\mu_t$", r"$\sigma_t$", r"$\mu_p$", r"$\sigma_p$", r"$\mu_s$", r"$\sigma_s$",
+        labels = [r"$\mu_t$", r"$\sigma_t$", r"$\mu_p$", r"$\sigma_p$",
+                  r"$\mu_s$", r"$\sigma_s$",
                   r"$\rho_tp$", r"$\rho_ts$", r"$\rho_ps$"]
-        fig = corner.corner(self.flat_samples, show_titles=True, labels=labels, plot_datapoints=True,
+        fig = corner.corner(self.flat_samples, show_titles=True, labels=labels,
+                            plot_datapoints=True,
                             quantiles=[0.16, 0.5, 0.84])
 
-        fig.savefig("../model_performance/Corners/corner_" + self.cult + "_daily_3d.png", bbox_inches="tight")
+        fig.savefig(
+            "../model_performance/Corners/corner_" + self.cult + "_daily_3d.png",
+            bbox_inches="tight")
 
         plt.close(fig)
+
+    def true_pred_comp(self):
+
+        # Set up figure
+        fig = plt.figure(figsize=(6, 6))
+        ax1 = fig.add_subplot(111)
+
+        im = ax1.scatter(self.predict_yields, self.preds, marker="+")
+        ax1.plot((7, 15), (7, 15), linestyle="--", color="k", label="1-1")
+
+        # Label axes
+        ax1.set_xlabel(r"True Yeild (t Ha$^{-1}$)")
+        ax1.set_ylabel(r"Predicted Yeild (t Ha$^{-1}$)")
+
+        ax1.legend()
+
+        # Save the figure
+        fig.savefig("../model_performance/Predictionvstruth/"
+                    "prediction_vs_truth_" + self.cult + ".png",
+                    bbox_inches="tight")
+
+    def climate_dependence(self):
+
+        # Set up figure
+        fig = plt.figure(figsize=(16, 6))
+        gs = gridspec.GridSpec(nrows=1, ncols=3, wspace=0.0)
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax3 = fig.add_subplot(gs[0, 2])
+
+        ax1.scatter(self.therm_days, self.yield_data, marker="+")
+        ax2.scatter(self.tot_precip, self.yield_data, marker="+")
+        ax3.scatter(self.tot_sun, self.yield_data, marker="+")
+
+        strt_line = lambda x, m, c: m * x + c
+
+        popt, pcov = curve_fit(strt_line, self.therm_days, self.yield_data,
+                               p0=(1, 4))
+
+        xs = np.linspace(np.min(self.therm_days),
+                         np.max(self.therm_days),
+                         1000)
+
+        ax1.plot(xs, strt_line(xs, popt[0], popt[1]),
+                 linestyle="--", color="k",
+                 label="Fit: $y = $%.4f" % popt[0]
+                       + "$\mathrm{GDD} +$ %.2f" % popt[1])
+
+        popt, pcov = curve_fit(strt_line, self.tot_precip, self.yield_data,
+                               p0=(1, 4))
+
+        xs = np.linspace(np.min(self.tot_precip),
+                         np.max(self.tot_precip),
+                         1000)
+
+        ax2.plot(xs, strt_line(xs, popt[0], popt[1]),
+                 linestyle="--", color="k",
+                 label="Fit: $y = $%.4f" % popt[0]
+                       + r"$\times(\sum P)+$%.2f" % popt[1])
+
+        popt, pcov = curve_fit(strt_line, self.tot_sun, self.yield_data,
+                               p0=(1, 4))
+
+        xs = np.linspace(np.min(self.tot_sun),
+                         np.max(self.tot_sun),
+                         1000)
+
+        ax3.plot(xs, strt_line(xs, popt[0], popt[1]),
+                 linestyle="--", color="k",
+                 label="Fit: $y = $%.4f" % popt[0]
+                       + r"$\times(\sum S)+$%.2f" % popt[1])
+
+        # Label axes
+        ax1.set_ylabel(r"Yeild (t Ha$^{-1}$)")
+        ax1.set_xlabel(r"GDD ($^\circ$C days)")
+        ax2.set_xlabel(r"$\sum P$ (mm)")
+        ax3.set_xlabel(r"$\sum S$ (hrs)")
+
+        for ax in [ax2, ax3]:
+            ax.tick_params(axis='y', left=False, right=False, labelleft=False,
+                           labelright=False)
+
+            ax.legend()
+
+        # Save the figure
+        fig.savefig("../Climate_analysis/"
+                    "input_yield_climate_" + self.cult + "1d.png",
+                    bbox_inches="tight")

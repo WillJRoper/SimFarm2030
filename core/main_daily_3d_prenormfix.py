@@ -7,16 +7,13 @@ import os
 
 
 # Extract cultivar from command line input
-if len(sys.argv) > 1:
-    cult = sys.argv[1]
-    files = [cult + "_Data.csv", ]
+cult = sys.argv[1]
+
+if cult == "All":
+    files = os.listdir("../example_data")
+    files.remove('.DS_Store')
 else:
-    try:
-        files = os.listdir("../example_data")
-        files.remove('.DS_Store')
-    except ValueError:
-        files = []
-        print("No .DS_Store to remove")
+    files = [cult + "_Data.csv", ]
 
 for f in files:
 
@@ -26,7 +23,7 @@ for f in files:
     tstart = time.time()
     simfarm = cultivarModel(cult, region_tol=0.25, metric='Yield',
                             metric_units='t Ha$^{-1}$')
-    simfarm.train_and_validate_model(nsample=75000, nwalkers=250)
+    simfarm.train_and_validate_model(nsample=20000, nwalkers=250)
     print('Train', time.time() - tstart)
 
     simfarm.plot_walkers()
@@ -35,8 +32,7 @@ for f in files:
     simfarm.climate_dependence()
 
     # Write out object as pickle
-    with open('../cultivar_models/' + simfarm.cult + '_' + simfarm.metric
-              + '_model_daily_3d.pck', 'wb') as pfile1:
+    with open('../cultivar_models/' + simfarm.cult + '_' + simfarm.metric + '_model_daily_3d.pck', 'wb') as pfile1:
         pickle.dump(simfarm, pfile1)
 
     simfarm.post_prior_comp()
