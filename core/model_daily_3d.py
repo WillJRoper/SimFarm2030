@@ -105,6 +105,7 @@ class cultivarModel:
             print("File not found")
 
         if extract_flag:
+            print("Extracting meterological files")
             self.temp_max = self.get_temp("tempmax")
             self.temp_min = self.get_temp("tempmin")
 
@@ -153,7 +154,7 @@ class cultivarModel:
         self.tot_precip = np.nansum(self.precip, axis=1)
         self.tot_sun = np.nansum(self.sun, axis=1)
 
-        print("Input extracted:", time.time() - start)
+        print(f"Input extracted {time.time() - start}")
 
     @staticmethod
     def gdd_calc(tempmin, tempmax):
@@ -188,7 +189,7 @@ class cultivarModel:
         ex_reg = ex_reg[ex_reg < 1e8]
 
         if ex_reg.size == 0:
-            print("Region not in coords:", region_lat, region_long)
+            print(f"Region not in coords: {region_lat} {region_long}")
             return np.nan
         else:
             return np.mean(ex_reg)
@@ -585,7 +586,7 @@ class cultivarModel:
         # has an entry for each walker so, in this case, it is a 250-dimensional
         # vector.
         af = sampler.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(af))
+        print(f"Mean acceptance fraction: {np.mean(af)}")
         af_msg = """As a rule of thumb, the acceptance fraction (af) should be 
                                     between 0.2 and 0.5
                     If af < 0.2 decrease the a parameter
@@ -681,7 +682,7 @@ class cultivarModel:
         # has an entry for each walker so, in this case, it is a 250-dimensional
         # vector.
         af = sampler.acceptance_fraction
-        print("Mean acceptance fraction:", np.mean(af))
+        print(f"Mean acceptance fraction: {np.mean(af)}")
         af_msg = """As a rule of thumb, the acceptance fraction (af) should be 
                                     between 0.2 and 0.5
                     If af < 0.2 decrease the a parameter

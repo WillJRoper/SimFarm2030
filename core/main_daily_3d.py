@@ -21,16 +21,16 @@ if cult == "All":
 else:
     files = [cult + "_Data.csv", ]
 
+print(files)  # to see if it knows what all is.
 for f in files:
-
     cult = f.split("_")[0]
-    print(cult)
+    print(f'{cult} is being processed')
 
     tstart = time.time()
     simfarm = cultivarModel(cult, region_tol=0.25, metric='Yield',
                             metric_units='t Ha$^{-1}$')
     simfarm.train_and_validate_model(nsample=75000, nwalkers=250)
-    print('Train', time.time() - tstart)
+    print(f'Train {time.time() - tstart}')
 
     simfarm.plot_walkers()
     simfarm.plot_response()
@@ -45,4 +45,4 @@ for f in files:
     simfarm.post_prior_comp()
 
     tau = simfarm.model.get_autocorr_time()
-    print("Steps until initial start 'forgotten'", tau)
+    print(f"Steps until initial start 'forgotten' {tau}")
