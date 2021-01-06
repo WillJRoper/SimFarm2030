@@ -297,15 +297,12 @@ class cultivarModel:
                 zip(self.reg_lats, self.reg_longs, self.sow_year)):
 
             hdf_keys = self.reg_keys[str(lat) + "." + str(long)][str(year)]
+            year_loc = f"{lat}_{long}_{year}"
 
-            if str(lat) + "_" + str(long) + "_" + str(year) in done_wthr:
-                if tuple(hdf_keys) in done_wthr[
-                    str(lat) + "_" + str(long) + "_" + str(year)]:
-                    print("Already extracted",
-                          str(lat) + "_" + str(long) + "_" + str(year))
-                    wthr[llind, :] = \
-                    done_wthr[str(lat) + "_" + str(long) + "_" + str(year)][
-                        tuple(hdf_keys)]
+            if year_loc in done_wthr:
+                if tuple(hdf_keys) in done_wthr[year_loc]:
+                    print(f"Already extracted {year_loc}")
+                    wthr[llind, :] = done_wthr[year_loc][tuple(hdf_keys)]
                     continue
 
             # Initialise arrays to hold results
@@ -323,8 +320,8 @@ class cultivarModel:
                 anom[llind, key_ind] = ex_reg - uk_monthly_mean[int(day) - 1]
                 key_ind += 1
 
-            done_wthr.setdefault(str(lat) + "_" + str(long) + "_" + str(year),
-                                 {})[tuple(hdf_keys)] = wthr[llind, :]
+            done_wthr.setdefault(year_loc, {})[
+                tuple(hdf_keys)] = wthr[llind, :]
 
         # Assign weather data to variable
         self.wthr_anom_dict[weather] = anom
@@ -348,15 +345,13 @@ class cultivarModel:
                 zip(self.reg_lats, self.reg_longs, self.sow_year)):
 
             hdf_keys = self.reg_keys[str(lat) + "." + str(long)][str(year)]
+            year_loc = f"{lat}_{long}_{year}"
 
-            if str(lat) + "_" + str(long) + "_" + str(year) in done_wthr:
-                if tuple(hdf_keys) in done_wthr[
-                    str(lat) + "_" + str(long) + "_" + str(year)]:
-                    print("Already extracted",
-                          str(lat) + "_" + str(long) + "_" + str(year))
+            if year_loc in done_wthr:
+                if tuple(hdf_keys) in done_wthr[year_loc]:
+                    print("Already extracted {year_loc}")
                     wthr[llind, :] = \
-                    done_wthr[str(lat) + "_" + str(long) + "_" + str(year)][
-                        tuple(hdf_keys)]
+                    done_wthr[year_loc][tuple(hdf_keys)]
                     continue
 
             # Initialise arrays to hold results
