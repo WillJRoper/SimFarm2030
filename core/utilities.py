@@ -32,9 +32,9 @@ def extract_data(path):
     data.fillna((data["Ripe Time"].mean()), inplace=True)
 
     # Set up a new data frame to extract day and month from sow date with split value columns
-    date = parse_date(data['Sow Month'])
-    sow_day = date.day
-    sow_mth_ini = date.month
+    date = data['Sow Month'].apply(parse_date)
+    sow_day = date.dt.day
+    sow_mth_ini = date.dt.month
 
     # Format months
     sow_mths = []
