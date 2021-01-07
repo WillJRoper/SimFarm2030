@@ -28,7 +28,7 @@ class cultivarModel:
                  weather=("temperature", "rainfall", "sunshine"),
                  metric="yield",
                  metric_units="t/Ha", extract_flag=False, initial_guess=(
-            1200, 100, 700, 150, 1500, 150, -0.1, 0.1, -0.1),
+                        1200, 100, 700, 150, 1500, 150, -0.1, 0.1, -0.1),
                  initial_spread=(200, 150, 200, 150, 250, 150, 2, 2, 2)):
 
         start = time.time()
@@ -38,13 +38,13 @@ class cultivarModel:
             data = utilities.extract_data("../example_data/"
                                           + cultivar + "_Data.csv")
             region_lats, region_longs, years, \
-            ripe_days, yields, sow_day, sow_month = data
+                ripe_days, yields, sow_day, sow_month = data
         else:
             yield_path = "../All_Cultivars_Spreadsheets/Yield.csv"
             ripetime_path = "../All_Cultivars_Spreadsheets/Ripe Time.csv"
             data = utilities.extract_data_allwheat(yield_path, ripetime_path)
             region_lats, region_longs, years, \
-            ripe_days, yields, sow_day, sow_month = data
+                ripe_days, yields, sow_day, sow_month = data
 
         self.reg_lats = region_lats
         self.reg_longs = region_longs
@@ -81,18 +81,18 @@ class cultivarModel:
 
         # Open file
         try:
+            filename = "../Climate_Data/Region_Climate_" + self.cult + ".hdf5"
 
-            hdf = h5py.File(
-                "../Climate_Data/Region_Climate_" + self.cult + ".hdf5", "r")
+            hdf = h5py.File(filename, "r")
 
             self.temp_max, self.temp_min = hdf["Temperature_Maximum"][...], \
-                                           hdf["Temperature_Minimum"][...]
+                hdf["Temperature_Minimum"][...]
             print("Temperature Extracted")
             self.precip_anom, self.precip = hdf["Rainfall_Anomaly"][...], \
-                                            hdf["Rainfall"][...]
+                hdf["Rainfall"][...]
             print("Rainfall Extracted")
             self.sun_anom, self.sun = hdf["Sunshine_Anomaly"][...], \
-                                      hdf["Sunshine"][...]
+                hdf["Sunshine"][...]
             print("Sunshine Extracted")
 
             hdf.close()
@@ -122,8 +122,7 @@ class cultivarModel:
                 weather[2])
             print("Sunshine Extracted")
 
-            hdf = h5py.File(
-                "../Climate_Data/Region_Climate_" + self.cult + ".hdf5", "w")
+            hdf = h5py.File(filename, "w")
 
             hdf.create_dataset("Temperature_Maximum",
                                shape=self.temp_max.shape,
@@ -233,7 +232,8 @@ class cultivarModel:
                 # Compute the correct month number for this month
                 key_date = sow_date + datetime.timedelta(days=nday)
 
-                # Append this key to the dictionary under this region in chronological order
+                # Append this key to the dictionary under this
+                # region in chronological order
                 hdf_keys[nday] = str(
                     key_date.year) + "_%03d" % key_date.month + "_%04d" % key_date.day
 
@@ -269,7 +269,8 @@ class cultivarModel:
                 # Compute the correct month number for this month
                 key_date = sow_date + datetime.timedelta(days=ndays)
 
-                # Append this key to the dictionary under this region in chronological order
+                # Append this key to the dictionary under this
+                # region in chronological order
                 hdf_keys.append(str(key_date.year) + "_%03d" % key_date.month)
 
             # Assign keys to dictionary
@@ -331,7 +332,7 @@ class cultivarModel:
         return anom, wthr
 
     def get_temp(self, weather):
-
+        print(f'Getting the locations for new cultivar: {self.cult}')
         hdf = h5py.File("../SimFarm2030_" + weather + ".hdf5", "r")
 
         lats = hdf["Latitude_grid"][...]
@@ -340,6 +341,7 @@ class cultivarModel:
         done_wthr = {}
 
         # Loop over regions
+        print(f'Getting the temperature for those locations: {self.cult}')
         wthr = np.zeros((len(self.reg_lats), 400))
         for llind, (lat, long, year) in enumerate(
                 zip(self.reg_lats, self.reg_longs, self.sow_year)):
@@ -351,7 +353,7 @@ class cultivarModel:
                 if tuple(hdf_keys) in done_wthr[year_loc]:
                     print("Already extracted {year_loc}")
                     wthr[llind, :] = \
-                    done_wthr[year_loc][tuple(hdf_keys)]
+                        done_wthr[year_loc][tuple(hdf_keys)]
                     continue
 
             # Initialise arrays to hold results
@@ -368,8 +370,7 @@ class cultivarModel:
                 wthr[llind, key_ind] = ex_reg
                 key_ind += 1
 
-            done_wthr.setdefault(str(lat) + "_" + str(long) + "_" + str(year),
-                                 {})[tuple(hdf_keys)] = wthr[llind, :]
+            done_wthr.setdefault(year_loc, {})[tuple(hdf_keys)] = wthr[llind, :]
 
         hdf.close()
 
@@ -433,13 +434,13 @@ class cultivarModel:
 
         dy = norm * np.exp(-(0.5 * 1 / (
                     1 - np.square(rho_tp) - np.square(rho_ts) - np.square(
-                rho_ps)
+                        rho_ps)
                     + 2 * rho_tp * rho_ts * rho_ps))
                            * (np.square((t - mu_t) / sig_t)
                               + np.square((p - mu_p) / sig_p) + np.square(
-                    (s - mu_s) / sig_s)
+                                (s - mu_s) / sig_s)
                               + 2 * ((t - mu_t) * (p - mu_p) * (
-                            rho_ts * rho_ps - rho_tp) / (sig_t * sig_p)
+                                rho_ts * rho_ps - rho_tp) / (sig_t * sig_p)
                                      + (t - mu_t) * (s - mu_s) * (
                                                  rho_tp * rho_ts - rho_ps)
                                      / (sig_t * sig_s) + (p - mu_p) * (
@@ -532,8 +533,8 @@ class cultivarModel:
                                         coeff=self.norm_coeff)
 
             return mut_lnprob + sigt_lnprob + mup_lnprob \
-                   + sigp_lnprob + mus_lnprob + sigs_lnprob \
-                   + rhotp_lnprob + rhots_lnprob + rhops_lnprob
+                + sigp_lnprob + mus_lnprob + sigs_lnprob \
+                + rhotp_lnprob + rhots_lnprob + rhops_lnprob
             # return 0
         else:
             return -np.inf
@@ -577,12 +578,12 @@ class cultivarModel:
 
         self.model = sampler
 
-        # Print out the mean acceptance fraction. In general, acceptance_fraction
-        # has an entry for each walker so, in this case, it is a 250-dimensional
-        # vector.
+        # Print out the mean acceptance fraction. In general,
+        # acceptance_fraction has an entry for each walker so,
+        # in this case, it is a 250-dimensional vector.
         af = sampler.acceptance_fraction
-        print(f"Mean acceptance fraction: {np.mean(af)}")
-        af_msg = """As a rule of thumb, the acceptance fraction (af) should be 
+        print(f"Mean acceptance fraction: {np.mean(af):.3f}")
+        af_msg = """As a rule of thumb, the acceptance fraction (af) should be
                                     between 0.2 and 0.5
                     If af < 0.2 decrease the a parameter
                     If af > 0.5 increase the a parameter
@@ -619,11 +620,11 @@ class cultivarModel:
         print("mu_s = %.3f +/- %.3f" % (self.mean_params["mu_s"], mu_s_err))
         print("sig_s = %.3f +/- %.3f" % (self.mean_params["sig_s"], sig_s_err))
         print("rho_tp = %.3f +/- %.3f" % (
-        self.mean_params["rho_tp"], rho_tp_err))
+            self.mean_params["rho_tp"], rho_tp_err))
         print("rho_ts = %.3f +/- %.3f" % (
-        self.mean_params["rho_ts"], rho_ts_err))
+            self.mean_params["rho_ts"], rho_ts_err))
         print("rho_ps = %.3f +/- %.3f" % (
-        self.mean_params["rho_ps"], rho_ps_err))
+            self.mean_params["rho_ps"], rho_ps_err))
 
     def train_and_validate_model(self, split=0.7, nsample=5000, nwalkers=500):
 
@@ -673,12 +674,12 @@ class cultivarModel:
 
         self.model = sampler
 
-        # Print out the mean acceptance fraction. In general, acceptance_fraction
-        # has an entry for each walker so, in this case, it is a 250-dimensional
-        # vector.
+        # Print out the mean acceptance fraction. In general,
+        # acceptance_fraction has an entry for each walker so,
+        # in this case, it is a 250-dimensional vector.
         af = sampler.acceptance_fraction
-        print(f"Mean acceptance fraction: {np.mean(af)}")
-        af_msg = """As a rule of thumb, the acceptance fraction (af) should be 
+        print(f"Mean acceptance fraction: {np.mean(af):.3f}")
+        af_msg = """As a rule of thumb, the acceptance fraction (af) should be
                                     between 0.2 and 0.5
                     If af < 0.2 decrease the a parameter
                     If af > 0.5 increase the a parameter
@@ -715,11 +716,11 @@ class cultivarModel:
         print("mu_s = %.3f +/- %.3f" % (self.mean_params["mu_s"], mu_s_err))
         print("sig_s = %.3f +/- %.3f" % (self.mean_params["sig_s"], sig_s_err))
         print("rho_tp = %.3f +/- %.3f" % (
-        self.mean_params["rho_tp"], rho_tp_err))
+            self.mean_params["rho_tp"], rho_tp_err))
         print("rho_ts = %.3f +/- %.3f" % (
-        self.mean_params["rho_ts"], rho_ts_err))
+            self.mean_params["rho_ts"], rho_ts_err))
         print("rho_ps = %.3f +/- %.3f" % (
-        self.mean_params["rho_ps"], rho_ps_err))
+            self.mean_params["rho_ps"], rho_ps_err))
 
         # Calculate the predicted results
         preds = self.gauss3d(self.norm, self.predict_temp,

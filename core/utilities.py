@@ -127,7 +127,7 @@ def extract_data_allwheat(yield_path, ripetime_path):
     data = pd.DataFrame(data, columns=("Lat", "Long", "Year", "Sow Month",
                                        "Ripe Time", "Yield"))
 
-    # Remove NaN entries
+    #  Remove NaN entries
     data.dropna(subset=["Yield"], inplace=True)
 
     # Replace missing ripe times
@@ -259,7 +259,6 @@ if __name__ == '__main__':
 
     # ftp_paths = ['/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.1.0/1km/tas/mon/v20190808',
     #              '/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.1.0/1km/rainfall/mon/v20190808']
-
 
     # ftp_paths = ['/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.0.0/1km/rainfall/day/v20181126',
     #              '/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.0.0/1km/tasmax/day/v20181126',
