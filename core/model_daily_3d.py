@@ -99,7 +99,7 @@ class cultivarModel:
             print("Key not found")
         except OSError:
             extract_flag = True
-            print("File not found")
+            print(f"File {filename} not found")
 
         if extract_flag:
             print("Extracting meterological files")
@@ -150,7 +150,7 @@ class cultivarModel:
         self.tot_precip = np.nansum(self.precip, axis=1)
         self.tot_sun = np.nansum(self.sun, axis=1)
 
-        print(f"Input extracted {time.time() - start}")
+        print(f"Input extracted in {(time.time() - start):.2} seconds")
 
     @staticmethod
     def gdd_calc(tempmin, tempmax):
@@ -354,6 +354,7 @@ class cultivarModel:
                     continue
 
             # Initialise arrays to hold results
+            print(f'Initialising array: {llind}')
             key_ind = 0
             for key in hdf_keys:
                 year, month, day = key.split("_")
@@ -577,11 +578,15 @@ class cultivarModel:
                                               self.train_sun,
                                               self.train_yields, self.yerr))
 
-        # Run 200 steps as a burn-in.
-        print("Burning in ...")
+        # Run 1000 steps(random choice) as a burn-in.
+        print(
+            "Burning in 1000 steps... "
+            "letting the walkers explore "
+            "the parameter space before starting")
         pos, prob, state = sampler.run_mcmc(p0, 1000)
 
         # Reset the chain to remove the burn-in samples.
+        # https://emcee.readthedocs.io/en/stable/tutorials/quickstart/
         sampler.reset()
 
         print("Running MCMC ...")

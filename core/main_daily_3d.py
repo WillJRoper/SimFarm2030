@@ -30,7 +30,7 @@ for f in files:
     simfarm = cultivarModel(cult, region_tol=0.25, metric='Yield',
                             metric_units='t Ha$^{-1}$')
     simfarm.train_and_validate_model(nsample=75000, nwalkers=250)
-    print(f'Train {time.time() - tstart}')
+    print(f'Train in {(time.time() - tstart):.2} seconds')
 
     # Moved plotting functions -> create_figures.py revisit after tests created
     # simfarm.plot_walkers()
@@ -46,4 +46,4 @@ for f in files:
     # simfarm.post_prior_comp()  <-- see above comment
 
     tau = simfarm.model.get_autocorr_time()
-    print(f"Steps until initial start 'forgotten' {tau}")
+    print(f"Steps until initial start 'forgotten' {tau:.3f}")
