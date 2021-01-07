@@ -32,17 +32,18 @@ for f in files:
     simfarm.train_and_validate_model(nsample=75000, nwalkers=250)
     print(f'Train {time.time() - tstart}')
 
-    simfarm.plot_walkers()
-    simfarm.plot_response()
-    simfarm.true_pred_comp()
-    simfarm.climate_dependence()
+    # Moved plotting functions -> create_figures.py revisit after tests created
+    # simfarm.plot_walkers()
+    # simfarm.plot_response()
+    # simfarm.true_pred_comp()
+    # simfarm.climate_dependence()
 
     # Write out object as pickle
     with open('../cultivar_models/' + simfarm.cult + '_' + simfarm.metric
               + '_model_daily_3d.pck', 'wb') as pfile1:
         pickle.dump(simfarm, pfile1)
 
-    simfarm.post_prior_comp()
+    # simfarm.post_prior_comp()  <-- see above comment
 
     tau = simfarm.model.get_autocorr_time()
     print(f"Steps until initial start 'forgotten' {tau}")
