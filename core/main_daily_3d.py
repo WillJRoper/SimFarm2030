@@ -1,5 +1,5 @@
 from model_daily_3d import cultivarModel
-import utilities
+# import utilities
 import time
 import pickle
 import sys

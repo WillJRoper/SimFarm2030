@@ -1,8 +1,8 @@
-from model import cultivarModel
-import numpy as np
-import time
-import matplotlib.pyplot as plt
-import pystan
+# from model_daily_3d import cultivarModel
+# import numpy as np
+# import time
+# import matplotlib.pyplot as plt
+# import pystan
 import os
 import pickle
 from kivy.app import App
