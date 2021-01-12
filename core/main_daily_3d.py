@@ -4,6 +4,7 @@ import time
 import pickle
 import sys
 import os
+import numpy as np
 
 
 def get_non_hidden_filepaths():
@@ -45,5 +46,6 @@ for f in files:
 
     # simfarm.post_prior_comp()  <-- see above comment
 
-    tau = simfarm.model.get_autocorr_time()
-    print(f"Steps until initial start 'forgotten' {tau:.3f}")
+    # https://emcee.readthedocs.io/en/stable/tutorials/autocorr/ - is it steps?
+    tau = np.mean(simfarm.model.get_autocorr_time())
+    print(f"Number of steps until the initial start is 'forgotten' {tau:.3f}")

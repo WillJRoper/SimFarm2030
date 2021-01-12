@@ -630,17 +630,17 @@ class cultivarModel:
         mu_t_err, sig_t_err, mu_p_err, sig_p_err, mu_s_err, sig_s_err, rho_tp_err, rho_ts_err, rho_ps_err = self.param_errors
 
         print("================ Model Parameters ================")
-        print("mu_t = %.3f +/- %.3f" % (self.mean_params["mu_t"], mu_t_err))
-        print("sig_t = %.3f +/- %.3f" % (self.mean_params["sig_t"], sig_t_err))
-        print("mu_p = %.3f +/- %.3f" % (self.mean_params["mu_p"], mu_p_err))
-        print("sig_p = %.3f +/- %.3f" % (self.mean_params["sig_p"], sig_p_err))
-        print("mu_s = %.3f +/- %.3f" % (self.mean_params["mu_s"], mu_s_err))
-        print("sig_s = %.3f +/- %.3f" % (self.mean_params["sig_s"], sig_s_err))
-        print("rho_tp = %.3f +/- %.3f" % (
+        print("mu_t (mean temperature +/- error) = %.3f +/- %.3f" % (self.mean_params["mu_t"], mu_t_err))
+        print("sig_t (standard deviation temperature +/- error) = %.3f +/- %.3f" % (self.mean_params["sig_t"], sig_t_err))
+        print("mu_p (mean precipitation +/- error) = %.3f +/- %.3f" % (self.mean_params["mu_p"], mu_p_err))
+        print("sig_p (standard deviation precipitation +/- error) = %.3f +/- %.3f" % (self.mean_params["sig_p"], sig_p_err))
+        print("mu_s (mean sunshine +/- error) = %.3f +/- %.3f" % (self.mean_params["mu_s"], mu_s_err))
+        print("sig_s (standard deviation sunshine +/- error) = %.3f +/- %.3f" % (self.mean_params["sig_s"], sig_s_err))
+        print("rho_tp (temperature and precipitation correlation +/- error) = %.3f +/- %.3f" % (
             self.mean_params["rho_tp"], rho_tp_err))
-        print("rho_ts = %.3f +/- %.3f" % (
+        print("rho_ts (temperature and sunshine correlation +/- error) = %.3f +/- %.3f" % (
             self.mean_params["rho_ts"], rho_ts_err))
-        print("rho_ps = %.3f +/- %.3f" % (
+        print("rho_ps (precipitation and sunshine correlation +/- error) = %.3f +/- %.3f" % (
             self.mean_params["rho_ps"], rho_ps_err))
 
         # Calculate the predicted results
@@ -659,8 +659,8 @@ class cultivarModel:
 
         # Calculate the percentage residual
         resi = (1 - (preds / self.predict_yields)) * 100
-        print(resi)
-        print(np.mean(resi))
-        print(np.median(resi))
+        print(f'{[f"{r:.3f}" for r in resi]} percent residual')
+        print(f'Residual Mean: {np.mean(resi):.3f}')
+        print(f'Residual Median: {np.median(resi):.3f}')
 
         self.resi = resi
