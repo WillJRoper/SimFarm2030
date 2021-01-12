@@ -8,7 +8,7 @@ import emcee
 import h5py
 import numpy as np
 import seaborn as sns
-import utilities
+import core.utilities as utilities
 
 
 warnings.filterwarnings("ignore")
