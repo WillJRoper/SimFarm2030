@@ -4,12 +4,15 @@ import time
 import pickle
 import sys
 import os
+from os.path import abspath, dirname, join
 import numpy as np
+
+PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 
 def get_non_hidden_filepaths():
     return [
-        f for f in os.listdir('../example_data')
+        f for f in os.listdir(join(PARENT_DIR, 'example_data'))
         if not f.startswith('.')
     ]
 
@@ -40,8 +43,11 @@ for f in files:
     # simfarm.climate_dependence()
 
     # Write out object as pickle
-    with open('../cultivar_models/' + simfarm.cult + '_' + simfarm.metric
-              + '_model_daily_3d.pck', 'wb') as pfile1:
+    with open(
+        join(
+            PARENT_DIR, 'cultivar_models',
+            simfarm.cult + '_' + simfarm.metric + '_model_daily_3d.pck'),
+            'wb') as pfile1:
         pickle.dump(simfarm, pfile1)
 
     # simfarm.post_prior_comp()  <-- see above comment

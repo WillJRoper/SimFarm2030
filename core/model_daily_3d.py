@@ -1,17 +1,22 @@
 import datetime
 import os
+from os.path import abspath, dirname, join
 import time
 import warnings
-from multiprocessing import Pool
+# from multiprocessing import Pool
 
 import emcee
 import h5py
 import numpy as np
 import seaborn as sns
-import core.utilities as utilities
+from utilities import (
+    extract_data, extract_data_allwheat)
 
+
+PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 warnings.filterwarnings("ignore")
+# Does this do anything? AA
 os.environ["OMP_NUM_THREADS"] = "1"
 
 sns.set_style("whitegrid")
@@ -32,14 +37,16 @@ class cultivarModel:
 
         # Get the inputs
         if cultivar != "All":
-            data = utilities.extract_data("../example_data/"
-                                          + cultivar + "_Data.csv")
+            data = extract_data(
+                join(PARENT_DIR, "example_data", cultivar + "_Data.csv"))
             region_lats, region_longs, years, \
                 ripe_days, yields, sow_day, sow_month = data
         else:
-            yield_path = "../All_Cultivars_Spreadsheets/Yield.csv"
-            ripetime_path = "../All_Cultivars_Spreadsheets/Ripe Time.csv"
-            data = utilities.extract_data_allwheat(yield_path, ripetime_path)
+            yield_path = join(
+                PARENT_DIR, "All_Cultivars_Spreadsheets", "Yield.csv")
+            ripetime_path = join(
+                PARENT_DIR, "All_Cultivars_Spreadsheets", "Ripe Time.csv")
+            data = extract_data_allwheat(yield_path, ripetime_path)
             region_lats, region_longs, years, \
                 ripe_days, yields, sow_day, sow_month = data
 
@@ -78,7 +85,9 @@ class cultivarModel:
 
         # Open file
         try:
-            filename = "../Climate_Data/Region_Climate_" + self.cult + ".hdf5"
+            filename = join(
+                PARENT_DIR, "Climate_Data",
+                "Region_Climate_" + self.cult + ".hdf5")
 
             hdf = h5py.File(filename, "r")
 
@@ -278,7 +287,9 @@ class cultivarModel:
 
     def get_weather_anomaly(self, weather):
 
-        hdf = h5py.File("../SimFarm2030_" + weather + ".hdf5", "r")
+        hdf = h5py.File(
+            join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
+            "r")
 
         # Get the mean weather data for each month of the year
         uk_monthly_mean = hdf["all_years_mean"][...]
@@ -330,7 +341,9 @@ class cultivarModel:
 
     def get_temp(self, weather):
         print(f'Getting the locations for new cultivar: {self.cult}')
-        hdf = h5py.File("../SimFarm2030_" + weather + ".hdf5", "r")
+        hdf = h5py.File(
+            join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
+            "r")
 
         lats = hdf["Latitude_grid"][...]
         longs = hdf["Longitude_grid"][...]
@@ -376,7 +389,9 @@ class cultivarModel:
 
     def get_weather_anomaly_monthly(self, weather):
 
-        hdf = h5py.File("../SimFarm2030_" + weather + ".hdf5", "r")
+        hdf = h5py.File(
+            join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
+            "r")
 
         # Get the mean weather data for each month of the year
         uk_monthly_mean = hdf["all_years_mean"][...]
