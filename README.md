@@ -49,3 +49,13 @@ model_performance
   Predictionvstruth
   Corners
 cultivar_models
+
+
+## Running the tests
+
+cd tests
+pytest .
+
+or (from anywhere)
+
+PYTHONPATH=core pytest tests
