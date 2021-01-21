@@ -614,7 +614,8 @@ class cultivarModel:
         # acceptance_fraction has an entry for each walker so,
         # in this case, it is a 250-dimensional vector.
         af = sampler.acceptance_fraction
-        print(f"Mean acceptance fraction: {np.mean(af):.3f}")
+        self.af = np.mean(af)
+        print(f"Mean acceptance fraction: {self.af:.3f}")
         af_msg = """As a rule of thumb, the acceptance fraction (af) should be
                                     between 0.2 and 0.5
                     If af < 0.2 decrease the a parameter
