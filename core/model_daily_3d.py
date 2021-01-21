@@ -24,6 +24,10 @@ sns.set_context("paper", rc={"font.size": 12, "axes.titlesize": 12,
                              "axes.labelsize": 12})
 
 
+def create_seed(num_walkers, dimensions, initial_guess):
+    return np.random.randn(num_walkers, dimensions) * 0.001 + initial_guess
+
+
 class cultivarModel:
 
     def __init__(self, cultivar, region_tol=0.25,
@@ -31,7 +35,8 @@ class cultivarModel:
                  metric="yield",
                  metric_units="t/Ha", extract_flag=False, initial_guess=(
                         1200, 100, 700, 150, 1500, 150, -0.1, 0.1, -0.1),
-                 initial_spread=(200, 150, 200, 150, 250, 150, 2, 2, 2)):
+                 initial_spread=(200, 150, 200, 150, 250, 150, 2, 2, 2),
+                 seed_generator=create_seed):
 
         start = time.time()
 
@@ -82,6 +87,8 @@ class cultivarModel:
         # Internal variables for speed
         self.norm_coeff = np.log(1 / ((2 * np.pi) ** (1 / 2)))
         self.log_initial_spread = [np.log(i) for i in initial_spread]
+
+        self.seed_generator = seed_generator
 
         # Open file
         try:
@@ -584,8 +591,7 @@ class cultivarModel:
         self.predict_sow_month = self.sow_months[okinds]
 
         ndim = len(self.initial_guess)
-
-        p0 = np.random.randn(nwalkers, ndim) * 0.001 + self.initial_guess
+        p0 = self.seed_generator(nwalkers, ndim, self.initial_guess)
 
         sampler = emcee.EnsembleSampler(nwalkers, ndim,
                                         self.log_probability_3d,
