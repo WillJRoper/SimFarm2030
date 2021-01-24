@@ -4,10 +4,15 @@ import pandas as pd
 from ftplib import FTP, error_perm
 import fnmatch
 import os
+from os.path import abspath, dirname, join
+
 
 # list of expected sow date formats AA
 MONTH_DAY_NUMS = '%d/%m'
 MONTH_DAY_WORDS = '%d-%b'
+
+
+PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 
 def parse_date(date_string):
@@ -18,6 +23,11 @@ def parse_date(date_string):
             continue
     else:
         raise ValueError(f'Unknown date format {date_string}')
+
+
+def extract_cultivar(cultivar):
+    return extract_data(
+        join(PARENT_DIR, "example_data", cultivar + "_Data.csv"))
 
 
 def extract_data(path):
@@ -79,6 +89,8 @@ def extract_data(path):
     return lats, longs, years, ripe_time, yields, sow_day, sow_month
 
 
+# TODO: Modify this code to create Verty large input dataset that
+# captures all cultivars in one csv 
 def extract_data_allwheat(yield_path, ripetime_path):
 
     #  Open the csv file

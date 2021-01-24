@@ -9,8 +9,7 @@ import emcee
 import h5py
 import numpy as np
 import seaborn as sns
-from utilities import (
-    extract_data, extract_data_allwheat)
+from utilities import extract_cultivar
 
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
@@ -39,56 +38,39 @@ class cultivarModel:
                  seed_generator=create_seed):
 
         start = time.time()
-
-        # Get the inputs
-        if cultivar != "All":
-            data = extract_data(
-                join(PARENT_DIR, "example_data", cultivar + "_Data.csv"))
-            region_lats, region_longs, years, \
-                ripe_days, yields, sow_day, sow_month = data
-        else:
-            yield_path = join(
-                PARENT_DIR, "All_Cultivars_Spreadsheets", "Yield.csv")
-            ripetime_path = join(
-                PARENT_DIR, "All_Cultivars_Spreadsheets", "Ripe Time.csv")
-            data = extract_data_allwheat(yield_path, ripetime_path)
-            region_lats, region_longs, years, \
-                ripe_days, yields, sow_day, sow_month = data
-
-        self.reg_lats = region_lats
-        self.reg_longs = region_longs
-        self.reg_yrs = years
-        self.sow_days = sow_day
-        self.sow_months = sow_month
-        self.sow_year = years - 1
-        self.ripe_days = ripe_days
-        self.reg_keys = self.get_day_keys()
-        self.reg_mth_keys = self.get_month_keys()
-        self.yield_data = yields
         self.cult = cultivar
         self.tol = region_tol
-        self.wthr_dict = {}
-        self.wthr_anom_dict = {}
-        self.mean_params = {}
-        self.fit = None
         self.extract_flag = extract_flag
-
         self.initial_guess = initial_guess
         self.initial_spread = initial_spread
-        self.samples = {}
-        self.reg_pred = np.zeros_like(self.yield_data)
-        self.resi = None
         self.weather = weather
         self.metric = metric
         self.metric_units = metric_units
+        self.seed_generator = seed_generator
 
+        # Extract imput data from cultivar csv's (see utilities)
+        (
+            self.reg_lats, self.reg_longs, self.reg_yrs,
+            self.ripe_days, self.yield_data, self.sow_days, self.sow_months
+        ) = extract_cultivar(cultivar)
+
+        self.sow_year = self.reg_yrs - 1
+        self.reg_keys = self.get_day_keys()
+        self.reg_mth_keys = self.get_month_keys()
+        self.reg_pred = np.zeros_like(self.yield_data)
+
+        self.wthr_dict = {}
+        self.wthr_anom_dict = {}
+        self.mean_params = {}
+        self.samples = {}
+
+        self.fit = None
+        self.resi = None
         self.norm = 16
 
         # Internal variables for speed
         self.norm_coeff = np.log(1 / ((2 * np.pi) ** (1 / 2)))
         self.log_initial_spread = [np.log(i) for i in initial_spread]
-
-        self.seed_generator = seed_generator
 
         # Open file
         try:
