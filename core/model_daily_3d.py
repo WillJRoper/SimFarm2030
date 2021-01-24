@@ -60,8 +60,8 @@ class cultivarModel:
         self.reg_mth_keys = self.get_month_keys()
         self.reg_pred = np.zeros_like(self.yield_data)
 
-        self.wthr_dict = {}
-        self.wthr_anom_dict = {}
+        # self.wthr_dict = {}  # unused???
+        # self.wthr_anom_dict = {}  # unused ??
         self.mean_params = {}
         self.samples = {}
 
