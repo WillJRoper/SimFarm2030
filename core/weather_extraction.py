@@ -1,6 +1,7 @@
 from os.path import abspath, dirname, join
 import h5py
 import numpy as np
+import datetime
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
@@ -19,8 +20,7 @@ def read_from_existing_file(hdf):
 
 
 def read_or_create(
-        cult, reg_lats, reg_longs, sow_year,
-        reg_keys, reg_mth_keys, tol, extract_flag=False):
+        cult, regional_data, tol=0.25, extract_flag=False):
     """
     If a regional hdf5 file exists, read in the data.
     Otherwise extract regional data from the weather hdf5 files
@@ -43,8 +43,15 @@ def read_or_create(
             hdf.close()
 
     if extract_flag:
+        lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
+        sow_year = years - 1
+        reg_keys = get_day_keys(
+            lats, longs, sow_year, sow_days, sow_months, ripe_days)
+        reg_mth_keys = get_month_keys(
+            lats, longs, sow_year, sow_days, sow_months, ripe_days)
+
         data = extract_weather_data(
-            filename, cult, reg_lats, reg_longs, sow_year,
+            filename, cult, lats, longs, sow_year,
             reg_keys, reg_mth_keys, tol)
         write_dataset(filename, data)
 
@@ -55,8 +62,10 @@ def extract_weather_data(
         filename, cult, reg_lats, reg_longs, sow_year,
         reg_keys, reg_mth_keys, tol):
     print("Extracting meterological files")
-    temp_max = get_temp("tempmax")
-    temp_min = get_temp("tempmin")
+    temp_max = get_temp(
+        "tempmax", cult, reg_lats, reg_longs, sow_year, reg_keys, tol)
+    temp_min = get_temp(
+        "tempmin", cult, reg_lats, reg_longs, sow_year, reg_keys, tol)
 
     # Apply conditions from
     # https://ndawn.ndsu.nodak.edu/help-wheat-growing-degree-days.html
@@ -113,6 +122,84 @@ def write_dataset(filename, data):
         data=sun_anom, compression="gzip")
 
     hdf.close()
+
+
+def get_day_keys(
+        reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
+
+    # Initialise the dictionary to hold keys
+    sow_dict = {}
+
+    # Loop over regions
+    for regind, (lat, long, sow_yr) in enumerate(
+            zip(reg_lats, reg_longs, sow_year)):
+
+        # Initialise this regions entry
+        sow_dict.setdefault(str(lat) + "." + str(long), {})
+
+        # Extract this years sowing date and ripening time in days
+        sow_day = sow_days[regind]
+        sow_month = sow_months[regind]
+        ripe_time = ripe_days[regind]
+        sow_date = datetime.date(
+            year=sow_yr, month=int(sow_month), day=int(sow_day))
+
+        # Initialise this region"s dictionary entry
+        hdf_keys = np.empty(ripe_time + 1, dtype=object)
+
+        # Loop over months between sowing and ripening
+        for nday in range(ripe_time + 1):
+            # Compute the correct month number for this month
+            key_date = sow_date + datetime.timedelta(days=nday)
+
+            # Append this key to the dictionary under this
+            # region in chronological order
+            hdf_keys[nday] = str(
+                key_date.year) + "_%03d" % key_date.month + "_%04d" % key_date.day
+
+        # Assign keys to dictionary
+        sow_dict[str(lat) + "." + str(long)][str(sow_yr)] = hdf_keys
+
+    return sow_dict
+
+
+def get_month_keys(
+        reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
+
+    # Initialise the dictionary to hold keys
+    sow_dict = {}
+
+    # Loop over regions
+    for regind, (lat, long, sow_yr) in enumerate(
+            zip(reg_lats, reg_longs, sow_year)):
+
+        # Initialise this regions entry
+        sow_dict.setdefault(str(lat) + "." + str(long), {})
+
+        # Extract this years sowing date and ripening time in days
+        sow_day = sow_days[regind]
+        sow_month = sow_months[regind]
+        ripe_time = ripe_days[regind]
+        sow_date = datetime.date(
+            year=sow_yr, month=int(sow_month), day=int(sow_day))
+
+        # Initialise this region"s dictionary entry
+        hdf_keys = []
+
+        # Loop over months between sowing and ripening
+        for ndays in range(ripe_time + 1):
+            # Compute the correct month number for this month
+            key_date = sow_date + datetime.timedelta(days=ndays)
+
+            # Append this key to the dictionary under this
+            # region in chronological order
+            hdf_keys.append(str(key_date.year) + "_%03d" % key_date.month)
+
+        # Assign keys to dictionary
+        sow_dict[str(lat) + "." + str(long)][str(sow_yr)] = np.unique(
+            hdf_keys)
+
+    return sow_dict
 
 
 def extract_region(lat, long, region_lat, region_long, weather, tol):

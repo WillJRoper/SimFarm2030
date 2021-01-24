@@ -1,4 +1,6 @@
 from model_daily_3d import cultivarModel
+from weather_extraction import read_or_create
+from utilities import extract_cultivar
 # import utilities
 import time
 import pickle
@@ -29,10 +31,13 @@ print(files)  # to see if it knows what all is.
 for f in files:
     cult = f.split("_")[0]
     print(f'{cult} is being processed')
+    cultivar_data = extract_cultivar(cult)
+    cultivar_weather_data = read_or_create(cult, cultivar_data)
 
     tstart = time.time()
-    simfarm = cultivarModel(cult, region_tol=0.25, metric='Yield',
-                            metric_units='t Ha$^{-1}$')
+    simfarm = cultivarModel(
+        cult, cultivar_data, cultivar_weather_data,
+        metric='Yield', metric_units='t Ha$^{-1}$')
     simfarm.train_and_validate_model(nsample=75000, nwalkers=250)
     print(f'Train in {(time.time() - tstart):.2} seconds')
 

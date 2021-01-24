@@ -1,4 +1,6 @@
 from core.model_daily_3d import cultivarModel
+from core.utilities import extract_cultivar
+from core.weather_extraction import read_or_create
 import numpy as np
 
 
@@ -83,11 +85,15 @@ def mock_seed_generator(a, b, c):
 
 
 def test_training():
-    cult = 'Test'
+    cult = 'Consort'
+    cultivar_data = extract_cultivar(cult)
+    cultivar_weather_data = read_or_create(cult, cultivar_data)
+
     simfarm = cultivarModel(
-        cult, region_tol=0.25, metric='Yield',
+        cult, cultivar_data, cultivar_weather_data, metric='Yield',
         metric_units='t Ha$^{-1}$', seed_generator=mock_seed_generator)
     simfarm.train_and_validate_model(nsample=1100, nwalkers=25)
+
     assert np.mean(simfarm.resi) != np.nan
     assert np.median(simfarm.resi) != np.nan
     assert 0.2 <= simfarm.af <= 0.5

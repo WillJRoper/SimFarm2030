@@ -30,34 +30,31 @@ def create_seed(num_walkers, dimensions, initial_guess):
 
 class cultivarModel:
 
-    def __init__(self, cultivar, region_tol=0.25,
-                 weather=("temperature", "rainfall", "sunshine"),
+    def __init__(self, cultivar, cultivar_data, cultivar_weather_data,
                  metric="yield",
-                 metric_units="t/Ha", extract_flag=False, initial_guess=(
+                 metric_units="t/Ha", initial_guess=(
                         1200, 100, 700, 150, 1500, 150, -0.1, 0.1, -0.1),
                  initial_spread=(200, 150, 200, 150, 250, 150, 2, 2, 2),
                  seed_generator=create_seed):
 
         start = time.time()
         self.cult = cultivar
-        self.tol = region_tol
-        self.extract_flag = extract_flag
+        (
+            self.reg_lats, self.reg_longs, self.reg_yrs,
+            self.ripe_days, self.yield_data, self.sow_days, self.sow_months
+        ) = cultivar_data
+
+        (
+            self.temp_min, self.temp_max, self.precip, self.precip_anom,
+            self.sun, self.sun_anom
+        ) = cultivar_weather_data
+
         self.initial_guess = initial_guess
         self.initial_spread = initial_spread
-        self.weather = weather
         self.metric = metric
         self.metric_units = metric_units
         self.seed_generator = seed_generator
 
-        # Extract imput data from cultivar csv's (see utilities)
-        (
-            self.reg_lats, self.reg_longs, self.reg_yrs,
-            self.ripe_days, self.yield_data, self.sow_days, self.sow_months
-        ) = extract_cultivar(cultivar)
-
-        self.sow_year = self.reg_yrs - 1
-        self.reg_keys = self.get_day_keys()
-        self.reg_mth_keys = self.get_month_keys()
         self.reg_pred = np.zeros_like(self.yield_data)
 
         # self.wthr_dict = {}  # unused???
@@ -72,14 +69,6 @@ class cultivarModel:
         # Internal variables for speed
         self.norm_coeff = np.log(1 / ((2 * np.pi) ** (1 / 2)))
         self.log_initial_spread = [np.log(i) for i in initial_spread]
-
-        weather_data = read_or_create(
-            cultivar, self.reg_lats, self.reg_longs, self.sow_year,
-            self.reg_keys, self.reg_mth_keys, self.tol)
-        (
-            self.temp_min, self.temp_max, self.precip, self.precip_anom,
-            self.sun, self.sun_anom
-        ) = weather_data
 
         # Compute thermal days and total rainfall
         self.therm_days = self.gdd_calc(self.temp_min, self.temp_max)
