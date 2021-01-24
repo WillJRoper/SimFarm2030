@@ -6,6 +6,12 @@ import datetime
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 
+# General Idea for weather extraction:
+# Trying to build a 2d array of shape(lat-lon, num_day|num_months)
+# i.e. each row corresponds to a "region (lat,lon)" and each
+# column represents a mean weather value for day or month.
+# It appears that max days = 400 and max months = 15
+
 def read_from_existing_file(hdf):
     temp_max = hdf["Temperature_Maximum"][...]
     temp_min = hdf["Temperature_Minimum"][...]
