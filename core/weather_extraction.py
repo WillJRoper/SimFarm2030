@@ -30,7 +30,7 @@ def read_or_create(
         PARENT_DIR, "Climate_Data", "Region_Climate_" + cult + ".hdf5")
     try:
         hdf = h5py.File(filename, "r")
-    except FileNotFoundError:
+    except OSError:
         extract_flag = True
         print(f"File {filename} not found")
     else:
