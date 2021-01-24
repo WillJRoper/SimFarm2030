@@ -10,6 +10,7 @@ import h5py
 import numpy as np
 import seaborn as sns
 from utilities import extract_cultivar
+from weather_extraction import read_or_create
 
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
@@ -72,76 +73,13 @@ class cultivarModel:
         self.norm_coeff = np.log(1 / ((2 * np.pi) ** (1 / 2)))
         self.log_initial_spread = [np.log(i) for i in initial_spread]
 
-        # Open file
-        try:
-            filename = join(
-                PARENT_DIR, "Climate_Data",
-                "Region_Climate_" + self.cult + ".hdf5")
-
-            hdf = h5py.File(filename, "r")
-
-            self.temp_max, self.temp_min = hdf["Temperature_Maximum"][...], \
-                hdf["Temperature_Minimum"][...]
-            print("Temperature Extracted")
-            self.precip_anom, self.precip = hdf["Rainfall_Anomaly"][...], \
-                hdf["Rainfall"][...]
-            print("Rainfall Extracted")
-            self.sun_anom, self.sun = hdf["Sunshine_Anomaly"][...], \
-                hdf["Sunshine"][...]
-            print("Sunshine Extracted")
-
-            hdf.close()
-
-        except KeyError:
-            extract_flag = True
-            print("Key not found")
-        except OSError:
-            extract_flag = True
-            print(f"File {filename} not found")
-
-        if extract_flag:
-            print("Extracting meterological files")
-            self.temp_max = self.get_temp("tempmax")
-            self.temp_min = self.get_temp("tempmin")
-
-            # Apply conditions from
-            # https://ndawn.ndsu.nodak.edu/help-wheat-growing-degree-days.html
-            self.temp_max[self.temp_max < 0] = 0
-            self.temp_min[self.temp_min < 0] = 0
-
-            print("Temperature Extracted")
-            self.precip_anom, self.precip = self.get_weather_anomaly(
-                weather[1])
-            print("Rainfall Extracted")
-            self.sun_anom, self.sun = self.get_weather_anomaly_monthly(
-                weather[2])
-            print("Sunshine Extracted")
-
-            hdf = h5py.File(filename, "w")
-
-            hdf.create_dataset("Temperature_Maximum",
-                               shape=self.temp_max.shape,
-                               dtype=self.temp_max.dtype,
-                               data=self.temp_max, compression="gzip")
-            hdf.create_dataset("Temperature_Minimum",
-                               shape=self.temp_min.shape,
-                               dtype=self.temp_min.dtype,
-                               data=self.temp_min, compression="gzip")
-            hdf.create_dataset("Rainfall", shape=self.precip.shape,
-                               dtype=self.precip.dtype,
-                               data=self.precip, compression="gzip")
-            hdf.create_dataset("Rainfall_Anomaly",
-                               shape=self.precip_anom.shape,
-                               dtype=self.precip_anom.dtype,
-                               data=self.precip_anom, compression="gzip")
-            hdf.create_dataset("Sunshine", shape=self.sun.shape,
-                               dtype=self.sun.dtype,
-                               data=self.sun, compression="gzip")
-            hdf.create_dataset("Sunshine_Anomaly", shape=self.sun_anom.shape,
-                               dtype=self.sun_anom.dtype,
-                               data=self.sun_anom, compression="gzip")
-
-            hdf.close()
+        weather_data = read_or_create(
+            cultivar, self.reg_lats, self.reg_longs, self.sow_year,
+            self.reg_keys, self.reg_mth_keys, self.tol)
+        (
+            self.temp_min, self.temp_max, self.precip, self.precip_anom,
+            self.sun, self.sun_anom
+        ) = weather_data
 
         # Compute thermal days and total rainfall
         self.therm_days = self.gdd_calc(self.temp_min, self.temp_max)
@@ -168,25 +106,6 @@ class cultivarModel:
             gdd += (tmaxs - tmins) / 2
 
         return gdd
-
-    @staticmethod
-    def extract_region(lat, long, region_lat, region_long, weather, tol):
-
-        # Get the boolean array for points within tolerence
-        bool_cond = np.logical_and(np.abs(lat - region_lat) < tol,
-                                   np.abs(long - region_long) < tol)
-
-        # Get the extracted region
-        ex_reg = weather[bool_cond]
-
-        # Remove any nan and set them to 0 these correspond to ocean
-        ex_reg = ex_reg[ex_reg < 1e8]
-
-        if ex_reg.size == 0:
-            print(f"Region not in coords: {region_lat} {region_long}")
-            return np.nan
-        else:
-            return np.mean(ex_reg)
 
     @staticmethod
     def gauss2d_resp(t, norm, mu_t, sig_t, p, mu_p, sig_p, rho):
@@ -273,150 +192,6 @@ class cultivarModel:
                 hdf_keys)
 
         return sow_dict
-
-    def get_weather_anomaly(self, weather):
-
-        hdf = h5py.File(
-            join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
-            "r")
-
-        # Get the mean weather data for each month of the year
-        uk_monthly_mean = hdf["all_years_mean"][...]
-
-        lats = hdf["Latitude_grid"][...]
-        longs = hdf["Longitude_grid"][...]
-
-        done_wthr = {}
-
-        # Loop over regions
-        anom = np.full((len(self.reg_lats), 400), np.nan)
-        wthr = np.full((len(self.reg_lats), 400), np.nan)
-        for llind, (lat, long, year) in enumerate(
-                zip(self.reg_lats, self.reg_longs, self.sow_year)):
-
-            hdf_keys = self.reg_keys[str(lat) + "." + str(long)][str(year)]
-            year_loc = f"{lat}_{long}_{year}"
-
-            if year_loc in done_wthr:
-                if tuple(hdf_keys) in done_wthr[year_loc]:
-                    print(f"Already extracted {year_loc}")
-                    wthr[llind, :] = done_wthr[year_loc][tuple(hdf_keys)]
-                    continue
-
-            # Initialise arrays to hold results
-            key_ind = 0
-            for key in hdf_keys:
-                year, month, day = key.split("_")
-
-                wthr_grid = hdf[key]["daily_grid"][...]
-
-                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid,
-                                             self.tol)
-
-                # If year is within list of years extract the relevant data
-                wthr[llind, key_ind] = ex_reg
-                anom[llind, key_ind] = ex_reg - uk_monthly_mean[int(day) - 1]
-                key_ind += 1
-
-            done_wthr.setdefault(year_loc, {})[
-                tuple(hdf_keys)] = wthr[llind, :]
-
-        # Assign weather data to variable
-        self.wthr_anom_dict[weather] = anom
-
-        hdf.close()
-
-        return anom, wthr
-
-    def get_temp(self, weather):
-        print(f'Getting the locations for new cultivar: {self.cult}')
-        hdf = h5py.File(
-            join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
-            "r")
-
-        lats = hdf["Latitude_grid"][...]
-        longs = hdf["Longitude_grid"][...]
-
-        done_wthr = {}
-
-        # Loop over regions
-        print(f'Getting the temperature for those locations: {self.cult}')
-        wthr = np.zeros((len(self.reg_lats), 400))
-        for llind, (lat, long, year) in enumerate(
-                zip(self.reg_lats, self.reg_longs, self.sow_year)):
-
-            hdf_keys = self.reg_keys[str(lat) + "." + str(long)][str(year)]
-            year_loc = f"{lat}_{long}_{year}"
-
-            if year_loc in done_wthr:
-                if tuple(hdf_keys) in done_wthr[year_loc]:
-                    print("Already extracted {year_loc}")
-                    wthr[llind, :] = \
-                        done_wthr[year_loc][tuple(hdf_keys)]
-                    continue
-
-            # Initialise arrays to hold results
-            print(f'Initialising array: {llind}')
-            key_ind = 0
-            for key in hdf_keys:
-                year, month, day = key.split("_")
-
-                wthr_grid = hdf[key]["daily_grid"][...]
-
-                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid,
-                                             self.tol)
-
-                # If year is within list of years extract the relevant data
-                wthr[llind, key_ind] = ex_reg
-                key_ind += 1
-
-            done_wthr.setdefault(year_loc, {})[tuple(hdf_keys)] = wthr[llind, :]
-
-        hdf.close()
-
-        return wthr
-
-    def get_weather_anomaly_monthly(self, weather):
-
-        hdf = h5py.File(
-            join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
-            "r")
-
-        # Get the mean weather data for each month of the year
-        uk_monthly_mean = hdf["all_years_mean"][...]
-
-        lats = hdf["Latitude_grid"][...]
-        longs = hdf["Longitude_grid"][...]
-
-        # Loop over regions
-        anom = np.full((len(self.reg_lats), 15), np.nan)
-        wthr = np.full((len(self.reg_lats), 15), np.nan)
-        for llind, (lat, long, year) in enumerate(
-                zip(self.reg_lats, self.reg_longs, self.sow_year)):
-
-            hdf_keys = self.reg_mth_keys[str(lat) + "." + str(long)][str(year)]
-
-            # Initialise arrays to hold results
-            key_ind = 0
-            for key in hdf_keys:
-                year, month = key.split("_")
-
-                wthr_grid = hdf[key]["monthly_grid"][...]
-
-                ex_reg = self.extract_region(lats, longs, lat, long, wthr_grid,
-                                             self.tol)
-
-                # If year is within list of years extract the relevant data
-                wthr[llind, key_ind] = ex_reg
-                anom[llind, key_ind] = ex_reg - uk_monthly_mean[int(month) - 1]
-                key_ind += 1
-
-        # Assign weather data to variable
-        self.wthr_anom_dict[weather] = anom
-
-        hdf.close()
-
-        return anom, wthr
 
     @staticmethod
     def gauss2d(t, norm, mu_t, sig_t, p, mu_p, sig_p, rho):
