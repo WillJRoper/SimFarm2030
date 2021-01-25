@@ -143,17 +143,16 @@ def get_day_keys(
             sow_year, sow_days, sow_months,
             ripe_days):
 
-        # Extract this years sowing date and ripening time in days
+        # Extract the sow day for this year
         sow_date = datetime.date(
             year=sow_yr, month=int(sow_month), day=int(sow_day))
 
         # Initialise this region"s dictionary entry
         hdf_keys = np.empty(ripe_time + 1, dtype=object)
 
-        # Loop over months between sowing and ripening
+        # Loop over the days between sowing and ripening
         for nday in range(ripe_time + 1):
-            # Compute the correct month number for this month
-            key_date = sow_date + datetime.timedelta(days=nday)
+            # Compute the grow day since sowing
             grow_day = sow_date + datetime.timedelta(days=nday)
             hdf_key = f"{grow_day.year}_{grow_day.month:03d}_{grow_day.day:04d}"
 
@@ -185,10 +184,9 @@ def get_month_keys(
         # Initialise this region"s dictionary entry
         hdf_keys = []
 
-        # Loop over months between sowing and ripening
+        # Loop over the days between sowing and ripening
         for ndays in range(ripe_time + 1):
-            # Compute the correct month number for this month
-            key_date = sow_date + datetime.timedelta(days=ndays)
+            # Compute the grow day since sowing
             grow_day = sow_date + datetime.timedelta(days=ndays)
             hdf_key = f"{grow_day.year}_{grow_day.month:03d}"
 
