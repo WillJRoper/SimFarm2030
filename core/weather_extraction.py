@@ -3,6 +3,7 @@ import h5py
 import numpy as np
 import datetime
 from collections import defaultdict
+from ordered_set import OrderedSet
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
@@ -52,14 +53,11 @@ def read_or_create(
     if extract_flag:
         lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
         sow_year = years - 1
-        reg_keys = get_day_keys(
+        day_keys, month_keys = generate_hdf_keys(
             lats, longs, sow_year, sow_days, sow_months, ripe_days)
-        reg_mth_keys = get_month_keys(
-            lats, longs, sow_year, sow_days, sow_months, ripe_days)
-
         data = extract_weather_data(
             filename, cult, lats, longs, sow_year,
-            reg_keys, reg_mth_keys, tol)
+            day_keys, month_keys, tol)
         write_dataset(filename, data)
 
     return data
@@ -131,11 +129,12 @@ def write_dataset(filename, data):
     hdf.close()
 
 
-def get_day_keys(
+def generate_hdf_keys(
         reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
 
     # Initialise the dictionary to hold keys
-    sow_dict = defaultdict(dict)
+    day_keys_collection = defaultdict(dict)
+    month_keys_collection = defaultdict(dict)
 
     # Loop over regions
     for (lat, long, sow_yr, sow_day, sow_month, ripe_time) in zip(
@@ -147,57 +146,27 @@ def get_day_keys(
         sow_date = datetime.date(
             year=sow_yr, month=int(sow_month), day=int(sow_day))
 
-        # Initialise this region"s dictionary entry
-        hdf_keys = OrderedSet()
+        # Initialise this region"s day and month keys
+        day_keys = OrderedSet()
+        month_keys = OrderedSet()
 
         # Loop over the days between sowing and ripening
         for nday in range(ripe_time + 1):
             # Compute the grow day since sowing
             grow_day = sow_date + datetime.timedelta(days=nday)
-            hdf_key = f"{grow_day.year}_{grow_day.month:03d}_{grow_day.day:04d}"
 
-            # Append this key to the dictionary under this
-            # region in chronological order
-            hdf_keys.add(hdf_key)
+            day_key = f"{grow_day.year}_{grow_day.month:03d}_{grow_day.day:04d}"
+            month_key = f"{grow_day.year}_{grow_day.month:03d}"
 
-        # Assign keys to dictionary
-        sow_dict[f"{lat}.{long}"][f"{sow_yr}"] = hdf_keys
-
-    return sow_dict
-
-
-def get_month_keys(
-        reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
-
-    # Initialise the dictionary to hold keys
-    sow_dict = defaultdict(dict)
-
-    # Loop over regions
-    for (lat, long, sow_yr, sow_day, sow_month, ripe_time) in zip(
-            reg_lats, reg_longs,
-            sow_year, sow_days, sow_months, ripe_days):
-
-        # Extract this years sowing date and ripening time in days
-        sow_date = datetime.date(
-            year=sow_yr, month=int(sow_month), day=int(sow_day))
-
-        # Initialise this region"s dictionary entry
-        hdf_keys = OrderedSet()
-
-        # Loop over the days between sowing and ripening
-        for ndays in range(ripe_time + 1):
-            # Compute the grow day since sowing
-            grow_day = sow_date + datetime.timedelta(days=ndays)
-            hdf_key = f"{grow_day.year}_{grow_day.month:03d}"
-
-            # Append this key to the dictionary under this
-            # region in chronological order
-            hdf_keys.add(hdf_key)
+            # Append keys
+            day_keys.add(day_key)
+            month_keys.add(month_key)
 
         # Assign keys to dictionary
-        sow_dict[f"{lat}.{long}"][f"{sow_yr}"] = hdf_keys
+        day_keys_collection[f"{lat}.{long}"][f"{sow_yr}"] = day_keys
+        month_keys_collection[f"{lat}.{long}"][f"{sow_yr}"] = month_keys
 
-    return sow_dict
+    return day_keys_collection, month_keys_collection
 
 
 def extract_region(lat, long, region_lat, region_long, weather, tol):

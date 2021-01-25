@@ -1,6 +1,6 @@
 from core.utilities import extract_data
 from core.weather_extraction import (
-    read_or_create, get_day_keys, get_month_keys)
+    read_or_create, generate_hdf_keys)
 
 import numpy as np
 from os.path import abspath, dirname, join
@@ -141,25 +141,17 @@ def test_day_key_generation(regional_data):
     lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
     sow_year = years - 1
 
-    expected = {
+    expected_day_keys = {
         '52.0834.-1.4545': {
             '2012': OrderedSet(['2012_009_0010', '2012_009_0011'])
         }
     }
-    day_keys = get_day_keys(
-        lats, longs, sow_year, sow_days, sow_months, ripe_days)
-    assert day_keys == expected
-
-
-def test_month_key_generation(regional_data):
-    lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
-    sow_year = years - 1
-
-    expected = {
+    expected_month_keys = {
         '52.0834.-1.4545': {
             '2012': OrderedSet(['2012_009'])
         }
     }
-    month_keys = get_month_keys(
+    day_keys, month_keys = generate_hdf_keys(
         lats, longs, sow_year, sow_days, sow_months, ripe_days)
-    assert month_keys == expected
+    assert day_keys == expected_day_keys
+    assert month_keys == expected_month_keys
