@@ -148,7 +148,7 @@ def get_day_keys(
             year=sow_yr, month=int(sow_month), day=int(sow_day))
 
         # Initialise this region"s dictionary entry
-        hdf_keys = np.empty(ripe_time + 1, dtype=object)
+        hdf_keys = OrderedSet()
 
         # Loop over the days between sowing and ripening
         for nday in range(ripe_time + 1):
@@ -158,7 +158,7 @@ def get_day_keys(
 
             # Append this key to the dictionary under this
             # region in chronological order
-            hdf_keys[nday] = hdf_key
+            hdf_keys.add(hdf_key)
 
         # Assign keys to dictionary
         sow_dict[f"{lat}.{long}"][f"{sow_yr}"] = hdf_keys
@@ -182,7 +182,7 @@ def get_month_keys(
             year=sow_yr, month=int(sow_month), day=int(sow_day))
 
         # Initialise this region"s dictionary entry
-        hdf_keys = []
+        hdf_keys = OrderedSet()
 
         # Loop over the days between sowing and ripening
         for ndays in range(ripe_time + 1):
@@ -192,10 +192,10 @@ def get_month_keys(
 
             # Append this key to the dictionary under this
             # region in chronological order
-            hdf_keys.append(hdf_key)
+            hdf_keys.add(hdf_key)
 
         # Assign keys to dictionary
-        sow_dict[f"{lat}.{long}"][f"{sow_yr}"] = np.unique(hdf_keys)
+        sow_dict[f"{lat}.{long}"][f"{sow_yr}"] = hdf_keys
 
     return sow_dict
 

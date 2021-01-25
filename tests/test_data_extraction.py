@@ -5,6 +5,7 @@ from core.weather_extraction import (
 import numpy as np
 from os.path import abspath, dirname, join
 import os
+from ordered_set import OrderedSet
 
 import pytest
 
@@ -136,26 +137,18 @@ def regional_data():
     )
 
 
-def hdf_keys_equal(actual, expected):
-    latlon, *_ = actual.keys()
-    year, *_ = actual[latlon].keys()
-    actual_hdf_keys = actual[latlon][year]
-    expected_hdf_keys = expected[latlon][year]
-    return np.array_equal(expected_hdf_keys, actual_hdf_keys)
-
-
 def test_day_key_generation(regional_data):
     lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
     sow_year = years - 1
 
     expected = {
         '52.0834.-1.4545': {
-            '2012': np.array(['2012_009_0010', '2012_009_0011'])
+            '2012': OrderedSet(['2012_009_0010', '2012_009_0011'])
         }
     }
     day_keys = get_day_keys(
         lats, longs, sow_year, sow_days, sow_months, ripe_days)
-    assert hdf_keys_equal(day_keys, expected)
+    assert day_keys == expected
 
 
 def test_month_key_generation(regional_data):
@@ -164,9 +157,9 @@ def test_month_key_generation(regional_data):
 
     expected = {
         '52.0834.-1.4545': {
-            '2012': np.array(['2012_009'])
+            '2012': OrderedSet(['2012_009'])
         }
     }
     month_keys = get_month_keys(
         lats, longs, sow_year, sow_days, sow_months, ripe_days)
-    assert hdf_keys_equal(month_keys, expected)
+    assert month_keys == expected
