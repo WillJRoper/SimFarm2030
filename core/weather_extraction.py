@@ -137,16 +137,15 @@ def get_day_keys(
     sow_dict = {}
 
     # Loop over regions
-    for regind, (lat, long, sow_yr) in enumerate(
-            zip(reg_lats, reg_longs, sow_year)):
+    for (lat, long, sow_yr, sow_day, sow_month, ripe_time) in zip(
+            reg_lats, reg_longs,
+            sow_year, sow_days, sow_months,
+            ripe_days):
 
         # Initialise this regions entry
         sow_dict.setdefault(str(lat) + "." + str(long), {})
 
         # Extract this years sowing date and ripening time in days
-        sow_day = sow_days[regind]
-        sow_month = sow_months[regind]
-        ripe_time = ripe_days[regind]
         sow_date = datetime.date(
             year=sow_yr, month=int(sow_month), day=int(sow_day))
 
@@ -176,16 +175,14 @@ def get_month_keys(
     sow_dict = {}
 
     # Loop over regions
-    for regind, (lat, long, sow_yr) in enumerate(
-            zip(reg_lats, reg_longs, sow_year)):
+    for (lat, long, sow_yr, sow_day, sow_month, ripe_time) in zip(
+            reg_lats, reg_longs,
+            sow_year, sow_days, sow_months, ripe_days):
 
         # Initialise this regions entry
         sow_dict.setdefault(str(lat) + "." + str(long), {})
 
         # Extract this years sowing date and ripening time in days
-        sow_day = sow_days[regind]
-        sow_month = sow_months[regind]
-        ripe_time = ripe_days[regind]
         sow_date = datetime.date(
             year=sow_yr, month=int(sow_month), day=int(sow_day))
 
