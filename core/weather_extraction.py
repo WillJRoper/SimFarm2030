@@ -2,6 +2,7 @@ from os.path import abspath, dirname, join
 import h5py
 import numpy as np
 import datetime
+from collections import defaultdict
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
@@ -134,16 +135,13 @@ def get_day_keys(
         reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
 
     # Initialise the dictionary to hold keys
-    sow_dict = {}
+    sow_dict = defaultdict(dict)
 
     # Loop over regions
     for (lat, long, sow_yr, sow_day, sow_month, ripe_time) in zip(
             reg_lats, reg_longs,
             sow_year, sow_days, sow_months,
             ripe_days):
-
-        # Initialise this regions entry
-        sow_dict.setdefault(str(lat) + "." + str(long), {})
 
         # Extract this years sowing date and ripening time in days
         sow_date = datetime.date(
@@ -172,15 +170,12 @@ def get_month_keys(
         reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
 
     # Initialise the dictionary to hold keys
-    sow_dict = {}
+    sow_dict = defaultdict(dict)
 
     # Loop over regions
     for (lat, long, sow_yr, sow_day, sow_month, ripe_time) in zip(
             reg_lats, reg_longs,
             sow_year, sow_days, sow_months, ripe_days):
-
-        # Initialise this regions entry
-        sow_dict.setdefault(str(lat) + "." + str(long), {})
 
         # Extract this years sowing date and ripening time in days
         sow_date = datetime.date(
