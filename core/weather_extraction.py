@@ -154,14 +154,15 @@ def get_day_keys(
         for nday in range(ripe_time + 1):
             # Compute the correct month number for this month
             key_date = sow_date + datetime.timedelta(days=nday)
+            grow_day = sow_date + datetime.timedelta(days=nday)
+            hdf_key = f"{grow_day.year}_{grow_day.month:03d}_{grow_day.day:04d}"
 
             # Append this key to the dictionary under this
             # region in chronological order
-            hdf_keys[nday] = str(
-                key_date.year) + "_%03d" % key_date.month + "_%04d" % key_date.day
+            hdf_keys[nday] = hdf_key
 
         # Assign keys to dictionary
-        sow_dict[str(lat) + "." + str(long)][str(sow_yr)] = hdf_keys
+        sow_dict[f"{lat}.{long}"][f"{sow_yr}"] = hdf_keys
 
     return sow_dict
 
@@ -188,14 +189,15 @@ def get_month_keys(
         for ndays in range(ripe_time + 1):
             # Compute the correct month number for this month
             key_date = sow_date + datetime.timedelta(days=ndays)
+            grow_day = sow_date + datetime.timedelta(days=ndays)
+            hdf_key = f"{grow_day.year}_{grow_day.month:03d}"
 
             # Append this key to the dictionary under this
             # region in chronological order
-            hdf_keys.append(str(key_date.year) + "_%03d" % key_date.month)
+            hdf_keys.append(hdf_key)
 
         # Assign keys to dictionary
-        sow_dict[str(lat) + "." + str(long)][str(sow_yr)] = np.unique(
-            hdf_keys)
+        sow_dict[f"{lat}.{long}"][f"{sow_yr}"] = np.unique(hdf_keys)
 
     return sow_dict
 
