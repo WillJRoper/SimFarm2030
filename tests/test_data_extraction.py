@@ -1,5 +1,6 @@
 from core.utilities import extract_data
-from core.weather_extraction import read_or_create
+from core.weather_extraction import (
+    read_or_create, get_day_keys, get_month_keys)
 
 import numpy as np
 from os.path import abspath, dirname, join
@@ -119,3 +120,53 @@ def test_create(small_dataset):
     assert rounded_equal(pre_anom[0, 0:2], expected_rainfall_anom)
     assert sun[0, 0] == expected_sun
     assert sun_anom[0, 0] == expected_sun_anom
+
+
+@pytest.fixture()
+def regional_data():
+    lats = np.array([52.0834])
+    longs = np.array([-1.4545])
+    years = np.array([2013])
+    ripe_days = np.array([1])
+    yields = np.array([8.76])
+    days = np.array([10])
+    months = np.array(['09'])
+    return (
+        lats, longs, years, ripe_days, yields, days, months
+    )
+
+
+def hdf_keys_equal(actual, expected):
+    latlon, *_ = actual.keys()
+    year, *_ = actual[latlon].keys()
+    actual_hdf_keys = actual[latlon][year]
+    expected_hdf_keys = expected[latlon][year]
+    return np.array_equal(expected_hdf_keys, actual_hdf_keys)
+
+
+def test_day_key_generation(regional_data):
+    lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
+    sow_year = years - 1
+
+    expected = {
+        '52.0834.-1.4545': {
+            '2012': np.array(['2012_009_0010', '2012_009_0011'])
+        }
+    }
+    day_keys = get_day_keys(
+        lats, longs, sow_year, sow_days, sow_months, ripe_days)
+    assert hdf_keys_equal(day_keys, expected)
+
+
+def test_month_key_generation(regional_data):
+    lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
+    sow_year = years - 1
+
+    expected = {
+        '52.0834.-1.4545': {
+            '2012': np.array(['2012_009'])
+        }
+    }
+    month_keys = get_month_keys(
+        lats, longs, sow_year, sow_days, sow_months, ripe_days)
+    assert hdf_keys_equal(month_keys, expected)
