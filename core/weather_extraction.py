@@ -155,8 +155,8 @@ def generate_hdf_keys(
             # Compute the grow day since sowing
             grow_day = sow_date + datetime.timedelta(days=nday)
 
-            day_key = f"{grow_day.year}_{grow_day.month:03d}_{grow_day.day:04d}"
-            month_key = f"{grow_day.year}_{grow_day.month:03d}"
+            day_key = f"{grow_day.year}_{grow_day.month:03}_{grow_day.day:04}"
+            month_key = f"{grow_day.year}_{grow_day.month:03}"
 
             # Append keys
             day_keys.add(day_key)
