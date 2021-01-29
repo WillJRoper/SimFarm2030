@@ -1,7 +1,7 @@
 from core.utilities import extract_data
 from core.weather_extraction import (
     read_or_create, generate_hdf_keys, get_weather_anomaly,
-    get_weather_anomaly_monthly, get_temp)
+    get_weather_anomaly_monthly, get_temp, extract_weather)
 
 import numpy as np
 from os.path import abspath, dirname, join
@@ -157,6 +157,7 @@ def test_day_key_generation(regional_data):
     assert day_keys == expected_day_keys
     assert month_keys == expected_month_keys
 
+
 @pytest.fixture()
 def weather_inputs():
     lats = np.array([52.0834])
@@ -179,18 +180,18 @@ def weather_inputs():
 
 def test_get_rainfall(weather_inputs):
     lats, longs, sow_year, day_keys, _, tol = weather_inputs
-    weather, anomoly = get_weather_anomaly(
+    anomoly, weather = get_weather_anomaly(
         "rainfall", "", lats, longs, sow_year, day_keys, tol)
-    assert rounded_equal(weather[0][:2], np.array([-3.08042272, -4.63849409]))
-    assert rounded_equal(anomoly[0][:2], np.array([1.73540998, 0.05580953]))
+    assert rounded_equal(anomoly[0][:2], np.array([-3.08042272, -4.63849409]))
+    assert rounded_equal(weather[0][:2], np.array([1.73540998, 0.05580953]))
 
 
 def test_get_sunshine(weather_inputs):
     lats, longs, sow_year, _, month_keys, tol = weather_inputs
-    weather, anomoly = get_weather_anomaly_monthly(
+    anomoly, weather = get_weather_anomaly_monthly(
         "sunshine", "", lats, longs, sow_year, month_keys, tol)
-    assert rounded_equal(weather[0][:1], np.array([47.19762813]))
-    assert rounded_equal(anomoly[0][:1], np.array([173.48350601]))
+    assert rounded_equal(anomoly[0][:1], np.array([47.19762813]))
+    assert rounded_equal(weather[0][:1], np.array([173.48350601]))
 
 
 def test_get_temp(weather_inputs):
