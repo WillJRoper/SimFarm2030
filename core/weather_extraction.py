@@ -197,8 +197,6 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
     lats = hdf["Latitude_grid"][...]
     longs = hdf["Longitude_grid"][...]
 
-    done_wthr = {}
-
     # Loop over regions
     print(f'Getting the temperature for those locations: {cult}')
     wthr = np.zeros((len(reg_lats), 400))
@@ -206,14 +204,6 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
             zip(reg_lats, reg_longs, sow_year)):
 
         hdf_keys = reg_keys[str(lat) + "." + str(long)][str(year)]
-        year_loc = f"{lat}_{long}_{year}"
-
-        if year_loc in done_wthr:
-            if tuple(hdf_keys) in done_wthr[year_loc]:
-                print("Already extracted {year_loc}")
-                wthr[llind, :] = \
-                    done_wthr[year_loc][tuple(hdf_keys)]
-                continue
 
         # Initialise arrays to hold results
         print(f'Initialising array: {llind}')
@@ -229,8 +219,6 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
             # If year is within list of years extract the relevant data
             wthr[llind, key_ind] = ex_reg
             key_ind += 1
-
-        done_wthr.setdefault(year_loc, {})[tuple(hdf_keys)] = wthr[llind, :]
 
     hdf.close()
 
@@ -249,8 +237,6 @@ def get_weather_anomaly(
     lats = hdf["Latitude_grid"][...]
     longs = hdf["Longitude_grid"][...]
 
-    done_wthr = {}
-
     # Loop over regions
     anom = np.full((len(reg_lats), 400), np.nan)
     wthr = np.full((len(reg_lats), 400), np.nan)
@@ -258,13 +244,6 @@ def get_weather_anomaly(
             zip(reg_lats, reg_longs, sow_year)):
 
         hdf_keys = reg_keys[str(lat) + "." + str(long)][str(year)]
-        year_loc = f"{lat}_{long}_{year}"
-
-        if year_loc in done_wthr:
-            if tuple(hdf_keys) in done_wthr[year_loc]:
-                print(f"Already extracted {year_loc}")
-                wthr[llind, :] = done_wthr[year_loc][tuple(hdf_keys)]
-                continue
 
         # Initialise arrays to hold results
         key_ind = 0
@@ -280,9 +259,6 @@ def get_weather_anomaly(
             wthr[llind, key_ind] = ex_reg
             anom[llind, key_ind] = ex_reg - uk_monthly_mean[int(day) - 1]
             key_ind += 1
-
-        done_wthr.setdefault(year_loc, {})[
-            tuple(hdf_keys)] = wthr[llind, :]
 
     hdf.close()
     return anom, wthr

@@ -31,6 +31,8 @@ def extract_cultivar(cultivar):
 
 
 def extract_data(path):
+    # TODO: Validate the file:
+    #     * Check for duplicate entries
 
     #  Open the csv file
     data = pd.read_csv(path, usecols=("Lat", "Long", "Year", "Sow Month", "Ripe Time", "Yield"))
