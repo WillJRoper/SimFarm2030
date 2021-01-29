@@ -200,10 +200,10 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
     # Loop over regions
     print(f'Getting the temperature for those locations: {cult}')
     wthr = np.zeros((len(reg_lats), 400))
-    for llind, (lat, long, year) in enumerate(
+    for llind, (lat, lng, year) in enumerate(
             zip(reg_lats, reg_longs, sow_year)):
 
-        hdf_keys = reg_keys[str(lat) + "." + str(long)][str(year)]
+        hdf_keys = reg_keys[f"{lat}.{lng}"][f"{year}"]
 
         # Initialise arrays to hold results
         print(f'Initialising array: {llind}')
@@ -214,7 +214,7 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
             wthr_grid = hdf[key]["daily_grid"][...]
 
             ex_reg = extract_region(
-                lats, longs, lat, long, wthr_grid, tol)
+                lats, longs, lat, lng, wthr_grid, tol)
 
             # If year is within list of years extract the relevant data
             wthr[llind, key_ind] = ex_reg
@@ -240,10 +240,10 @@ def get_weather_anomaly(
     # Loop over regions
     anom = np.full((len(reg_lats), 400), np.nan)
     wthr = np.full((len(reg_lats), 400), np.nan)
-    for llind, (lat, long, year) in enumerate(
+    for llind, (lat, lng, year) in enumerate(
             zip(reg_lats, reg_longs, sow_year)):
 
-        hdf_keys = reg_keys[str(lat) + "." + str(long)][str(year)]
+        hdf_keys = reg_keys[f"{lat}.{lng}"][f"{year}"]
 
         # Initialise arrays to hold results
         key_ind = 0
@@ -253,7 +253,7 @@ def get_weather_anomaly(
             wthr_grid = hdf[key]["daily_grid"][...]
 
             ex_reg = extract_region(
-                lats, longs, lat, long, wthr_grid, tol)
+                lats, longs, lat, lng, wthr_grid, tol)
 
             # If year is within list of years extract the relevant data
             wthr[llind, key_ind] = ex_reg
@@ -280,10 +280,10 @@ def get_weather_anomaly_monthly(
     # Loop over regions
     anom = np.full((len(reg_lats), 15), np.nan)
     wthr = np.full((len(reg_lats), 15), np.nan)
-    for llind, (lat, long, year) in enumerate(
+    for llind, (lat, lng, year) in enumerate(
             zip(reg_lats, reg_longs, sow_year)):
 
-        hdf_keys = reg_mth_keys[str(lat) + "." + str(long)][str(year)]
+        hdf_keys = reg_mth_keys[f"{lat}.{lng}"][f"{year}"]
 
         # Initialise arrays to hold results
         key_ind = 0
@@ -293,7 +293,7 @@ def get_weather_anomaly_monthly(
             wthr_grid = hdf[key]["monthly_grid"][...]
 
             ex_reg = extract_region(
-                lats, longs, lat, long, wthr_grid, tol)
+                lats, longs, lat, lng, wthr_grid, tol)
 
             # If year is within list of years extract the relevant data
             wthr[llind, key_ind] = ex_reg
