@@ -10,3 +10,4 @@ emcee
 corner
 pystan
 tqdm
+ordered_set
