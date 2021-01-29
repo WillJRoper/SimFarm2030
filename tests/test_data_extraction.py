@@ -1,6 +1,6 @@
 from core.utilities import extract_data
 from core.weather_extraction import (
-    read_or_create, generate_hdf_keys)
+    read_or_create, generate_hdf_keys, get_weather_anomaly)
 
 import numpy as np
 from os.path import abspath, dirname, join
@@ -155,3 +155,19 @@ def test_day_key_generation(regional_data):
         lats, longs, sow_year, sow_days, sow_months, ripe_days)
     assert day_keys == expected_day_keys
     assert month_keys == expected_month_keys
+
+
+def test_get_weather():
+    lats = np.array([52.0834])
+    longs = np.array([-1.4545])
+    years = np.array([2013])
+    sow_year = years - 1
+    day_keys = {
+        '52.0834.-1.4545': {
+            '2012': OrderedSet(['2012_009_0010', '2012_009_0011'])
+        }
+    }
+    tol = 0.25
+    weather, anomoly = get_weather_anomaly(
+        "rainfall", "", lats, longs, sow_year, day_keys, tol)
+    assert rounded_equal(weather[0][:2], np.array([-3.08042272, -4.63849409]))
