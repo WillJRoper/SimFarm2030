@@ -210,24 +210,27 @@ def get_temp(temp, cult, regional_df, day_keys, tol):
     # Loop over regions
     print(f'Getting the temperature for those locations: {cult}')
     temps = np.zeros((regional_df.shape[0], 400))
-    for llind, row in regional_df.iterrows():
-        lat = row["Lat"]
-        lng = row["Long"]
-        year = row["Sow Year"]
-
-        grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
+    for latlng, group in regional_df.groupby(["Lat", "Long"]):
+        lat, lng = latlng
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
-        # Initialise arrays to hold results
-        print(f'Initialising array: {llind}')
-        for grow_day_idx, grow_date in enumerate(grow_days):
-            _, _, day = grow_date.split("_")
+        for llind, row in group.iterrows():
+            lat = row["Lat"]
+            lng = row["Long"]
+            year = row["Sow Year"]
 
-            wthr_grid = hdf[grow_date]["daily_grid"][...]
-            day_reg_temp = extract_regional_weather(wthr_grid, region_filter)
+            grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
 
-            # If year is within list of years extract the relevant data
-            temps[llind, grow_day_idx] = day_reg_temp
+            # Initialise arrays to hold results
+            print(f'Initialising array: {llind}')
+            for grow_day_idx, grow_date in enumerate(grow_days):
+                _, _, day = grow_date.split("_")
+
+                wthr_grid = hdf[grow_date]["daily_grid"][...]
+                day_reg_temp = extract_regional_weather(wthr_grid, region_filter)
+
+                # If year is within list of years extract the relevant data
+                temps[llind, grow_day_idx] = day_reg_temp
 
     hdf.close()
     return temps
@@ -249,25 +252,28 @@ def get_weather_anomaly_daily(
     # Loop over regions
     anom = np.full((regional_df.shape[0], 400), np.nan)
     wthr = np.full((regional_df.shape[0], 400), np.nan)
-    for llind, row in regional_df.iterrows():
-        lat = row["Lat"]
-        lng = row["Long"]
-        year = row["Sow Year"]
-
-        grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
+    for latlng, group in regional_df.groupby(["Lat", "Long"]):
+        lat, lng = latlng
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
-        # Initialise arrays to hold results
-        for grow_day_idx, grow_date in enumerate(grow_days):
-            _, _, day = grow_date.split("_")
+        for llind, row in group.iterrows():
+            lat = row["Lat"]
+            lng = row["Long"]
+            year = row["Sow Year"]
 
-            wthr_grid = hdf[grow_date]["daily_grid"][...]
+            grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
 
-            reg_weather = extract_regional_weather(wthr_grid, region_filter)
+            # Initialise arrays to hold results
+            for grow_day_idx, grow_date in enumerate(grow_days):
+                _, _, day = grow_date.split("_")
 
-            # If year is within list of years extract the relevant data
-            wthr[llind, grow_day_idx] = reg_weather
-            anom[llind, grow_day_idx] = reg_weather - uk_monthly_mean[int(day) - 1]
+                wthr_grid = hdf[grow_date]["daily_grid"][...]
+
+                reg_weather = extract_regional_weather(wthr_grid, region_filter)
+
+                # If year is within list of years extract the relevant data
+                wthr[llind, grow_day_idx] = reg_weather
+                anom[llind, grow_day_idx] = reg_weather - uk_monthly_mean[int(day) - 1]
 
     hdf.close()
     return anom, wthr
@@ -290,25 +296,28 @@ def get_weather_anomaly_monthly(
     # Loop over regions
     anom = np.full((regional_df.shape[0], 15), np.nan)
     wthr = np.full((regional_df.shape[0], 15), np.nan)
-    for llind, row in regional_df.iterrows():
-        lat = row["Lat"]
-        lng = row["Long"]
-        year = row["Sow Year"]
-
-        grow_months = month_keys[f"{lat}.{lng}"][f"{year}"]
+    for latlng, group in regional_df.groupby(["Lat", "Long"]):
+        lat, lng = latlng
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
-        # Initialise arrays to hold results
-        for grow_month_index, grow_date in enumerate(grow_months):
-            _, month = grow_date.split("_")
+        for llind, row in group.iterrows():
+            lat = row["Lat"]
+            lng = row["Long"]
+            year = row["Sow Year"]
 
-            wthr_grid = hdf[grow_date]["monthly_grid"][...]
+            grow_months = month_keys[f"{lat}.{lng}"][f"{year}"]
 
-            reg_weather = extract_regional_weather(wthr_grid, region_filter)
+            # Initialise arrays to hold results
+            for grow_month_index, grow_date in enumerate(grow_months):
+                _, month = grow_date.split("_")
 
-            # If year is within list of years extract the relevant data
-            wthr[llind, grow_month_index] = reg_weather
-            anom[llind, grow_month_index] = reg_weather - uk_monthly_mean[int(month) - 1]
+                wthr_grid = hdf[grow_date]["monthly_grid"][...]
+
+                reg_weather = extract_regional_weather(wthr_grid, region_filter)
+
+                # If year is within list of years extract the relevant data
+                wthr[llind, grow_month_index] = reg_weather
+                anom[llind, grow_month_index] = reg_weather - uk_monthly_mean[int(month) - 1]
 
     hdf.close()
     return anom, wthr
