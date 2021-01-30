@@ -169,20 +169,30 @@ def generate_hdf_keys(
     return day_keys_collection, month_keys_collection
 
 
-def extract_region(lat, long, region_lat, region_long, weather, tol):
+def create_region_filter(lat_grid, lng_grid, lat, lng, tolerance):
+    """Create a filter grid (or boolean mask) for the region surrounding
+    the lat,lng of interest that fits within the tolerance.
 
-    # Get the boolean array for points within tolerence
-    bool_cond = np.logical_and(
-        np.abs(lat - region_lat) < tol, np.abs(long - region_long) < tol)
+    The boolean mask is then used to extract regional weather from a 2D weather
+    array. For example:
+    boolean_mask = np.array([[True, True], [False, True]])
+    Weather_array = np.array([1, 2], [3, 4])
+    weather_array[boolean_mask] = np.array([1, 2, 4])
+    """
+    return np.logical_and(
+        np.abs(lat_grid - lat) < tolerance, np.abs(lng_grid - lng) < tolerance)
 
+
+def extract_regional_weather(weather, region_filter):
     # Get the extracted region
-    ex_reg = weather[bool_cond]
-
+    ex_reg = weather[region_filter]
     # Remove any nan and set them to 0 these correspond to ocean
     ex_reg = ex_reg[ex_reg < 1e8]
 
     if ex_reg.size == 0:
-        print(f"Region not in coords: {region_lat} {region_long}")
+        # FIXME:
+        # can't warn about this now:
+        # print(f"Region not in coords: {region_lat} {region_long}")
         return np.nan
     else:
         return np.mean(ex_reg)
@@ -204,6 +214,7 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
             zip(reg_lats, reg_longs, sow_year)):
 
         hdf_keys = reg_keys[f"{lat}.{lng}"][f"{year}"]
+        region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # Initialise arrays to hold results
         print(f'Initialising array: {llind}')
@@ -213,11 +224,10 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
 
             wthr_grid = hdf[key]["daily_grid"][...]
 
-            ex_reg = extract_region(
-                lats, longs, lat, lng, wthr_grid, tol)
+            reg_temp = extract_regional_weather(wthr_grid, region_filter)
 
             # If year is within list of years extract the relevant data
-            wthr[llind, key_ind] = ex_reg
+            wthr[llind, key_ind] = reg_temp
             key_ind += 1
 
     hdf.close()
@@ -244,6 +254,7 @@ def get_weather_anomaly(
             zip(reg_lats, reg_longs, sow_year)):
 
         hdf_keys = reg_keys[f"{lat}.{lng}"][f"{year}"]
+        region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # Initialise arrays to hold results
         key_ind = 0
@@ -252,12 +263,11 @@ def get_weather_anomaly(
 
             wthr_grid = hdf[key]["daily_grid"][...]
 
-            ex_reg = extract_region(
-                lats, longs, lat, lng, wthr_grid, tol)
+            reg_weather = extract_regional_weather(wthr_grid, region_filter)
 
             # If year is within list of years extract the relevant data
-            wthr[llind, key_ind] = ex_reg
-            anom[llind, key_ind] = ex_reg - uk_monthly_mean[int(day) - 1]
+            wthr[llind, key_ind] = reg_weather
+            anom[llind, key_ind] = reg_weather - uk_monthly_mean[int(day) - 1]
             key_ind += 1
 
     hdf.close()
@@ -284,6 +294,7 @@ def get_weather_anomaly_monthly(
             zip(reg_lats, reg_longs, sow_year)):
 
         hdf_keys = reg_mth_keys[f"{lat}.{lng}"][f"{year}"]
+        region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # Initialise arrays to hold results
         key_ind = 0
@@ -292,12 +303,11 @@ def get_weather_anomaly_monthly(
 
             wthr_grid = hdf[key]["monthly_grid"][...]
 
-            ex_reg = extract_region(
-                lats, longs, lat, lng, wthr_grid, tol)
+            reg_weather = extract_regional_weather(wthr_grid, region_filter)
 
             # If year is within list of years extract the relevant data
-            wthr[llind, key_ind] = ex_reg
-            anom[llind, key_ind] = ex_reg - uk_monthly_mean[int(month) - 1]
+            wthr[llind, key_ind] = reg_weather
+            anom[llind, key_ind] = reg_weather - uk_monthly_mean[int(month) - 1]
             key_ind += 1
 
     hdf.close()
