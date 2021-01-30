@@ -12,7 +12,8 @@ def test_extract():
     expected_df = pd.DataFrame.from_dict({
         "Lat": [52.0834], "Long": [-1.4545],
         "Year": [2013], "Ripe Time": [100],
-        "Yield": [8.76], "Sow Month": ['09'], "Sow Day": [10]
+        "Yield": [8.76], "Sow Month": ['09'], "Sow Day": [10],
+        "Sow Year": [2012]
     })
     expected_df['Sow Day'] = expected_df['Sow Day'].astype(np.int16)
     expected_df['Ripe Time'] = expected_df['Ripe Time'].astype(np.int32)

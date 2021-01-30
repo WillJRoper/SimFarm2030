@@ -59,6 +59,11 @@ def extract_data(path):
     # cast ripetime to int32 (unsure why?)
     data['Ripe Time'] = data['Ripe Time'].astype(np.int32)
 
+    # Define Sow Year
+    # FIXME: is this correct? shouldn't we count backwards from Year
+    # by the number of sow days to calculate the sow year??
+    data["Sow Year"] = data["Year"] - 1
+
     # # Get extreme outliers
     # lim = np.mean(yields) * 0.75
     # okinds = yields > lim

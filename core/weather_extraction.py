@@ -51,7 +51,6 @@ def read_or_create(
             hdf.close()
 
     if extract_flag:
-        regional_data["Sow Year"] = regional_data["Year"] - 1
         day_keys, month_keys = generate_hdf_keys(regional_data)
         data = extract_weather_data(
             filename, cult, regional_data,
