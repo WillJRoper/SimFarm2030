@@ -49,27 +49,15 @@ def extract_data(path):
     sow_mth_ini = date.dt.month
 
     # Format months
-    sow_mths = []
-    for s in sow_mth_ini:
-        s_str = str(s)
-        if len(s_str) == 1:
-            sow_mths.append("0" + s_str)
-        else:
-            sow_mths.append(s_str)
-
-    # Make separate columns from new data frame
-    data["Sow Day"] = np.int16(sow_day)
+    sow_months = sow_mth_ini.apply('{0:0>2}'.format)
     data.drop(columns=["Sow Month"], inplace=True)
-    data["Sow Month"] = sow_mths
+    data["Sow Month"] = sow_months
 
-    #  Extract columns into numpy arrays
-    lats = data["Lat"].values
-    longs = data["Long"].values
-    years = data["Year"].values
-    ripe_time = np.int32(data["Ripe Time"].values)
-    yields = data["Yield"].values
-    sow_day = data["Sow Day"].values
-    sow_month = data["Sow Month"].values
+    # add sow day column
+    data["Sow Day"] = np.int16(sow_day)
+
+    # cast ripetime to int32 (unsure why?)
+    data['Ripe Time'] = data['Ripe Time'].astype(np.int32)
 
     # # Get extreme outliers
     # lim = np.mean(yields) * 0.75
@@ -86,9 +74,8 @@ def extract_data(path):
     # sow_day = sow_day[okinds]
     # sow_month = sow_month[okinds]
 
-    print("Training on", yields.size, "Regions (data points)")
-
-    return lats, longs, years, ripe_time, yields, sow_day, sow_month
+    print("Training on", data.shape[0], "Regions (data points)")
+    return data
 
 
 # TODO: Modify this code to create Verty large input dataset that
