@@ -4,6 +4,7 @@ from core.weather_extraction import (
     get_weather_anomaly_monthly, get_temp)
 
 import numpy as np
+import pandas as pd
 from os.path import abspath, dirname, join
 import os
 from ordered_set import OrderedSet
@@ -68,8 +69,14 @@ def rounded_equal(array_a, array_b):
 
 
 def test_extract_data():
-    data = extract_data(join(PARENT_DIR, "example_data", "Test_Data.csv"))
-    lats, longs, years, ripe_time, yields, sow_day, sow_month = data
+    test_df = extract_data(join(PARENT_DIR, "example_data", "Test_Data.csv"))
+    lats = test_df["Lat"]
+    longs = test_df["Long"]
+    years = test_df["Year"]
+    ripe_time = test_df["Ripe Time"]
+    yields = test_df["Yield"]
+    sow_day = test_df["Sow Day"]
+    sow_month = test_df["Sow Month"]
     assert rounded_equal(lats, expected_lats)
     assert rounded_equal(longs, expected_longs)
     assert np.array_equal(years, expected_years)
@@ -126,22 +133,18 @@ def test_create(small_dataset):
 
 @pytest.fixture()
 def regional_data():
-    lats = np.array([52.0834])
-    longs = np.array([-1.4545])
-    years = np.array([2013])
-    ripe_days = np.array([1])
-    yields = np.array([8.76])
-    days = np.array([10])
-    months = np.array(['09'])
-    return (
-        lats, longs, years, ripe_days, yields, days, months
-    )
+    df = pd.DataFrame.from_dict({
+        "Lat": [52.0834], "Long": [-1.4545],
+        "Year": [2013], "Ripe Time": [1],
+        "Yield": [8.76], "Sow Month": ['09'], "Sow Day": [10]
+    })
+    df['Sow Day'] = df['Sow Day'].astype(np.int16)
+    df['Ripe Time'] = df['Ripe Time'].astype(np.int32)
+    df["Sow Year"] = df["Year"] - 1
+    return df
 
 
 def test_day_key_generation(regional_data):
-    lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
-    sow_year = years - 1
-
     expected_day_keys = {
         '52.0834.-1.4545': {
             '2012': OrderedSet(['2012_009_0010', '2012_009_0011'])
@@ -152,18 +155,13 @@ def test_day_key_generation(regional_data):
             '2012': OrderedSet(['2012_009'])
         }
     }
-    day_keys, month_keys = generate_hdf_keys(
-        lats, longs, sow_year, sow_days, sow_months, ripe_days)
+    day_keys, month_keys = generate_hdf_keys(regional_data)
     assert day_keys == expected_day_keys
     assert month_keys == expected_month_keys
 
 
 @pytest.fixture()
-def weather_inputs():
-    lats = np.array([52.0834])
-    longs = np.array([-1.4545])
-    years = np.array([2013])
-    sow_year = years - 1
+def weather_inputs(regional_data):
     day_keys = {
         '52.0834.-1.4545': {
             '2012': OrderedSet(['2012_009_0010', '2012_009_0011'])
@@ -175,30 +173,30 @@ def weather_inputs():
         }
     }
     tol = 0.25
-    return (lats, longs, sow_year, day_keys, month_keys, tol)
+    return (regional_data, day_keys, month_keys, tol)
 
 
 def test_get_rainfall(weather_inputs):
-    lats, longs, sow_year, day_keys, _, tol = weather_inputs
+    regional_data, day_keys, _, tol = weather_inputs
     anomoly, weather = get_weather_anomaly_daily(
-        "rainfall", "", lats, longs, sow_year, day_keys, tol)
+        "rainfall", "", regional_data, day_keys, tol)
     assert rounded_equal(anomoly[0][:2], np.array([-3.08042272, -4.63849409]))
     assert rounded_equal(weather[0][:2], np.array([1.73540998, 0.05580953]))
 
 
 def test_get_sunshine(weather_inputs):
-    lats, longs, sow_year, _, month_keys, tol = weather_inputs
+    regional_data, _, month_keys, tol = weather_inputs
     anomoly, weather = get_weather_anomaly_monthly(
-        "sunshine", "", lats, longs, sow_year, month_keys, tol)
+        "sunshine", "", regional_data, month_keys, tol)
     assert rounded_equal(anomoly[0][:1], np.array([47.19762813]))
     assert rounded_equal(weather[0][:1], np.array([173.48350601]))
 
 
 def test_get_temp(weather_inputs):
-    lats, longs, sow_year, day_keys, _, tol = weather_inputs
+    regional_data, day_keys, _, tol = weather_inputs
     temp_max = get_temp(
-        "tempmax", "", lats, longs, sow_year, day_keys, tol)
+        "tempmax", "", regional_data, day_keys, tol)
     assert rounded_equal(temp_max[0][:1], np.array([19.80653811]))
     temp_min = get_temp(
-        "tempmin", "", lats, longs, sow_year, day_keys, tol)
+        "tempmin", "", regional_data, day_keys, tol)
     assert rounded_equal(temp_min[0][:1], np.array([14.55400152]))

@@ -39,10 +39,13 @@ class cultivarModel:
 
         start = time.time()
         self.cult = cultivar
-        (
-            self.reg_lats, self.reg_longs, self.reg_yrs,
-            self.ripe_days, self.yield_data, self.sow_days, self.sow_months
-        ) = cultivar_data
+        self.reg_lats = cultivar_data["Lat"]
+        self.reg_longs = cultivar_data["Long"]
+        self.reg_yrs = cultivar_data["Year"]
+        self.ripe_days = cultivar_data["Ripe Time"]
+        self.yield_data = cultivar_data["Yield"]
+        self.sow_days = cultivar_data["Sow Day"]
+        self.sow_months = cultivar_data["Sow Month"]
 
         (
             self.temp_min, self.temp_max, self.precip, self.precip_anom,

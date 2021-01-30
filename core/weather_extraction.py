@@ -51,12 +51,10 @@ def read_or_create(
             hdf.close()
 
     if extract_flag:
-        lats, longs, years, ripe_days, _, sow_days, sow_months = regional_data
-        sow_year = years - 1
-        day_keys, month_keys = generate_hdf_keys(
-            lats, longs, sow_year, sow_days, sow_months, ripe_days)
+        regional_data["Sow Year"] = regional_data["Year"] - 1
+        day_keys, month_keys = generate_hdf_keys(regional_data)
         data = extract_weather_data(
-            filename, cult, lats, longs, sow_year,
+            filename, cult, regional_data,
             day_keys, month_keys, tol)
         write_dataset(filename, data)
 
@@ -64,13 +62,13 @@ def read_or_create(
 
 
 def extract_weather_data(
-        filename, cult, reg_lats, reg_longs, sow_year,
+        filename, cult, regional_data,
         reg_keys, reg_mth_keys, tol):
     print("Extracting meterological files")
     temp_max = get_temp(
-        "tempmax", cult, reg_lats, reg_longs, sow_year, reg_keys, tol)
+        "tempmax", cult, regional_data, reg_keys, tol)
     temp_min = get_temp(
-        "tempmin", cult, reg_lats, reg_longs, sow_year, reg_keys, tol)
+        "tempmin", cult, regional_data, reg_keys, tol)
 
     # Apply conditions from
     # https://ndawn.ndsu.nodak.edu/help-wheat-growing-degree-days.html
@@ -79,11 +77,11 @@ def extract_weather_data(
     print("Temperature Extracted")
 
     precip_anom, precip = get_weather_anomaly_daily(
-        "rainfall", cult, reg_lats, reg_longs, sow_year, reg_keys, tol)
+        "rainfall", cult, regional_data, reg_keys, tol)
     print("Rainfall Extracted")
 
     sun_anom, sun = get_weather_anomaly_monthly(
-        "sunshine", cult, reg_lats, reg_longs, sow_year, reg_mth_keys, tol)
+        "sunshine", cult, regional_data, reg_mth_keys, tol)
     print("Sunshine Extracted")
 
     # weather_anom_dict = {
@@ -129,18 +127,21 @@ def write_dataset(filename, data):
     hdf.close()
 
 
-def generate_hdf_keys(
-        reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
+def generate_hdf_keys(regional_df):
+    # reg_lats, reg_longs, sow_year, sow_days, sow_months, ripe_days):
 
     # Initialise the dictionary to hold keys
     day_keys_collection = defaultdict(dict)
     month_keys_collection = defaultdict(dict)
 
     # Loop over regions
-    for (lat, long, sow_yr, sow_day, sow_month, ripe_time) in zip(
-            reg_lats, reg_longs,
-            sow_year, sow_days, sow_months,
-            ripe_days):
+    for _, row in regional_df.iterrows():
+        sow_yr = row["Sow Year"]
+        sow_month = row["Sow Month"]
+        sow_day = row["Sow Day"]
+        ripe_time = row["Ripe Time"]
+        lat = row["Lat"]
+        long = row["Long"]
 
         # Extract the sow day for this year
         sow_date = datetime.date(
@@ -198,7 +199,7 @@ def extract_regional_weather(weather, region_filter):
         return np.mean(ex_reg)
 
 
-def get_temp(temp, cult, reg_lats, reg_longs, sow_year, day_keys, tol):
+def get_temp(temp, cult, regional_df, day_keys, tol):
     print(f'Getting the locations for new cultivar: {cult}')
     hdf = h5py.File(
         join(PARENT_DIR, "SimFarm2030_" + temp + ".hdf5"),
@@ -209,9 +210,11 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, day_keys, tol):
 
     # Loop over regions
     print(f'Getting the temperature for those locations: {cult}')
-    temps = np.zeros((len(reg_lats), 400))
-    for llind, (lat, lng, year) in enumerate(
-            zip(reg_lats, reg_longs, sow_year)):
+    temps = np.zeros((regional_df.shape[0], 400))
+    for llind, row in regional_df.iterrows():
+        lat = row["Lat"]
+        lng = row["Long"]
+        year = row["Sow Year"]
 
         grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
@@ -230,9 +233,10 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, day_keys, tol):
     hdf.close()
     return temps
 
+
 # used to extract rainfall
 def get_weather_anomaly_daily(
-        weather, cult, reg_lats, reg_longs, sow_year, day_keys, tol):
+        weather, cult, regional_df, day_keys, tol):
     hdf = h5py.File(
         join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
         "r")
@@ -244,10 +248,12 @@ def get_weather_anomaly_daily(
     longs = hdf["Longitude_grid"][...]
 
     # Loop over regions
-    anom = np.full((len(reg_lats), 400), np.nan)
-    wthr = np.full((len(reg_lats), 400), np.nan)
-    for llind, (lat, lng, year) in enumerate(
-            zip(reg_lats, reg_longs, sow_year)):
+    anom = np.full((regional_df.shape[0], 400), np.nan)
+    wthr = np.full((regional_df.shape[0], 400), np.nan)
+    for llind, row in regional_df.iterrows():
+        lat = row["Lat"]
+        lng = row["Long"]
+        year = row["Sow Year"]
 
         grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
@@ -267,9 +273,10 @@ def get_weather_anomaly_daily(
     hdf.close()
     return anom, wthr
 
+
 # used to extract sunshine and the anomolies (difference between actual and mean for each point)
 def get_weather_anomaly_monthly(
-        weather, cult, reg_lats, reg_longs, sow_year, month_keys, tol):
+        weather, cult, regional_df, month_keys, tol):
 
     hdf = h5py.File(
         join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
@@ -282,10 +289,12 @@ def get_weather_anomaly_monthly(
     longs = hdf["Longitude_grid"][...]
 
     # Loop over regions
-    anom = np.full((len(reg_lats), 15), np.nan)
-    wthr = np.full((len(reg_lats), 15), np.nan)
-    for llind, (lat, lng, year) in enumerate(
-            zip(reg_lats, reg_longs, sow_year)):
+    anom = np.full((regional_df.shape[0], 15), np.nan)
+    wthr = np.full((regional_df.shape[0], 15), np.nan)
+    for llind, row in regional_df.iterrows():
+        lat = row["Lat"]
+        lng = row["Long"]
+        year = row["Sow Year"]
 
         grow_months = month_keys[f"{lat}.{lng}"][f"{year}"]
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
