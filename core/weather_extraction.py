@@ -78,7 +78,7 @@ def extract_weather_data(
     temp_min[temp_min < 0] = 0
     print("Temperature Extracted")
 
-    precip_anom, precip = get_weather_anomaly(
+    precip_anom, precip = get_weather_anomaly_daily(
         "rainfall", cult, reg_lats, reg_longs, sow_year, reg_keys, tol)
     print("Rainfall Extracted")
 
@@ -198,7 +198,7 @@ def extract_regional_weather(weather, region_filter):
         return np.mean(ex_reg)
 
 
-def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
+def get_temp(temp, cult, reg_lats, reg_longs, sow_year, day_keys, tol):
     print(f'Getting the locations for new cultivar: {cult}')
     hdf = h5py.File(
         join(PARENT_DIR, "SimFarm2030_" + temp + ".hdf5"),
@@ -209,34 +209,30 @@ def get_temp(temp, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
 
     # Loop over regions
     print(f'Getting the temperature for those locations: {cult}')
-    wthr = np.zeros((len(reg_lats), 400))
+    temps = np.zeros((len(reg_lats), 400))
     for llind, (lat, lng, year) in enumerate(
             zip(reg_lats, reg_longs, sow_year)):
 
-        hdf_keys = reg_keys[f"{lat}.{lng}"][f"{year}"]
+        grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # Initialise arrays to hold results
         print(f'Initialising array: {llind}')
-        key_ind = 0
-        for key in hdf_keys:
-            year, month, day = key.split("_")
+        for grow_day_idx, grow_date in enumerate(grow_days):
+            _, _, day = grow_date.split("_")
 
-            wthr_grid = hdf[key]["daily_grid"][...]
-
-            reg_temp = extract_regional_weather(wthr_grid, region_filter)
+            wthr_grid = hdf[grow_date]["daily_grid"][...]
+            day_reg_temp = extract_regional_weather(wthr_grid, region_filter)
 
             # If year is within list of years extract the relevant data
-            wthr[llind, key_ind] = reg_temp
-            key_ind += 1
+            temps[llind, grow_day_idx] = day_reg_temp
 
     hdf.close()
+    return temps
 
-    return wthr
-
-
-def get_weather_anomaly(
-        weather, cult, reg_lats, reg_longs, sow_year, reg_keys, tol):
+# used to extract rainfall
+def get_weather_anomaly_daily(
+        weather, cult, reg_lats, reg_longs, sow_year, day_keys, tol):
     hdf = h5py.File(
         join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
         "r")
@@ -253,29 +249,27 @@ def get_weather_anomaly(
     for llind, (lat, lng, year) in enumerate(
             zip(reg_lats, reg_longs, sow_year)):
 
-        hdf_keys = reg_keys[f"{lat}.{lng}"][f"{year}"]
+        grow_days = day_keys[f"{lat}.{lng}"][f"{year}"]
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # Initialise arrays to hold results
-        key_ind = 0
-        for key in hdf_keys:
-            year, month, day = key.split("_")
+        for grow_day_idx, grow_date in enumerate(grow_days):
+            _, _, day = grow_date.split("_")
 
-            wthr_grid = hdf[key]["daily_grid"][...]
+            wthr_grid = hdf[grow_date]["daily_grid"][...]
 
             reg_weather = extract_regional_weather(wthr_grid, region_filter)
 
             # If year is within list of years extract the relevant data
-            wthr[llind, key_ind] = reg_weather
-            anom[llind, key_ind] = reg_weather - uk_monthly_mean[int(day) - 1]
-            key_ind += 1
+            wthr[llind, grow_day_idx] = reg_weather
+            anom[llind, grow_day_idx] = reg_weather - uk_monthly_mean[int(day) - 1]
 
     hdf.close()
     return anom, wthr
 
-
+# used to extract sunshine and the anomolies (difference between actual and mean for each point)
 def get_weather_anomaly_monthly(
-        weather, cult, reg_lats, reg_longs, sow_year, reg_mth_keys, tol):
+        weather, cult, reg_lats, reg_longs, sow_year, month_keys, tol):
 
     hdf = h5py.File(
         join(PARENT_DIR, "SimFarm2030_" + weather + ".hdf5"),
@@ -293,22 +287,20 @@ def get_weather_anomaly_monthly(
     for llind, (lat, lng, year) in enumerate(
             zip(reg_lats, reg_longs, sow_year)):
 
-        hdf_keys = reg_mth_keys[f"{lat}.{lng}"][f"{year}"]
+        grow_months = month_keys[f"{lat}.{lng}"][f"{year}"]
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # Initialise arrays to hold results
-        key_ind = 0
-        for key in hdf_keys:
-            year, month = key.split("_")
+        for grow_month_index, grow_date in enumerate(grow_months):
+            _, month = grow_date.split("_")
 
-            wthr_grid = hdf[key]["monthly_grid"][...]
+            wthr_grid = hdf[grow_date]["monthly_grid"][...]
 
             reg_weather = extract_regional_weather(wthr_grid, region_filter)
 
             # If year is within list of years extract the relevant data
-            wthr[llind, key_ind] = reg_weather
-            anom[llind, key_ind] = reg_weather - uk_monthly_mean[int(month) - 1]
-            key_ind += 1
+            wthr[llind, grow_month_index] = reg_weather
+            anom[llind, grow_month_index] = reg_weather - uk_monthly_mean[int(month) - 1]
 
     hdf.close()
     return anom, wthr

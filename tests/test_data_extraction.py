@@ -1,7 +1,7 @@
 from core.utilities import extract_data
 from core.weather_extraction import (
-    read_or_create, generate_hdf_keys, get_weather_anomaly,
-    get_weather_anomaly_monthly, get_temp, extract_weather)
+    read_or_create, generate_hdf_keys, get_weather_anomaly_daily,
+    get_weather_anomaly_monthly, get_temp)
 
 import numpy as np
 from os.path import abspath, dirname, join
@@ -180,7 +180,7 @@ def weather_inputs():
 
 def test_get_rainfall(weather_inputs):
     lats, longs, sow_year, day_keys, _, tol = weather_inputs
-    anomoly, weather = get_weather_anomaly(
+    anomoly, weather = get_weather_anomaly_daily(
         "rainfall", "", lats, longs, sow_year, day_keys, tol)
     assert rounded_equal(anomoly[0][:2], np.array([-3.08042272, -4.63849409]))
     assert rounded_equal(weather[0][:2], np.array([1.73540998, 0.05580953]))
