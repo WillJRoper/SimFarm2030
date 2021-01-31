@@ -11,7 +11,7 @@ def test_extract():
         join(PARENT_DIR, "example_data", "Test_Single_Data.csv"))
     expected_df = pd.DataFrame.from_dict({
         "Lat": [52.0834], "Long": [-1.4545],
-        "Year": [2013], "Ripe Time": [100],
+        "Year": [2013], "Ripe Time": [1],
         "Yield": [8.76], "Sow Month": ['09'], "Sow Day": [10],
         "Sow Year": [2012]
     })
