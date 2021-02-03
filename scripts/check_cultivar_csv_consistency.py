@@ -14,4 +14,4 @@ with open(RIPETIME_PATH) as rf, open(YIELD_PATH) as yf:
     y_comp_df = y_df[["Region", "Lat", "Long", "Year"]].reset_index(drop=True)
 
     eq = rt_comp_df == y_comp_df
-    print("hi")
+    assert(rt_comp_df.equals(y_comp_df))
