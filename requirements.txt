@@ -9,3 +9,5 @@ h5py
 emcee
 corner
 pystan
+tqdm
+ordered_set
