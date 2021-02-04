@@ -4,6 +4,7 @@ import numpy as np
 import datetime
 from collections import defaultdict
 from ordered_set import OrderedSet
+from tqdm import tqdm
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
@@ -17,13 +18,10 @@ PARENT_DIR = dirname(dirname(abspath(__file__)))
 def read_from_existing_file(hdf):
     temp_max = hdf["Temperature_Maximum"][...]
     temp_min = hdf["Temperature_Minimum"][...]
-    print("Temperature Extracted")
     precip_anom = hdf["Rainfall_Anomaly"][...]
     precip = hdf["Rainfall"][...]
-    print("Rainfall Extracted")
     sun_anom = hdf["Sunshine_Anomaly"][...]
     sun = hdf["Sunshine"][...]
-    print("Sunshine Extracted")
     return temp_min, temp_max, precip, precip_anom, sun, sun_anom
 
 
@@ -63,7 +61,7 @@ def read_or_create(
 def extract_weather_data(
         filename, cult, regional_data,
         reg_keys, reg_mth_keys, tol):
-    print("Extracting meterological files")
+    print(f"Extracting meterological data for {cult}")
     temp_max = get_temp(
         "tempmax", cult, regional_data, reg_keys, tol)
     temp_min = get_temp(
@@ -73,20 +71,13 @@ def extract_weather_data(
     # https://ndawn.ndsu.nodak.edu/help-wheat-growing-degree-days.html
     temp_max[temp_max < 0] = 0
     temp_min[temp_min < 0] = 0
-    print("Temperature Extracted")
 
     precip_anom, precip = get_weather_anomaly_daily(
         "rainfall", cult, regional_data, reg_keys, tol)
-    print("Rainfall Extracted")
 
     sun_anom, sun = get_weather_anomaly_monthly(
         "sunshine", cult, regional_data, reg_mth_keys, tol)
-    print("Sunshine Extracted")
 
-    # weather_anom_dict = {
-    #     "rainfall": precip_anom,
-    #     "sunshine": sun_anom
-    # }  # unused ???
     return temp_min, temp_max, precip, precip_anom, sun, sun_anom
 
 
@@ -199,7 +190,6 @@ def extract_regional_weather(weather, region_filter):
 
 
 def get_temp(temp, cult, regional_df, day_keys, tol):
-    print(f'Getting the locations for new cultivar: {cult}')
     hdf = h5py.File(
         join(PARENT_DIR, "SimFarm2030_" + temp + ".hdf5"),
         "r")
@@ -208,9 +198,11 @@ def get_temp(temp, cult, regional_df, day_keys, tol):
     longs = hdf["Longitude_grid"][...]
 
     # Loop over regions
-    print(f'Getting the temperature for those locations: {cult}')
-    temps = np.zeros((regional_df.shape[0], 400))
-    for llind, row in regional_df.iterrows():
+    num_records = regional_df.shape[0]
+    temps = np.zeros((num_records, 400))
+    for llind, row in tqdm(
+            regional_df.iterrows(), total=num_records,
+            desc=f"Extracting {temp}", colour='red'):
         lat = row["Lat"]
         lng = row["Long"]
         year = row["Sow Year"]
@@ -219,7 +211,6 @@ def get_temp(temp, cult, regional_df, day_keys, tol):
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # Initialise arrays to hold results
-        print(f'Initialising array: {llind}')
         for grow_day_idx, grow_date in enumerate(grow_days):
             _, _, day = grow_date.split("_")
 
@@ -247,9 +238,12 @@ def get_weather_anomaly_daily(
     longs = hdf["Longitude_grid"][...]
 
     # Loop over regions
-    anom = np.full((regional_df.shape[0], 400), np.nan)
-    wthr = np.full((regional_df.shape[0], 400), np.nan)
-    for llind, row in regional_df.iterrows():
+    num_records = regional_df.shape[0]
+    anom = np.full((num_records, 400), np.nan)
+    wthr = np.full((num_records, 400), np.nan)
+    for llind, row in tqdm(
+            regional_df.iterrows(), total=num_records,
+            desc=f"Extracting {weather}", colour='blue'):
         lat = row["Lat"]
         lng = row["Long"]
         year = row["Sow Year"]
@@ -288,9 +282,12 @@ def get_weather_anomaly_monthly(
     longs = hdf["Longitude_grid"][...]
 
     # Loop over regions
-    anom = np.full((regional_df.shape[0], 15), np.nan)
-    wthr = np.full((regional_df.shape[0], 15), np.nan)
-    for llind, row in regional_df.iterrows():
+    num_records = regional_df.shape[0]
+    anom = np.full((num_records, 15), np.nan)
+    wthr = np.full((num_records, 15), np.nan)
+    for llind, row in tqdm(
+            regional_df.iterrows(), total=num_records,
+            desc=f"Extracting {weather}", colour='yellow'):
         lat = row["Lat"]
         lng = row["Long"]
         year = row["Sow Year"]
