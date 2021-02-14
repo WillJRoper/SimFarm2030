@@ -35,7 +35,9 @@ def extract_data(path):
     #     * Check for duplicate entries
 
     #  Open the csv file
-    data = pd.read_csv(path, usecols=("Lat", "Long", "Year", "Sow Month", "Ripe Time", "Yield"))
+    data = pd.read_csv(
+        path,
+        usecols=("Cultivar", "Lat", "Long", "Year", "Sow Month", "Ripe Time", "Yield"))
 
     #  Remove NaN entries
     data.dropna(subset=["Yield"], inplace=True)
