@@ -12,10 +12,7 @@ from weather_extraction import create_region_filter, extract_regional_weather
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 
-def extract_rainfall(all_cultivars_df, tol):
-    hdf = h5py.File(
-        join(PARENT_DIR, "SimFarm2030_rainfall.hdf5"), "r")
-
+def extract_rainfall(all_cultivars_df, hdf, tol):
     dataset = defaultdict(list)
     lats = hdf["Latitude_grid"][...]
     longs = hdf["Longitude_grid"][...]
@@ -41,7 +38,7 @@ def extract_rainfall(all_cultivars_df, tol):
                 fetch_regional_weather(day)
                 for day in generate_hdf_day_keys(row)])
 
-    print(dataset["Skyfall"])
+    return dataset
 
 
 def generate_hdf_day_keys(cultivar_row):
@@ -61,6 +58,8 @@ if __name__ == '__main__':
             PARENT_DIR,
             "All_Cultivars_Spreadsheets",
             "all_cultivars.csv"))
+    hdf = h5py.File(
+        join(PARENT_DIR, "SimFarm2030_rainfall.hdf5"), "r")
     extract_rainfall(
         all_cultivars_df.sort_values(["Lat", "Long", "Year"]),
-        tol=0.25)
+        hdf, tol=0.25)
