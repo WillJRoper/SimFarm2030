@@ -3,7 +3,9 @@ import numpy as np
 from os.path import abspath, dirname
 from core.weather_extraction import (
     create_region_filter, extract_regional_weather)
-from core.extract_all_weather import extract_rainfall, generate_hdf_day_keys, generate_hdf_month_keys
+from core.extract_all_weather import (
+    extract_rainfall, extract_sunshine,
+    generate_hdf_day_keys, generate_hdf_month_keys)
 from collections import defaultdict
 
 import pytest
@@ -91,6 +93,29 @@ def hdf_rainfall(monthly_mean, lat_grid, lng_grid):
 
 
 @pytest.fixture
+def monthly_mean_sun():
+    return np.array([
+        0, 0, 0, 0, 0, 0, 0, 1, 9, 2
+    ])
+
+
+@pytest.fixture
+def hdf_sunshine(monthly_mean_sun, lat_grid, lng_grid):
+    return {
+        'all_years_mean': monthly_mean_sun,
+        'Latitude_grid': lat_grid,
+        'Longitude_grid': lng_grid,
+        '2005_010': {
+            'daily_grid': np.array([
+                [21.0, 14.0, 0.0],
+                [0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0]
+            ])
+        }
+    }
+
+
+@pytest.fixture
 def all_cultivars_df():
     return pd.DataFrame.from_records([
         {
@@ -129,16 +154,39 @@ def test_extract_rainfall(hdf_rainfall, all_cultivars_df):
                 list,
                 {
                     'rainfall': [[17.5, 14.5]],
-                    'anomaly': [[-2.0, 1.5]]
+                    'rainfall_anomaly': [[-2.0, 1.5]]
                 }),
             'Ambrosia': defaultdict(
                 list,
                 {
                     'rainfall': [[17.5, 14.5]],
-                    'anomaly': [[-2.0, 1.5]]
+                    'rainfall_anomaly': [[-2.0, 1.5]]
                 })
         })
     assert rainfall == e_data
+
+
+def test_extract_sunshine(hdf_sunshine, all_cultivars_df):
+    sunshine = extract_sunshine(all_cultivars_df, hdf_sunshine, 0.25)
+    # get an array of mean weather for each region for each grow
+    # day (17.5 average for grow day 1, 14.5 grow day 2, only for one location)
+    e_data = defaultdict(
+        list,
+        {
+            'Alchemy': defaultdict(
+                list,
+                {
+                    'sunshine': [[17.5]],
+                    'sunshine_anomaly': [[15.5]]
+                }),
+            'Ambrosia': defaultdict(
+                list,
+                {
+                    'sunshine': [[17.5]],
+                    'sunshine_anomaly': [[15.5]]
+                })
+        })
+    assert sunshine == e_data
 
 
 def test_generate_hdf_day_keys(all_cultivars_df):

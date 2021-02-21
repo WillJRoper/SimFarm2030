@@ -45,8 +45,47 @@ def extract_rainfall(all_cultivars_df, hdf, tol):
                 _, _, day = grow_date.split("_")
                 anom = rain - uk_monthly_mean[int(day) - 1]
                 anomaly.append(anom)
-            cultivar_data['anomaly'].append(anomaly)
+            cultivar_data['rainfall_anomaly'].append(anomaly)
             cultivar_data['rainfall'].append(rainfall)
+
+    return dataset
+
+
+def extract_sunshine(all_cultivars_df, hdf, tol):
+    dataset = defaultdict(lambda: defaultdict(list))
+    # Get the mean weather data for each month of the year
+    uk_monthly_mean = hdf["all_years_mean"][...]
+    lats = hdf["Latitude_grid"][...]
+    longs = hdf["Longitude_grid"][...]
+
+    latlng_groups = all_cultivars_df.groupby(["Lat", "Long"])
+    num_groups = len(latlng_groups.size())
+    for (lat, lng), group, in tqdm(
+            latlng_groups, total=num_groups,
+            desc="Regions", colour="Yellow"):
+        region_filter = create_region_filter(lats, longs, lat, lng, tol)
+
+        # cache_size is the closest power of 2 to
+        # 3 months worth of sow days (Sep-Nov) + 400 grow days)
+        @lru_cache(maxsize=512)
+        def fetch_regional_weather(grow_day):
+            weather_grid = hdf[grow_day]["daily_grid"]
+            return extract_regional_weather(weather_grid, region_filter)
+
+        for i, row in tqdm(
+                group.iterrows(), total=group.shape[0],
+                desc="Cultivar Years"):
+            cultivar_data = dataset[row.Cultivar]
+            sunshine = []
+            anomaly = []
+            for grow_date in generate_hdf_month_keys(row):
+                sun = fetch_regional_weather(grow_date)
+                sunshine.append(sun)
+                _, month = grow_date.split("_")
+                anom = sun - uk_monthly_mean[int(month) - 1]
+                anomaly.append(anom)
+            cultivar_data['sunshine_anomaly'].append(anomaly)
+            cultivar_data['sunshine'].append(sunshine)
 
     return dataset
 
