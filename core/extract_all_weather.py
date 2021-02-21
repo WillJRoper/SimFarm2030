@@ -13,7 +13,9 @@ PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 
 def extract_rainfall(all_cultivars_df, hdf, tol):
-    dataset = defaultdict(list)
+    dataset = defaultdict(lambda: defaultdict(list))
+    # Get the mean weather data for each month of the year
+    uk_monthly_mean = hdf["all_years_mean"][...]
     lats = hdf["Latitude_grid"][...]
     longs = hdf["Longitude_grid"][...]
 
@@ -34,9 +36,17 @@ def extract_rainfall(all_cultivars_df, hdf, tol):
         for i, row in tqdm(
                 group.iterrows(), total=group.shape[0],
                 desc="Cultivar Years"):
-            dataset[row.Cultivar].append([
-                fetch_regional_weather(day)
-                for day in generate_hdf_day_keys(row)])
+            cultivar_data = dataset[row.Cultivar]
+            rainfall = []
+            anomaly = []
+            for grow_date in generate_hdf_day_keys(row):
+                rain = fetch_regional_weather(grow_date)
+                rainfall.append(rain)
+                _, _, day = grow_date.split("_")
+                anom = rain - uk_monthly_mean[int(day) - 1]
+                anomaly.append(anom)
+            cultivar_data['anomaly'].append(anomaly)
+            cultivar_data['rainfall'].append(rainfall)
 
     return dataset
 

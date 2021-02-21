@@ -61,8 +61,16 @@ def test_extract_regional_weather(weather_grid):
 
 
 @pytest.fixture
-def hdf_rainfall(lat_grid, lng_grid):
+def monthly_mean():
+    return np.array([
+        19.5, 13
+    ])
+
+
+@pytest.fixture
+def hdf_rainfall(monthly_mean, lat_grid, lng_grid):
     return {
+        'all_years_mean': monthly_mean,
         'Latitude_grid': lat_grid,
         'Longitude_grid': lng_grid,
         '2005_010_0001': {
@@ -116,7 +124,20 @@ def test_extract_rainfall(hdf_rainfall, all_cultivars_df):
     # day (17.5 average for grow day 1, 14.5 grow day 2, only for one location)
     e_data = defaultdict(
         list,
-        {'Alchemy': [[17.5, 14.5]], 'Ambrosia': [[17.5, 14.5]]})
+        {
+            'Alchemy': defaultdict(
+                list,
+                {
+                    'rainfall': [[17.5, 14.5]],
+                    'anomaly': [[-2.0, 1.5]]
+                }),
+            'Ambrosia': defaultdict(
+                list,
+                {
+                    'rainfall': [[17.5, 14.5]],
+                    'anomaly': [[-2.0, 1.5]]
+                })
+        })
     assert rainfall == e_data
 
 
