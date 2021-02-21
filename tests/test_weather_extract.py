@@ -3,7 +3,7 @@ import numpy as np
 from os.path import abspath, dirname
 from core.weather_extraction import (
     create_region_filter, extract_regional_weather)
-from core.extract_all_weather import extract_rainfall, generate_hdf_day_keys
+from core.extract_all_weather import extract_rainfall, generate_hdf_day_keys, generate_hdf_month_keys
 from collections import defaultdict
 
 import pytest
@@ -146,3 +146,10 @@ def test_generate_hdf_day_keys(all_cultivars_df):
     hdf_day_keys = list(generate_hdf_day_keys(row_0))
     e_day_keys = ['2005_010_0001', '2005_010_0002']
     assert e_day_keys == hdf_day_keys
+
+
+def test_generate_hdf_month_keys(all_cultivars_df):
+    row_0 = all_cultivars_df.iloc[0]
+    hdf_month_keys = list(generate_hdf_month_keys(row_0))
+    e_mth_keys = ['2005_010']
+    assert e_mth_keys == hdf_month_keys

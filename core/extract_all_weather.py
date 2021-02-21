@@ -62,6 +62,22 @@ def generate_hdf_day_keys(cultivar_row):
         yield f"{grow_day.year}_{grow_day.month:03}_{grow_day.day:04}"
 
 
+def generate_hdf_month_keys(cultivar_row):
+    sow_date = date(
+        year=cultivar_row["Sow Year"],
+        month=int(cultivar_row["Sow Month"]),
+        day=int(cultivar_row["Sow Day"]))
+    ripe_time = cultivar_row["Ripe Time"]
+
+    yield f"{sow_date.year}_{sow_date.month:03}"
+    prev_month = sow_date.month
+    for nday in range(1, ripe_time + 1):
+        grow_day = sow_date + timedelta(days=nday)
+        if grow_day.month != prev_month:
+            yield f"{grow_day.year}_{grow_day.month:03}"
+            prev_month = grow_day.month
+
+
 if __name__ == '__main__':
     all_cultivars_df = extract_data(
         join(
