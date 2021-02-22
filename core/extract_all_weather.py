@@ -4,6 +4,8 @@ from functools import lru_cache
 import h5py
 from os.path import abspath, dirname, join
 import pandas as pd
+import numpy as np
+from itertools import zip_longest
 from tqdm import tqdm
 
 from utilities import extract_data
@@ -90,6 +92,41 @@ def extract_sunshine(all_cultivars_df, hdf, tol):
     return dataset
 
 
+def extract_temp(all_cultivars_df, hdf, temp_type, tol):
+    dataset = defaultdict(lambda: defaultdict(list))
+    lats = hdf["Latitude_grid"][...]
+    longs = hdf["Longitude_grid"][...]
+
+    latlng_groups = all_cultivars_df.groupby(["Lat", "Long"])
+    num_groups = len(latlng_groups.size())
+    for (lat, lng), group, in tqdm(
+            latlng_groups, total=num_groups,
+            desc="Regions", colour="Yellow"):
+        region_filter = create_region_filter(lats, longs, lat, lng, tol)
+
+        # cache_size is the closest power of 2 to
+        # 3 months worth of sow days (Sep-Nov) + 400 grow days)
+        @lru_cache(maxsize=512)
+        def fetch_regional_weather(grow_day):
+            weather_grid = hdf[grow_day]["daily_grid"]
+            return extract_regional_weather(weather_grid, region_filter)
+
+        for i, row in tqdm(
+                group.iterrows(), total=group.shape[0],
+                desc="Cultivar Years"):
+            cultivar_data = dataset[row.Cultivar]
+            temperature = []
+            for grow_date in generate_hdf_day_keys(row):
+                temp = fetch_regional_weather(grow_date)
+                temperature.append(temp)
+            if temp_type == 'min':
+                cultivar_data['temp_min'].append(temperature)
+            else:
+                cultivar_data['temp_max'].append(temperature)
+
+    return dataset
+
+
 def generate_hdf_day_keys(cultivar_row):
     sow_date = date(
         year=cultivar_row["Sow Year"],
@@ -115,6 +152,10 @@ def generate_hdf_month_keys(cultivar_row):
         if grow_day.month != prev_month:
             yield f"{grow_day.year}_{grow_day.month:03}"
             prev_month = grow_day.month
+
+
+def to_np_array(array):
+    return np.array(list(zip_longest(*array, fillvalue=0))).T
 
 
 if __name__ == '__main__':
