@@ -193,14 +193,34 @@ def write_weather_to_hdf(output_hdf, cultivars_weather_data):
                 data=data, compression="gzip")
 
 
+def extract_all_weather(all_cultivars_df, tol=0.25):
+    with hdf_open(WEATHER_OUTPUT_HDF, access="a") as outfile:
+
+        with hdf_open(TEMP_MAX_HDF) as f:
+            temp_max = extract_temp(all_cultivars_df, f, "max", tol)
+        temp_max = map_dict(nested_to_np_array, temp_max)
+        write_weather_to_hdf(outfile, temp_max)
+
+        with hdf_open(TEMP_MIN_HDF) as f:
+            temp_min = extract_temp(all_cultivars_df, f, "min", tol)
+        temp_min = map_dict(nested_to_np_array, temp_min)
+        write_weather_to_hdf(outfile, temp_min)
+
+        with hdf_open(RAINFALL_HDF) as f:
+            rainfall = extract_rainfall(all_cultivars_df, f, tol)
+        rainfall = map_dict(nested_to_np_array, rainfall)
+        write_weather_to_hdf(outfile, rainfall)
+
+        with hdf_open(SUNSHINE_HDF) as f:
+            sunshine = extract_sunshine(all_cultivars_df, f, tol)
+        sunshine = map_dict(nested_to_np_array, sunshine)
+        write_weather_to_hdf(outfile, sunshine)
+
+
 if __name__ == '__main__':
     all_cultivars_df = extract_data(
         join(
             PARENT_DIR,
             "All_Cultivars_Spreadsheets",
             "all_cultivars.csv"))
-    hdf = h5py.File(
-        join(PARENT_DIR, "SimFarm2030_rainfall.hdf5"), "r")
-    extract_rainfall(
-        all_cultivars_df.sort_values(["Lat", "Long", "Year"]),
-        hdf, tol=0.25)
+    extract_all_weather(all_cultivars_df)
