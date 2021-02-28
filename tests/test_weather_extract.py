@@ -176,14 +176,14 @@ def test_extract_rainfall(hdf_rainfall, all_cultivars_df):
             'Alchemy': defaultdict(
                 list,
                 {
-                    'rainfall': [[17.5, 14.5]],
-                    'rainfall_anomaly': [[-2.0, 1.5]]
+                    'Rainfall': [[17.5, 14.5]],
+                    'Rainfall_Anomaly': [[-2.0, 1.5]]
                 }),
             'Ambrosia': defaultdict(
                 list,
                 {
-                    'rainfall': [[17.5, 14.5]],
-                    'rainfall_anomaly': [[-2.0, 1.5]]
+                    'Rainfall': [[17.5, 14.5]],
+                    'Rainfall_Anomaly': [[-2.0, 1.5]]
                 })
         })
     assert rainfall == e_data
@@ -199,17 +199,18 @@ def test_extract_sunshine(hdf_sunshine, all_cultivars_df):
             'Alchemy': defaultdict(
                 list,
                 {
-                    'sunshine': [[17.5]],
-                    'sunshine_anomaly': [[15.5]]
+                    'Sunshine': [[17.5]],
+                    'Sunshine_Anomaly': [[15.5]]
                 }),
             'Ambrosia': defaultdict(
                 list,
                 {
-                    'sunshine': [[17.5]],
-                    'sunshine_anomaly': [[15.5]]
+                    'Sunshine': [[17.5]],
+                    'Sunshine_Anomaly': [[15.5]]
                 })
         })
     assert sunshine == e_data
+
 
 def test_extract_temp_min(hdf_temp, all_cultivars_df):
     temp = extract_temp(all_cultivars_df, hdf_temp, 'min', 0.25)
@@ -221,12 +222,12 @@ def test_extract_temp_min(hdf_temp, all_cultivars_df):
             'Alchemy': defaultdict(
                 list,
                 {
-                    'temp_min': [[17.5, 14.5]]
+                    'Temperature_Minimum': [[17.5, 14.5]]
                 }),
             'Ambrosia': defaultdict(
                 list,
                 {
-                    'temp_min': [[17.5, 14.5]]
+                    'Temperature_Minimum': [[17.5, 14.5]]
                 })
         })
     assert temp == e_data
@@ -242,12 +243,12 @@ def test_extract_temp_max(hdf_temp, all_cultivars_df):
             'Alchemy': defaultdict(
                 list,
                 {
-                    'temp_max': [[17.5, 14.5]]
+                    'Temperature_Maximum': [[17.5, 14.5]]
                 }),
             'Ambrosia': defaultdict(
                 list,
                 {
-                    'temp_max': [[17.5, 14.5]]
+                    'Temperature_Maximum': [[17.5, 14.5]]
                 })
         })
     assert temp == e_data

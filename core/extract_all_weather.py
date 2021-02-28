@@ -44,8 +44,8 @@ def extract_rainfall(all_cultivars_df, hdf, tol):
                 _, _, day = grow_date.split("_")
                 anom = rain - uk_monthly_mean[int(day) - 1]
                 anomaly.append(anom)
-            cultivar_data['rainfall_anomaly'].append(anomaly)
-            cultivar_data['rainfall'].append(rainfall)
+            cultivar_data['Rainfall_Anomaly'].append(anomaly)
+            cultivar_data['Rainfall'].append(rainfall)
 
     return dataset
 
@@ -81,8 +81,8 @@ def extract_sunshine(all_cultivars_df, hdf, tol):
                 _, month = grow_date.split("_")
                 anom = sun - uk_monthly_mean[int(month) - 1]
                 anomaly.append(anom)
-            cultivar_data['sunshine_anomaly'].append(anomaly)
-            cultivar_data['sunshine'].append(sunshine)
+            cultivar_data['Sunshine_Anomaly'].append(anomaly)
+            cultivar_data['Sunshine'].append(sunshine)
 
     return dataset
 
@@ -113,9 +113,9 @@ def extract_temp(all_cultivars_df, hdf, temp_type, tol):
                 temp = fetch_regional_weather(grow_date)
                 temperature.append(temp)
             if temp_type == 'min':
-                cultivar_data['temp_min'].append(temperature)
+                cultivar_data['Temperature_Minimum'].append(temperature)
             else:
-                cultivar_data['temp_max'].append(temperature)
+                cultivar_data['Temperature_Maximum'].append(temperature)
 
     return dataset
 
