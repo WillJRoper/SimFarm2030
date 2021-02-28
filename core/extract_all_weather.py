@@ -12,6 +12,14 @@ from weather_extraction import create_region_filter, extract_regional_weather
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
+RAINFALL_HDF = join(PARENT_DIR, "SimFarm2030_rainfall.hdf5")
+TEMP_MIN_HDF = join(PARENT_DIR, "SimFarm2030_tempmin.hdf5")
+TEMP_MAX_HDF = join(PARENT_DIR, "SimFarm2030_tempmax.hdf5")
+SUNSHINE_HDF = join(PARENT_DIR, "SimFarm2030_sunshine.hdf5")
+
+WEATHER_OUTPUT_HDF = join(
+    PARENT_DIR, "Climate_Data", "all_cultivars_weather.hdf")
+
 
 def extract_rainfall(all_cultivars_df, hdf, tol):
     dataset = defaultdict(lambda: defaultdict(list))
