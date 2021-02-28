@@ -34,9 +34,7 @@ def extract_rainfall(all_cultivars_df, hdf, tol):
             weather_grid = hdf[grow_day]["daily_grid"]
             return extract_regional_weather(weather_grid, region_filter)
 
-        for i, row in tqdm(
-                group.iterrows(), total=group.shape[0],
-                desc="Cultivar Years"):
+        for i, row in group.iterrows():
             cultivar_data = dataset[row.Cultivar]
             rainfall = []
             anomaly = []
@@ -73,9 +71,7 @@ def extract_sunshine(all_cultivars_df, hdf, tol):
             weather_grid = hdf[grow_day]["daily_grid"]
             return extract_regional_weather(weather_grid, region_filter)
 
-        for i, row in tqdm(
-                group.iterrows(), total=group.shape[0],
-                desc="Cultivar Years"):
+        for i, row in group.iterrows():
             cultivar_data = dataset[row.Cultivar]
             sunshine = []
             anomaly = []
@@ -110,9 +106,7 @@ def extract_temp(all_cultivars_df, hdf, temp_type, tol):
             weather_grid = hdf[grow_day]["daily_grid"]
             return extract_regional_weather(weather_grid, region_filter)
 
-        for i, row in tqdm(
-                group.iterrows(), total=group.shape[0],
-                desc="Cultivar Years"):
+        for i, row in group.iterrows():
             cultivar_data = dataset[row.Cultivar]
             temperature = []
             for grow_date in generate_hdf_day_keys(row):
