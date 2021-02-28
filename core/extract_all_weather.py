@@ -67,8 +67,8 @@ def extract_sunshine(all_cultivars_df, hdf, tol):
         # cache_size is the closest power of 2 to
         # 3 months worth of sow days (Sep-Nov) + 400 grow days)
         @lru_cache(maxsize=512)
-        def fetch_regional_weather(grow_day):
-            weather_grid = hdf[grow_day]["daily_grid"]
+        def fetch_regional_weather(grow_month):
+            weather_grid = hdf[grow_month]["monthly_grid"]
             return extract_regional_weather(weather_grid, region_filter)
 
         for i, row in group.iterrows():

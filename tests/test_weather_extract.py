@@ -107,7 +107,7 @@ def hdf_sunshine(monthly_mean_sun, lat_grid, lng_grid):
         'Latitude_grid': lat_grid,
         'Longitude_grid': lng_grid,
         '2005_010': {
-            'daily_grid': np.array([
+            'monthly_grid': np.array([
                 [21.0, 14.0, 0.0],
                 [0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0]
@@ -137,6 +137,7 @@ def hdf_temp(monthly_mean, lat_grid, lng_grid):
             ])
         }
     }
+
 
 @pytest.fixture
 def all_cultivars_df():
