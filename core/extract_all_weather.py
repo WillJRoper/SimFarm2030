@@ -159,6 +159,14 @@ def to_np_array(array):
     return np.array(list(zip_longest(*array, fillvalue=0))).T
 
 
+def map_dict(f, dictionary):
+    return {key: f(value) for key, value in dictionary.items()}
+
+
+def nested_to_np_array(dictionary):
+    return map_dict(to_np_array, dictionary)
+
+
 if __name__ == '__main__':
     all_cultivars_df = extract_data(
         join(
