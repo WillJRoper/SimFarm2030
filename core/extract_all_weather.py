@@ -1,4 +1,5 @@
 from collections import defaultdict
+from contextlib import contextmanager
 from datetime import date, timedelta
 from functools import lru_cache
 import h5py
@@ -167,6 +168,11 @@ def nested_to_np_array(dictionary):
     return map_dict(to_np_array, dictionary)
 
 
+@contextmanager
+def hdf_open(filename, access="r"):
+    hdf = h5py.File(filename, access)
+    yield hdf
+    hdf.close()
 if __name__ == '__main__':
     all_cultivars_df = extract_data(
         join(
