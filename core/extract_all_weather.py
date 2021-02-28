@@ -24,7 +24,7 @@ def extract_rainfall(all_cultivars_df, hdf, tol):
     num_groups = len(latlng_groups.size())
     for (lat, lng), group, in tqdm(
             latlng_groups, total=num_groups,
-            desc="Regions", colour="Yellow"):
+            desc="Rainfall", colour="Blue"):
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # cache_size is the closest power of 2 to
@@ -61,7 +61,7 @@ def extract_sunshine(all_cultivars_df, hdf, tol):
     num_groups = len(latlng_groups.size())
     for (lat, lng), group, in tqdm(
             latlng_groups, total=num_groups,
-            desc="Regions", colour="Yellow"):
+            desc="Sunshine", colour="Yellow"):
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # cache_size is the closest power of 2 to
@@ -96,7 +96,7 @@ def extract_temp(all_cultivars_df, hdf, temp_type, tol):
     num_groups = len(latlng_groups.size())
     for (lat, lng), group, in tqdm(
             latlng_groups, total=num_groups,
-            desc="Regions", colour="Yellow"):
+            desc="Regions", colour="Red"):
         region_filter = create_region_filter(lats, longs, lat, lng, tol)
 
         # cache_size is the closest power of 2 to
