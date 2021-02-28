@@ -82,6 +82,10 @@ def extract_data(path):
     # sow_month = sow_month[okinds]
 
     print("Training on", data.shape[0], "Regions (data points)")
+    # The order of records in the weather extraction data (temp, sun, rain)
+    # have to be consistent with those in the cultivar data (yield)
+    # both use this function, so we sort here.
+    data = data.sort_values(["Lat", "Long", "Year"])
     return data
 
 
