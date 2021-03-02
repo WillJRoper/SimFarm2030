@@ -20,6 +20,7 @@ SUNSHINE_HDF = join(PARENT_DIR, "SimFarm2030_sunshine.hdf5")
 
 WEATHER_OUTPUT_HDF = join(
     PARENT_DIR, "Climate_Data", "all_cultivars_weather.hdf")
+EXTRACTED_WEATHER_HDF = WEATHER_OUTPUT_HDF
 
 
 def extract_rainfall(all_cultivars_df, hdf, tol):
@@ -215,6 +216,12 @@ def extract_all_weather(all_cultivars_df, tol=0.25):
             sunshine = extract_sunshine(all_cultivars_df, f, tol)
         sunshine = map_dict(nested_to_np_array, sunshine)
         write_weather_to_hdf(outfile, sunshine)
+
+
+def fetch_weather(cultivar, extractor_f):
+    with hdf_open(EXTRACTED_WEATHER_HDF) as f:
+        cultivar_data = extractor_f(f[cultivar])
+    return cultivar_data
 
 
 if __name__ == '__main__':

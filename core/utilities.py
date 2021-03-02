@@ -26,8 +26,9 @@ def parse_date(date_string):
 
 
 def extract_cultivar(cultivar):
-    return extract_data(
-        join(PARENT_DIR, "example_data", cultivar + "_Data.csv"))
+    all_data = extract_data(
+        join(PARENT_DIR, "All_Cultivars_Spreadsheets", "all_cultivars.csv"))
+    return all_data[all_data.Cultivar == cultivar]
 
 
 def extract_data(path):
