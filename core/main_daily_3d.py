@@ -54,5 +54,5 @@ if __name__ == "__main__":
     # simfarm.post_prior_comp()  <-- see above comment
 
     # https://emcee.readthedocs.io/en/stable/tutorials/autocorr/ - is it steps?
-    tau = np.mean(simfarm.model.get_autocorr_time())
+    tau = simfarm.model.get_autocorr_time()
     print(f"Number of steps until the initial start is 'forgotten' {tau:.3f}")
