@@ -1,6 +1,6 @@
 from core.model_daily_3d import cultivarModel
-from core.utilities import extract_cultivar
-from core.weather_extraction import read_or_create
+from core.cultivar_pandas_utils import extract_cultivar
+from core.extract_all_weather import fetch_weather
 import numpy as np
 
 
@@ -87,7 +87,7 @@ def mock_seed_generator(a, b, c):
 def test_training():
     cult = 'Consort'
     cultivar_data = extract_cultivar(cult)
-    cultivar_weather_data = read_or_create(cult, cultivar_data)
+    cultivar_weather_data = fetch_weather(cult)
 
     simfarm = cultivarModel(
         cult, cultivar_data, cultivar_weather_data, metric='Yield',

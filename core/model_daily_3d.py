@@ -1,16 +1,12 @@
-import datetime
 import os
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname
 import time
 import warnings
 # from multiprocessing import Pool
 
 import emcee
-import h5py
 import numpy as np
 import seaborn as sns
-from utilities import extract_cultivar
-from weather_extraction import read_or_create
 
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))

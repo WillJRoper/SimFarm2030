@@ -1,15 +1,13 @@
 from model_daily_3d import cultivarModel
-
 from extract_all_weather import fetch_weather
-from utilities import extract_cultivar
-from weather_extraction import read_from_existing_file
-# import utilities
+from cultivar_pandas_utils import extract_cultivar
+
 import time
 import pickle
 import sys
 import os
 from os.path import abspath, dirname, join
-import numpy as np
+
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
@@ -25,8 +23,7 @@ if __name__ == "__main__":
     # Extract cultivar from command line input
     cultivar = sys.argv[1]
 
-    cultivar_weather_data = fetch_weather(
-        cultivar, read_from_existing_file)
+    cultivar_weather_data = fetch_weather(cultivar)
     cultivar_data = extract_cultivar(cultivar)
     print(cultivar_data)
 

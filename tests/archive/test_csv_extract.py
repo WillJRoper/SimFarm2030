@@ -1,4 +1,4 @@
-from core.utilities import extract_data
+from core.cultivar_pandas_utils import extract_data
 from os.path import abspath, dirname, join
 import pandas as pd
 import numpy as np

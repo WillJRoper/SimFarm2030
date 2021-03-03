@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from os.path import abspath, dirname, join
-from core.utilities import extract_data
+from core.cultivar_pandas_utils import extract_data
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 CUR_DIR = dirname(abspath(__file__))
@@ -41,3 +41,8 @@ def test_extract_data():
     e_data['Ripe Time'] = e_data['Ripe Time'].astype(np.int32)
     e_data['Sow Day'] = e_data['Sow Day'].astype(np.int16)
     assert cultivar_data.equals(e_data)
+
+# TODO:
+# add test for extract_cultivar
+# it filters the all_cultivars.csv returning only the rows
+# for the specified cultivar
