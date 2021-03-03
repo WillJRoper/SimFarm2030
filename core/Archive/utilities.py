@@ -4,10 +4,15 @@ import pandas as pd
 from ftplib import FTP, error_perm
 import fnmatch
 import os
+from os.path import abspath, dirname, join
+
 
 # list of expected sow date formats AA
 MONTH_DAY_NUMS = '%d/%m'
 MONTH_DAY_WORDS = '%d-%b'
+
+
+PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 
 def parse_date(date_string):
@@ -20,10 +25,20 @@ def parse_date(date_string):
         raise ValueError(f'Unknown date format {date_string}')
 
 
+def extract_cultivar(cultivar):
+    all_data = extract_data(
+        join(PARENT_DIR, "All_Cultivars_Spreadsheets", "all_cultivars.csv"))
+    return all_data[all_data.Cultivar == cultivar]
+
+
 def extract_data(path):
+    # TODO: Validate the file:
+    #     * Check for duplicate entries
 
     #  Open the csv file
-    data = pd.read_csv(path, usecols=("Lat", "Long", "Year", "Sow Month", "Ripe Time", "Yield"))
+    data = pd.read_csv(
+        path,
+        usecols=("Cultivar", "Lat", "Long", "Year", "Sow Month", "Ripe Time", "Yield"))
 
     #  Remove NaN entries
     data.dropna(subset=["Yield"], inplace=True)
@@ -37,27 +52,20 @@ def extract_data(path):
     sow_mth_ini = date.dt.month
 
     # Format months
-    sow_mths = []
-    for s in sow_mth_ini:
-        s_str = str(s)
-        if len(s_str) == 1:
-            sow_mths.append("0" + s_str)
-        else:
-            sow_mths.append(s_str)
-
-    # Make separate columns from new data frame
-    data["Sow Day"] = np.int16(sow_day)
+    sow_months = sow_mth_ini.apply('{0:0>2}'.format)
     data.drop(columns=["Sow Month"], inplace=True)
-    data["Sow Month"] = sow_mths
+    data["Sow Month"] = sow_months
 
-    #  Extract columns into numpy arrays
-    lats = data["Lat"].values
-    longs = data["Long"].values
-    years = data["Year"].values
-    ripe_time = np.int32(data["Ripe Time"].values)
-    yields = data["Yield"].values
-    sow_day = data["Sow Day"].values
-    sow_month = data["Sow Month"].values
+    # add sow day column
+    data["Sow Day"] = np.int16(sow_day)
+
+    # cast ripetime to int32 (unsure why?)
+    data['Ripe Time'] = data['Ripe Time'].astype(np.int32)
+
+    # Define Sow Year
+    # FIXME: is this correct? shouldn't we count backwards from Year
+    # by the number of sow days to calculate the sow year??
+    data["Sow Year"] = data["Year"] - 1
 
     # # Get extreme outliers
     # lim = np.mean(yields) * 0.75
@@ -74,11 +82,16 @@ def extract_data(path):
     # sow_day = sow_day[okinds]
     # sow_month = sow_month[okinds]
 
-    print("Training on", yields.size, "Regions (data points)")
+    print("Training on", data.shape[0], "Regions (data points)")
+    # The order of records in the weather extraction data (temp, sun, rain)
+    # have to be consistent with those in the cultivar data (yield)
+    # both use this function, so we sort here.
+    data = data.sort_values(["Lat", "Long", "Year"])
+    return data
 
-    return lats, longs, years, ripe_time, yields, sow_day, sow_month
 
-
+# TODO: Modify this code to create Verty large input dataset that
+# captures all cultivars in one csv 
 def extract_data_allwheat(yield_path, ripetime_path):
 
     #  Open the csv file
@@ -127,7 +140,7 @@ def extract_data_allwheat(yield_path, ripetime_path):
     data = pd.DataFrame(data, columns=("Lat", "Long", "Year", "Sow Month",
                                        "Ripe Time", "Yield"))
 
-    # Remove NaN entries
+    #  Remove NaN entries
     data.dropna(subset=["Yield"], inplace=True)
 
     # Replace missing ripe times
@@ -259,7 +272,6 @@ if __name__ == '__main__':
 
     # ftp_paths = ['/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.1.0/1km/tas/mon/v20190808',
     #              '/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.1.0/1km/rainfall/mon/v20190808']
-
 
     # ftp_paths = ['/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.0.0/1km/rainfall/day/v20181126',
     #              '/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.0.0.0/1km/tasmax/day/v20181126',

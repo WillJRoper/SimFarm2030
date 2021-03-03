@@ -1,8 +1,8 @@
-from model import cultivarModel
-import numpy as np
-import time
-import matplotlib.pyplot as plt
-import pystan
+# from model_daily_3d import cultivarModel
+# import numpy as np
+# import time
+# import matplotlib.pyplot as plt
+# import pystan
 import os
 import pickle
 from kivy.app import App
@@ -23,7 +23,7 @@ class Layout(GridLayout):
         super(Layout, self).__init__(**kwargs)
 
         self.cols = 2
-        self.model_path = '/Users/willroper/Documents/University/SimFarm2030/SimFarm2030/cultivar_models/'
+        self.model_path = '../cultivar_models/'
         self.model_files = os.listdir(self.model_path)
 
         for mfile in iter(self.model_files):
