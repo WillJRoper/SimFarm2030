@@ -2,3 +2,7 @@
 model_performance/*
 cultivar_models/*
 Climate_Data/*
+**__pycache__/**
+*.pyc
+*.vscode
+*.hdf*
