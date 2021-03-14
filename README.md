@@ -59,3 +59,13 @@ pytest .
 or (from anywhere)
 
 PYTHONPATH=core pytest tests
+PYTHONPATH=core pytest --ignore=tests/archive
+
+
+## Plotting figures
+
+* First - run the main_daily_3d.py
+* Then locate the .pck file in core/culivar_models to copy path to terminal
+* Hash out any plots that you don't want to create in create_figures.py
+
+PYTHONPATH=core python create_figures.py /home/anisa/Code/SimFarm2030/cultivar_models/Skyfall_Yield_model_daily_3d.pck

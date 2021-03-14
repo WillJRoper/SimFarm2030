@@ -13,11 +13,18 @@ PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 def create_all_plots(simfarm):
     plot_validation(simfarm)
-    plot_walkers(simfarm)
+    print('validation plot')
+    # plot_walkers(simfarm)
+    print('walkers plot')
     plot_response(simfarm)
+    print('responses plotted')
     post_prior_comp(simfarm)
+    print('post_prior_comp plotted')
     true_pred_comp(simfarm)
+    print('true_pred_comp plotted')
     climate_dependence(simfarm)
+    print('climate_dependence plotted')
+
 
 
 def plot_validation(simfarm):
