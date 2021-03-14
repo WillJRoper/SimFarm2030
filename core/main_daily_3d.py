@@ -34,11 +34,6 @@ if __name__ == "__main__":
     simfarm.train_and_validate_model(nsample=75000, nwalkers=250)
     print(f'Train in {(time.time() - tstart):.2} seconds')
 
-    # Moved plotting functions -> create_figures.py revisit after tests created
-    # simfarm.plot_walkers()
-    # simfarm.plot_response()
-    # simfarm.true_pred_comp()
-    # simfarm.climate_dependence()
 
     # Write out object as pickle
     with open(
@@ -48,8 +43,9 @@ if __name__ == "__main__":
             'wb') as pfile1:
         pickle.dump(simfarm, pfile1)
 
-    # simfarm.post_prior_comp()  <-- see above comment
 
     # https://emcee.readthedocs.io/en/stable/tutorials/autocorr/ - is it steps?
     tau = simfarm.model.get_autocorr_time()
-    print(f"Number of steps until the initial start is 'forgotten' {tau:.3f}")
+    print(
+        f"Number of steps until the initial start is 'forgotten' "
+        f"{tau.round(decimals=2)}")

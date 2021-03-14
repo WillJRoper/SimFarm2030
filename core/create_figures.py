@@ -1,43 +1,72 @@
 import corner
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.optimize import curve_fit
-
-# removed from line 751 model_daily_3d.py - will revist later.
-# Plot results
-fig = plt.figure()
-ax = fig.add_subplot(111)
-
-ax.scatter(np.arange(preds.size), resi, marker="+", label="Regions")
-ax.axhline(np.mean(resi), linestyle="-", color="k", label="Mean")
-ax.axhline(np.median(resi), linestyle="--", color="k", label="Median")
-
-ax.set_xlabel("Region")
-ax.set_ylabel("$1 - Y_{\mathrm{Pred}} / Y_{\mathrm{True}}$ (%)")
-
-handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles, labels)
-
-fig.savefig("../model_performance/Validation/" + self.cult + "_3d.png",
-            bbox_inches="tight")
+import sys
+import pickle
+from os.path import abspath, dirname, join
 
 
-def plot_walkers(self):
+PARENT_DIR = dirname(dirname(abspath(__file__)))
 
-    ndim = len(self.initial_guess)
+
+def create_all_plots(simfarm):
+    plot_validation(simfarm)
+    print('validation plot')
+    # plot_walkers(simfarm)
+    print('walkers plot')
+    plot_response(simfarm)
+    print('responses plotted')
+    post_prior_comp(simfarm)
+    print('post_prior_comp plotted')
+    true_pred_comp(simfarm)
+    print('true_pred_comp plotted')
+    climate_dependence(simfarm)
+    print('climate_dependence plotted')
+
+
+
+def plot_validation(simfarm):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    ax.scatter(np.arange(simfarm.preds.size), simfarm.resi, marker="+", label="Regions")
+    ax.axhline(np.mean(simfarm.resi), linestyle="-", color="k", label="Mean")
+    ax.axhline(np.median(simfarm.resi), linestyle="--", color="k", label="Median")
+
+    ax.set_xlabel("Region")
+    ax.set_ylabel("$1 - Y_{\mathrm{Pred}} / Y_{\mathrm{True}}$ (%)")
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels)
+
+    fig.savefig(
+        join(
+            PARENT_DIR, "model_performance",
+            f"Validation{simfarm.cult}_3d.png"),
+        bbox_inches="tight")
+
+
+def plot_walkers(simfarm):
+
+    ndim = len(simfarm.initial_guess)
 
     for i in range(ndim):
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        res = ax.plot(self.model.chain[:, :, i].T, "-", color="k",
+        ax.plot(simfarm.model.chain[:, :, i].T, "-", color="k",
                         alpha=0.3)
         fig.savefig(
-            f"../model_performance/Chains/samplerchain_{i}_{self.cult}_daily_3d.png",
+            join(
+                PARENT_DIR,
+                "model_performance", "Chains",
+                f"samplerchain_{i}_{simfarm.cult}_daily_3d.png"),
             bbox_inches="tight")
         plt.close(fig)
 
 
-def plot_response(self):
+def plot_response(simfarm):
 
     # Create arrays to evaluate response function at
     eval_t = np.linspace(0, 6000, 1000)
@@ -50,57 +79,57 @@ def plot_response(self):
     ps_pp, ps_ss = np.meshgrid(eval_p, eval_s)
 
     # Compute temperature response
-    t_resp = self.gauss3d(self.norm, eval_t, self.mean_params["mu_t"],
-                            self.mean_params["sig_t"], 0,
-                            self.mean_params["mu_p"],
-                            self.mean_params["sig_p"], 0,
-                            self.mean_params["mu_s"],
-                            self.mean_params["sig_s"],
-                            self.mean_params["rho_tp"],
-                            self.mean_params["rho_ts"],
-                            self.mean_params["rho_ps"])
+    t_resp = simfarm.gauss3d(simfarm.norm, eval_t, simfarm.mean_params["mu_t"],
+                            simfarm.mean_params["sig_t"], 0,
+                            simfarm.mean_params["mu_p"],
+                            simfarm.mean_params["sig_p"], 0,
+                            simfarm.mean_params["mu_s"],
+                            simfarm.mean_params["sig_s"],
+                            simfarm.mean_params["rho_tp"],
+                            simfarm.mean_params["rho_ts"],
+                            simfarm.mean_params["rho_ps"])
 
     # Compute precipitation response
-    p_resp = self.gauss3d(self.norm, 0, self.mean_params["mu_t"],
-                            self.mean_params["sig_t"], eval_p,
-                            self.mean_params["mu_p"],
-                            self.mean_params["sig_p"], 0,
-                            self.mean_params["mu_s"],
-                            self.mean_params["sig_s"],
-                            self.mean_params["rho_tp"],
-                            self.mean_params["rho_ts"],
-                            self.mean_params["rho_ps"])
+    p_resp = simfarm.gauss3d(simfarm.norm, 0, simfarm.mean_params["mu_t"],
+                            simfarm.mean_params["sig_t"], eval_p,
+                            simfarm.mean_params["mu_p"],
+                            simfarm.mean_params["sig_p"], 0,
+                            simfarm.mean_params["mu_s"],
+                            simfarm.mean_params["sig_s"],
+                            simfarm.mean_params["rho_tp"],
+                            simfarm.mean_params["rho_ts"],
+                            simfarm.mean_params["rho_ps"])
 
     # Compute sunshine response
-    s_resp = self.gauss3d(self.norm, 0, self.mean_params["mu_t"],
-                            self.mean_params["sig_t"], 0,
-                            self.mean_params["mu_p"],
-                            self.mean_params["sig_p"], eval_s,
-                            self.mean_params["mu_s"],
-                            self.mean_params["sig_s"],
-                            self.mean_params["rho_tp"],
-                            self.mean_params["rho_ts"],
-                            self.mean_params["rho_ps"])
+    s_resp = simfarm.gauss3d(simfarm.norm, 0, simfarm.mean_params["mu_t"],
+                            simfarm.mean_params["sig_t"], 0,
+                            simfarm.mean_params["mu_p"],
+                            simfarm.mean_params["sig_p"], eval_s,
+                            simfarm.mean_params["mu_s"],
+                            simfarm.mean_params["sig_s"],
+                            simfarm.mean_params["rho_tp"],
+                            simfarm.mean_params["rho_ts"],
+                            simfarm.mean_params["rho_ps"])
 
     # Compute the response grids
-    resp_grid_tp = self.gauss2d_resp(tp_tt, self.norm,
-                                        self.mean_params["mu_t"],
-                                        self.mean_params["sig_t"], tp_pp,
-                                        self.mean_params["mu_p"],
-                                        self.mean_params["sig_p"],
-                                        self.mean_params["rho_tp"])
-    resp_grid_ts = self.gauss2d_resp(ts_tt, self.norm,
-                                        self.mean_params["mu_t"],
-                                        self.mean_params["sig_t"], ts_ss,
-                                        self.mean_params["mu_s"],
-                                        self.mean_params["sig_s"],
-                                        self.mean_params["rho_ts"])
-    resp_grid_ps = self.gauss2d_resp(ps_pp, self.norm,
-                                        self.mean_params["mu_p"],
-                                        self.mean_params["sig_p"], ps_ss,
-                                        self.mean_params["mu_s"],
-                                        self.mean_params["sig_s"],
-                                        self.mean_params["rho_ps"])
+    resp_grid_tp = simfarm.gauss2d_resp(tp_tt, simfarm.norm,
+                                        simfarm.mean_params["mu_t"],
+                                        simfarm.mean_params["sig_t"], tp_pp,
+                                        simfarm.mean_params["mu_p"],
+                                        simfarm.mean_params["sig_p"],
+                                        simfarm.mean_params["rho_tp"])
+    resp_grid_ts = simfarm.gauss2d_resp(ts_tt, simfarm.norm,
+                                        simfarm.mean_params["mu_t"],
+                                        simfarm.mean_params["sig_t"], ts_ss,
+                                        simfarm.mean_params["mu_s"],
+                                        simfarm.mean_params["sig_s"],
+                                        simfarm.mean_params["rho_ts"])
+    resp_grid_ps = simfarm.gauss2d_resp(ps_pp, simfarm.norm,
+                                        simfarm.mean_params["mu_p"],
+                                        simfarm.mean_params["sig_p"], ps_ss,
+                                        simfarm.mean_params["mu_s"],
+                                        simfarm.mean_params["sig_s"],
+                                        simfarm.mean_params["rho_ps"])
 
     # Set up figure
     fig = plt.figure(figsize=(16, 12))
@@ -128,17 +157,17 @@ def plot_response(self):
 
     # Label colorbars
     cbar1.ax.set_xlabel(
-        self.metric + " (" + self.metric_units + "month$^{-1}$)",
+        simfarm.metric + " (" + simfarm.metric_units + "month$^{-1}$)",
         fontsize=10, color="k", labelpad=5)
     cbar1.ax.xaxis.set_label_position("top")
     cbar1.ax.tick_params(axis="x", labelsize=10, color="k", labelcolor="k")
     cbar2.ax.set_xlabel(
-        self.metric + " (" + self.metric_units + "month$^{-1}$)",
+        simfarm.metric + " (" + simfarm.metric_units + "month$^{-1}$)",
         fontsize=10, color="k", labelpad=5)
     cbar2.ax.xaxis.set_label_position("top")
     cbar2.ax.tick_params(axis="x", labelsize=10, color="k", labelcolor="k")
     cbar3.ax.set_xlabel(
-        self.metric + " (" + self.metric_units + "month$^{-1}$)",
+        simfarm.metric + " (" + simfarm.metric_units + "month$^{-1}$)",
         fontsize=10, color="k", labelpad=5)
     cbar3.ax.xaxis.set_label_position("top")
     cbar3.ax.tick_params(axis="x", labelsize=10, color="k", labelcolor="k")
@@ -156,43 +185,49 @@ def plot_response(self):
     ax3.set_ylabel(r"$\sum S$ (hrs)")
     ax4.set_xlabel(r"GDD ($^\circ$C days)")
     ax4.set_ylabel(
-        self.metric + " (" + self.metric_units + "month$^{-1}$)")
+        simfarm.metric + " (" + simfarm.metric_units + "month$^{-1}$)")
     ax5.set_xlabel(r"$\sum P$ (mm)")
     ax5.set_ylabel(
-        self.metric + " (" + self.metric_units + "month$^{-1}$)")
+        simfarm.metric + " (" + simfarm.metric_units + "month$^{-1}$)")
     ax6.set_xlabel(r"$\sum S$ (hrs)")
     ax6.set_ylabel(
-        self.metric + " (" + self.metric_units + "month$^{-1}$)")
+        simfarm.metric + " (" + simfarm.metric_units + "month$^{-1}$)")
 
     # Save the figure
     fig.savefig(
-        "../Response_functions/response_" + self.cult + "_daily_3d.png",
+        join(
+            PARENT_DIR,
+            "Response_functions", 
+            f"response_{simfarm.cult}_daily_3d.png"),
         dpi=300, bbox_inches="tight")
 
 
-def post_prior_comp(self):
+def post_prior_comp(simfarm):
 
     labels = [r"$\mu_t$", r"$\sigma_t$", r"$\mu_p$", r"$\sigma_p$",
                 r"$\mu_s$", r"$\sigma_s$",
                 r"$\rho_tp$", r"$\rho_ts$", r"$\rho_ps$"]
-    fig = corner.corner(self.flat_samples, show_titles=True, labels=labels,
+    fig = corner.corner(simfarm.flat_samples, show_titles=True, labels=labels,
                         plot_datapoints=True,
                         quantiles=[0.16, 0.5, 0.84])
 
     fig.savefig(
-        "../model_performance/Corners/corner_" + self.cult + "_daily_3d.png",
+        join(
+            PARENT_DIR,
+            "model_performance", "Corners", 
+            f"corner_{simfarm.cult}_daily_3d.png"),
         bbox_inches="tight")
 
     plt.close(fig)
 
 
-def true_pred_comp(self):
+def true_pred_comp(simfarm):
 
     # Set up figure
     fig = plt.figure(figsize=(6, 6))
     ax1 = fig.add_subplot(111)
 
-    im = ax1.scatter(self.predict_yields, self.preds, marker="+")
+    im = ax1.scatter(simfarm.predict_yields, simfarm.preds, marker="+")
     ax1.plot((7, 15), (7, 15), linestyle="--", color="k", label="1-1")
 
     # Label axes
@@ -202,11 +237,14 @@ def true_pred_comp(self):
     ax1.legend()
 
     # Save the figure
-    fig.savefig("../model_performance/Predictionvstruth/"
-                "prediction_vs_truth_" + self.cult + ".png",
-                bbox_inches="tight")
+    fig.savefig(
+        join(
+            PARENT_DIR,
+            "model_performance", "Predictionvstruth",
+            f"prediction_vs_truth_{simfarm.cult}.png"),
+        bbox_inches="tight")
 
-def climate_dependence(self):
+def climate_dependence(simfarm):
 
     # Set up figure
     fig = plt.figure(figsize=(16, 6))
@@ -215,17 +253,17 @@ def climate_dependence(self):
     ax2 = fig.add_subplot(gs[0, 1])
     ax3 = fig.add_subplot(gs[0, 2])
 
-    ax1.scatter(self.therm_days, self.yield_data, marker="+")
-    ax2.scatter(self.tot_precip, self.yield_data, marker="+")
-    ax3.scatter(self.tot_sun, self.yield_data, marker="+")
+    ax1.scatter(simfarm.therm_days, simfarm.yield_data, marker="+")
+    ax2.scatter(simfarm.tot_precip, simfarm.yield_data, marker="+")
+    ax3.scatter(simfarm.tot_sun, simfarm.yield_data, marker="+")
 
     strt_line = lambda x, m, c: m * x + c
 
-    popt, pcov = curve_fit(strt_line, self.therm_days, self.yield_data,
+    popt, pcov = curve_fit(strt_line, simfarm.therm_days, simfarm.yield_data,
                             p0=(1, 4))
 
-    xs = np.linspace(np.min(self.therm_days),
-                        np.max(self.therm_days),
+    xs = np.linspace(np.min(simfarm.therm_days),
+                        np.max(simfarm.therm_days),
                         1000)
 
     ax1.plot(xs, strt_line(xs, popt[0], popt[1]),
@@ -233,11 +271,11 @@ def climate_dependence(self):
                 label="Fit: $y = $%.4f" % popt[0]
                     + "$\mathrm{GDD} +$ %.2f" % popt[1])
 
-    popt, pcov = curve_fit(strt_line, self.tot_precip, self.yield_data,
+    popt, pcov = curve_fit(strt_line, simfarm.tot_precip, simfarm.yield_data,
                             p0=(1, 4))
 
-    xs = np.linspace(np.min(self.tot_precip),
-                        np.max(self.tot_precip),
+    xs = np.linspace(np.min(simfarm.tot_precip),
+                        np.max(simfarm.tot_precip),
                         1000)
 
     ax2.plot(xs, strt_line(xs, popt[0], popt[1]),
@@ -245,11 +283,11 @@ def climate_dependence(self):
                 label="Fit: $y = $%.4f" % popt[0]
                     + r"$\times(\sum P)+$%.2f" % popt[1])
 
-    popt, pcov = curve_fit(strt_line, self.tot_sun, self.yield_data,
+    popt, pcov = curve_fit(strt_line, simfarm.tot_sun, simfarm.yield_data,
                             p0=(1, 4))
 
-    xs = np.linspace(np.min(self.tot_sun),
-                        np.max(self.tot_sun),
+    xs = np.linspace(np.min(simfarm.tot_sun),
+                        np.max(simfarm.tot_sun),
                         1000)
 
     ax3.plot(xs, strt_line(xs, popt[0], popt[1]),
@@ -270,6 +308,16 @@ def climate_dependence(self):
         ax.legend()
 
     # Save the figure
-    fig.savefig("../Climate_analysis/"
-                "input_yield_climate_" + self.cult + "1d.png",
-                bbox_inches="tight")
+    fig.savefig(
+        join(
+            PARENT_DIR, "Climate_analysis",
+            f"input_yield_climate_{simfarm.cult}1d.png"),
+        bbox_inches="tight")
+
+
+if __name__ == '__main__':
+    cultivar_pickle_file = sys.argv[1]
+    with open(cultivar_pickle_file, 'rb')as f:
+        simfarm = pickle.load(f)
+    print(f'{cultivar_pickle_file} loaded, creating plots...')
+    create_all_plots(simfarm)
