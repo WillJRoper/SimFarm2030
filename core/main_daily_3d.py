@@ -46,4 +46,6 @@ if __name__ == "__main__":
 
     # https://emcee.readthedocs.io/en/stable/tutorials/autocorr/ - is it steps?
     tau = simfarm.model.get_autocorr_time()
-    print(f"Number of steps until the initial start is 'forgotten' {tau:.3f}")
+    print(
+        f"Number of steps until the initial start is 'forgotten' "
+        f"{tau.round(decimals=2)}")
