@@ -14,7 +14,7 @@ PARENT_DIR = dirname(dirname(abspath(__file__)))
 def create_all_plots(simfarm):
     plot_validation(simfarm)
     print('validation plot')
-    # plot_walkers(simfarm)
+    plot_walkers(simfarm)
     print('walkers plot')
     plot_response(simfarm)
     print('responses plotted')
@@ -313,11 +313,3 @@ def climate_dependence(simfarm):
             PARENT_DIR, "Climate_analysis",
             f"input_yield_climate_{simfarm.cult}1d.png"),
         bbox_inches="tight")
-
-
-if __name__ == '__main__':
-    cultivar_pickle_file = sys.argv[1]
-    with open(cultivar_pickle_file, 'rb')as f:
-        simfarm = pickle.load(f)
-    print(f'{cultivar_pickle_file} loaded, creating plots...')
-    create_all_plots(simfarm)

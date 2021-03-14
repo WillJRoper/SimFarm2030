@@ -1,29 +1,34 @@
+import click
 from model_daily_3d import cultivarModel
 from extract_all_weather import fetch_weather
 from cultivar_pandas_utils import extract_cultivar
+from create_figures import create_all_plots
 
 import numpy as np
 import time
 import pickle
-import sys
-import os
 from os.path import abspath, dirname, join
 
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 
-def get_non_hidden_filepaths():
-    return [
-        f for f in os.listdir(join(PARENT_DIR, 'example_data'))
-        if not f.startswith('.')
-    ]
+@click.group()
+def cli():
+    pass
 
 
-if __name__ == "__main__":
-    # Extract cultivar from command line input
-    cultivar = sys.argv[1]
+@cli.command()
+# @click.argument()
+def extract(simfarm):
+    pass
 
+
+@cli.command()
+@click.argument('cultivar')
+@click.option('--samples', default=75000, type=int, show_default=True) # minimum 
+@click.option('--walkers', default=250, type=int, show_default=True) # minimum 18
+def run(cultivar, samples, walkers):
     cultivar_weather_data = fetch_weather(cultivar)
     cultivar_data = extract_cultivar(cultivar)
     print(cultivar_data)
@@ -32,7 +37,7 @@ if __name__ == "__main__":
     simfarm = cultivarModel(
         cultivar, cultivar_data, cultivar_weather_data,
         metric='Yield', metric_units='t Ha$^{-1}$')
-    simfarm.train_and_validate_model(nsample=75000, nwalkers=250)
+    simfarm.train_and_validate_model(nsample=samples, nwalkers=walkers)
     print(f'Train in {(time.time() - tstart):.2} seconds')
 
 
@@ -50,3 +55,13 @@ if __name__ == "__main__":
     print(
         f"Number of steps until the initial start is 'forgotten' "
         f"{np.round(tau, decimals=2)}")
+
+
+@cli.command()
+@click.argument('pickle_file', type=click.File('rb'))
+def plot(pickle_file):
+    create_all_plots(pickle.load(pickle_file))
+
+
+if __name__ == '__main__':
+    cli()
