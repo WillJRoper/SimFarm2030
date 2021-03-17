@@ -2,6 +2,7 @@ from model_daily_3d import cultivarModel
 from extract_all_weather import fetch_weather
 from cultivar_pandas_utils import extract_cultivar
 
+import numpy as np
 import time
 import pickle
 import sys
@@ -48,4 +49,4 @@ if __name__ == "__main__":
     tau = simfarm.model.get_autocorr_time()
     print(
         f"Number of steps until the initial start is 'forgotten' "
-        f"{tau.round(decimals=2)}")
+        f"{np.round(tau, decimals=2)}")
