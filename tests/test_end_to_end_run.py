@@ -2,6 +2,13 @@ from core.model_daily_3d import cultivarModel
 from core.cultivar_pandas_utils import extract_cultivar
 from core.extract_all_weather import fetch_weather
 import numpy as np
+from os.path import abspath, dirname, join
+
+PARENT_DIR = dirname(dirname(abspath(__file__)))
+
+WEATHER_OUTPUT_HDF = join(
+    PARENT_DIR, "Climate_Data", "all_cultivars_weather.hdf")
+EXTRACTED_WEATHER_HDF = WEATHER_OUTPUT_HDF
 
 
 def mock_seed_generator(a, b, c):
@@ -87,7 +94,7 @@ def mock_seed_generator(a, b, c):
 def test_training():
     cult = 'Consort'
     cultivar_data = extract_cultivar(cult)
-    cultivar_weather_data = fetch_weather(cult)
+    cultivar_weather_data = fetch_weather(cult, EXTRACTED_WEATHER_HDF)
 
     simfarm = cultivarModel(
         cult, cultivar_data, cultivar_weather_data, metric='Yield',

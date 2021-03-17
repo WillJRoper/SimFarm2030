@@ -230,7 +230,7 @@ def read_from_existing_file(hdf):
     return temp_min, temp_max, precip, precip_anom, sun, sun_anom
 
 
-def fetch_weather(cultivar, extractor_f=read_from_existing_file):
-    with hdf_open(EXTRACTED_WEATHER_HDF) as f:
-        cultivar_data = extractor_f(f[cultivar])
+def fetch_weather(cultivar, weather_datafile):
+    with hdf_open(weather_datafile) as f:
+        cultivar_data = read_from_existing_file(f[cultivar])
     return cultivar_data

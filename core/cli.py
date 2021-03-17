@@ -68,10 +68,11 @@ def weather(
 
 @cli.command()
 @click.argument('cultivar')
+@click.argument('weather_datafile', default=EXTRACTED_WEATHER_HDF, type=click.Path(exists=True))
 @click.option('--samples', default=75000, type=int, show_default=True) # minimum 
 @click.option('--walkers', default=250, type=int, show_default=True) # minimum 18
-def run(cultivar, samples, walkers):
-    cultivar_weather_data = fetch_weather(cultivar)
+def run(cultivar, weather_datafile, samples, walkers):
+    cultivar_weather_data = fetch_weather(cultivar, weather_datafile)
     cultivar_data = extract_cultivar(cultivar)
     print(cultivar_data)
 
