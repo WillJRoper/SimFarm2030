@@ -12,11 +12,6 @@ from tqdm import tqdm
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
-RAINFALL_HDF = join(PARENT_DIR, "SimFarm2030_rainfall.hdf5")
-TEMP_MIN_HDF = join(PARENT_DIR, "SimFarm2030_tempmin.hdf5")
-TEMP_MAX_HDF = join(PARENT_DIR, "SimFarm2030_tempmax.hdf5")
-SUNSHINE_HDF = join(PARENT_DIR, "SimFarm2030_sunshine.hdf5")
-
 WEATHER_OUTPUT_HDF = join(
     PARENT_DIR, "Climate_Data", "all_cultivars_weather.hdf")
 EXTRACTED_WEATHER_HDF = WEATHER_OUTPUT_HDF
@@ -197,25 +192,29 @@ def nested_to_np_array(dictionary):
     return map_dict(to_np_array, dictionary)
 
 
-def extract_all_weather(all_cultivars_df, tol=0.25):
-    with hdf_open(WEATHER_OUTPUT_HDF, access="a") as outfile:
+def extract_all_weather(
+        sunshine_datafile, tempmin_datafile,
+        tempmax_datafile, rainfall_datafile,
+        all_cultivars_csv, output_file, tol=0.25):
+    all_cultivars_df = extract_data(all_cultivars_csv)
+    with hdf_open(output_file, access="a") as outfile:
 
-        with hdf_open(TEMP_MAX_HDF) as f:
+        with hdf_open(tempmax_datafile) as f:
             temp_max = extract_temp(all_cultivars_df, f, "max", tol)
         temp_max = map_dict(nested_to_np_array, temp_max)
         write_weather_to_hdf(outfile, temp_max)
 
-        with hdf_open(TEMP_MIN_HDF) as f:
+        with hdf_open(tempmin_datafile) as f:
             temp_min = extract_temp(all_cultivars_df, f, "min", tol)
         temp_min = map_dict(nested_to_np_array, temp_min)
         write_weather_to_hdf(outfile, temp_min)
 
-        with hdf_open(RAINFALL_HDF) as f:
+        with hdf_open(rainfall_datafile) as f:
             rainfall = extract_rainfall(all_cultivars_df, f, tol)
         rainfall = map_dict(nested_to_np_array, rainfall)
         write_weather_to_hdf(outfile, rainfall)
 
-        with hdf_open(SUNSHINE_HDF) as f:
+        with hdf_open(sunshine_datafile) as f:
             sunshine = extract_sunshine(all_cultivars_df, f, tol)
         sunshine = map_dict(nested_to_np_array, sunshine)
         write_weather_to_hdf(outfile, sunshine)
@@ -235,12 +234,3 @@ def fetch_weather(cultivar, extractor_f=read_from_existing_file):
     with hdf_open(EXTRACTED_WEATHER_HDF) as f:
         cultivar_data = extractor_f(f[cultivar])
     return cultivar_data
-
-
-if __name__ == '__main__':
-    all_cultivars_df = extract_data(
-        join(
-            PARENT_DIR,
-            "All_Cultivars_Spreadsheets",
-            "all_cultivars.csv"))
-    extract_all_weather(all_cultivars_df)

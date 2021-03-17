@@ -1,6 +1,6 @@
 import click
 from model_daily_3d import cultivarModel
-from extract_all_weather import fetch_weather
+from extract_all_weather import fetch_weather, extract_all_weather
 from cultivar_pandas_utils import extract_cultivar
 from create_figures import create_all_plots
 
@@ -12,16 +12,58 @@ from os.path import abspath, dirname, join
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
+ALL_CULTIVARS_CSV = join(
+    PARENT_DIR, "All_Cultivars_Spreadsheets",
+    "all_cultivars.csv")
+
+RAINFALL_HDF = join(PARENT_DIR, "SimFarm2030_rainfall.hdf5")
+TEMP_MIN_HDF = join(PARENT_DIR, "SimFarm2030_tempmin.hdf5")
+TEMP_MAX_HDF = join(PARENT_DIR, "SimFarm2030_tempmax.hdf5")
+SUNSHINE_HDF = join(PARENT_DIR, "SimFarm2030_sunshine.hdf5")
+
+WEATHER_OUTPUT_HDF = join(
+    PARENT_DIR, "Climate_Data", "all_cultivars_weather.hdf")
+EXTRACTED_WEATHER_HDF = WEATHER_OUTPUT_HDF
+
 
 @click.group()
 def cli():
     pass
 
 
-@cli.command()
-# @click.argument()
-def extract(simfarm):
+@cli.group()
+def extract():
     pass
+
+
+@extract.command()
+@click.argument(
+    'cultivars_csv', default=ALL_CULTIVARS_CSV, type=click.Path(exists=True))
+@click.argument(
+    'sunshine_datafile', default=SUNSHINE_HDF, type=click.Path(exists=True))
+@click.argument(
+    'tempmin_datafile', default=TEMP_MIN_HDF, type=click.Path(exists=True))
+@click.argument(
+    'tempmax_datafile', default=TEMP_MAX_HDF, type=click.Path(exists=True))
+@click.argument(
+    'rainfall_datafile', default=RAINFALL_HDF, type=click.Path(exists=True))
+@click.argument(
+    'output_file', default=WEATHER_OUTPUT_HDF, type=click.Path())
+def weather(
+        cultivars_csv,
+        sunshine_datafile, tempmin_datafile,
+        tempmax_datafile, rainfall_datafile,
+        output_file):
+
+    extract_all_weather(
+        sunshine_datafile, tempmin_datafile,
+        tempmax_datafile, rainfall_datafile,
+        cultivars_csv, output_file)
+
+
+# TODO:
+# make command for (extract soil) when we have data.
+# create data directories for running the first time
 
 
 @cli.command()
