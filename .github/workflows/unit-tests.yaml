@@ -15,8 +15,8 @@ jobs:
           pip install pytest
       - name: set PYTHONPATH
         run: |
-          echo "PYTHONPATH=$GITHUB_WORSPACE/core" >> $GITHUB_ENV
+          echo "PYTHONPATH=$GITHUB_WORKSPACE/core" >> $GITHUB_ENV
           echo $(pwd)
           echo $GITHUB_ENV
       - name: run-unit-tests
-        run: PYTHONPATH=core pytest --ignore=tests/archive
+        run: pytest --ignore=tests/archive
