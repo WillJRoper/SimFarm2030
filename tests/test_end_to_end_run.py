@@ -3,6 +3,7 @@ from core.cultivar_pandas_utils import extract_cultivar
 from core.extract_all_weather import fetch_weather
 import numpy as np
 from os.path import abspath, dirname, join
+import pytest
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
@@ -91,6 +92,7 @@ def mock_seed_generator(a, b, c):
     ])
 
 
+@pytest.mark.skip(reason='Needs large hdf5 file to run, only run locally')
 def test_training():
     cult = 'Consort'
     cultivar_data = extract_cultivar(cult)
