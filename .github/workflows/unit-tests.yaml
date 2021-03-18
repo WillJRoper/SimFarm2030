@@ -17,5 +17,6 @@ jobs:
         run: |
           echo "PYTHONPATH=$GITHUB_WORSPACE/core" >> $GITHUB_ENV
           echo $(pwd)
+          echo $GITHUB_ENV
       - name: run-unit-tests
-        run: pytest --ignore=tests/archive
+        run: PYTHONPATH=core pytest --ignore=tests/archive
