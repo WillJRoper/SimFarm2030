@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from os.path import abspath, dirname
-from core.extract_all_weather import (
+from simfarm.extract_all_weather import (
     create_region_filter, extract_regional_weather,
     extract_rainfall, extract_sunshine, extract_temp,
     to_np_array,

@@ -1,6 +1,6 @@
-from core.model_daily_3d import cultivarModel
-from core.cultivar_pandas_utils import extract_cultivar
-from core.extract_all_weather import fetch_weather
+from simfarm.model_daily_3d import cultivarModel
+from simfarm.cultivar_pandas_utils import extract_cultivar
+from simfarm.extract_all_weather import fetch_weather
 import numpy as np
 from os.path import abspath, dirname, join
 import pytest

@@ -1,5 +1,5 @@
-from core.utilities import extract_data
-from core.weather_extraction import (
+from simfarm.utilities import extract_data
+from simfarm.weather_extraction import (
     read_or_create, generate_hdf_keys, get_weather_anomaly_daily,
     get_weather_anomaly_monthly, get_temp)
 

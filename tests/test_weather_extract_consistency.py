@@ -5,7 +5,7 @@ from os.path import abspath, dirname, join
 
 import pytest
 
-from core.cultivar_pandas_utils import extract_data, parse_date
+from simfarm.cultivar_pandas_utils import extract_data, parse_date
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 
