@@ -1,6 +1,6 @@
 import click
 from model_daily_3d import cultivarModel
-from extract_all_weather import fetch_weather, extract_all_weather
+from simfarm.extract.weather import fetch_weather, extract_all_weather
 from cultivar_pandas_utils import extract_cultivar
 from create_figures import create_all_plots
 
