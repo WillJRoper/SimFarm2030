@@ -1,5 +1,5 @@
 from simfarm.model_daily_3d import cultivarModel
-from simfarm.cultivar_pandas_utils import extract_cultivar
+from simfarm.utils.pandas import extract_cultivar
 from simfarm.extract.weather import fetch_weather
 import numpy as np
 from os.path import abspath, dirname, join

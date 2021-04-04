@@ -1,4 +1,4 @@
-from simfarm.cultivar_pandas_utils import extract_data
+from simfarm.utils.pandas import extract_data
 from os.path import abspath, dirname, join
 import pandas as pd
 import numpy as np

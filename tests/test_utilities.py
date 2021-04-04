@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from os.path import abspath, dirname, join
-from simfarm.cultivar_pandas_utils import extract_data
+from simfarm.utils.pandas import extract_data
 
 PARENT_DIR = dirname(dirname(abspath(__file__)))
 CUR_DIR = dirname(abspath(__file__))

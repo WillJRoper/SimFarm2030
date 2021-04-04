@@ -1,6 +1,6 @@
 from model_daily_3d import cultivarModel
 from simfarm.extract.weather import fetch_weather
-from cultivar_pandas_utils import extract_cultivar
+from utils.pandas import extract_cultivar
 
 import numpy as np
 import time
