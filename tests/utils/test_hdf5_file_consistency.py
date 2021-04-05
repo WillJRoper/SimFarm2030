@@ -3,7 +3,7 @@ import h5py
 import numpy as np
 from os.path import abspath, dirname, join
 
-PARENT_DIR = dirname(dirname(abspath(__file__)))
+PARENT_DIR = dirname(dirname(dirname(abspath(__file__))))
 
 
 def rounded_equal_with_nans(array_a, array_b):
