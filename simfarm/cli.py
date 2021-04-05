@@ -1,5 +1,5 @@
 import click
-from model_daily_3d import cultivarModel
+from model import cultivarModel
 from simfarm.extract.weather import fetch_weather, extract_all_weather
 from utils.pandas import extract_cultivar
 from create_figures import create_all_plots
@@ -73,6 +73,7 @@ def weather(
 @click.option('--walkers', default=250, type=int, show_default=True) # minimum 18
 def run(cultivar, weather_datafile, samples, walkers):
     cultivar_weather_data = fetch_weather(cultivar, weather_datafile)
+    # FIXME: pass in all_cultivars spreadsheet file to extract_cultivar
     cultivar_data = extract_cultivar(cultivar)
     print(cultivar_data)
 

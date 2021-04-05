@@ -1,4 +1,4 @@
-from simfarm.model_daily_3d import cultivarModel
+from simfarm.model import cultivarModel
 from simfarm.utils.pandas import extract_cultivar
 from simfarm.extract.weather import fetch_weather
 import numpy as np
