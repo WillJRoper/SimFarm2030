@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from os.path import abspath, dirname
 from simfarm.extract.weather import (
     create_region_filter, extract_regional_weather,
     extract_rainfall, extract_sunshine, extract_temp,
@@ -9,9 +8,6 @@ from simfarm.extract.weather import (
 from collections import defaultdict
 
 import pytest
-
-PARENT_DIR = dirname(dirname(abspath(__file__)))
-CUR_DIR = dirname(abspath(__file__))
 
 
 @pytest.fixture
