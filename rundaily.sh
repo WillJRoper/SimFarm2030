@@ -10,7 +10,7 @@ ulimit -s unlimited
 # Do not limit the number of open files a job can have
 #ulimit -n unlimited
 # Run the job from the following directory - change this to point to your own personal space on /lustre
-cd /lustre/scratch/astro/wjr21/SimFarm/SimFarm2030/core
+cd /lustre/scratch/astro/wjr21/SimFarm/SimFarm2030/simfarm
 # Created files will have rw permission for the group and r for the world
 umask 002
 

@@ -3,8 +3,6 @@ import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
-import sys
-import pickle
 from os.path import abspath, dirname, join
 
 
@@ -13,17 +11,17 @@ PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 def create_all_plots(simfarm):
     plot_validation(simfarm)
-    print('validation plot')
+    print('validation plot in model_performance')
     plot_walkers(simfarm)
-    print('walkers plot')
+    print('walkers plot in model_performance/Chains')
     plot_response(simfarm)
-    print('responses plotted')
+    print('responses plotted in Response Functions')
     post_prior_comp(simfarm)
-    print('post_prior_comp plotted')
+    print('post_prior_comp plotted in model_performance/Corners')
     true_pred_comp(simfarm)
-    print('true_pred_comp plotted')
+    print('true_pred_comp plotted model_performance/Predictionvstruth')
     climate_dependence(simfarm)
-    print('climate_dependence plotted')
+    print('climate_dependence plotted in Climate Analysis')
 
 
 

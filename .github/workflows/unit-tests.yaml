@@ -15,7 +15,7 @@ jobs:
           pip install pytest
       - name: set PYTHONPATH
         run: |
-          echo "PYTHONPATH=$GITHUB_WORKSPACE/core" >> $GITHUB_ENV
+          echo "PYTHONPATH=$GITHUB_WORKSPACE/simfarm" >> $GITHUB_ENV
           echo $(pwd)
           echo $GITHUB_ENV
       - name: run-unit-tests

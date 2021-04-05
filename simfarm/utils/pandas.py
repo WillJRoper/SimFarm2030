@@ -9,7 +9,7 @@ MONTH_DAY_NUMS = '%d/%m'
 MONTH_DAY_WORDS = '%d-%b'
 
 
-PARENT_DIR = dirname(dirname(abspath(__file__)))
+PARENT_DIR = dirname(dirname(dirname(abspath(__file__))))
 
 
 def parse_date(date_string):
