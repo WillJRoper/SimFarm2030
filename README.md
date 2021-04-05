@@ -32,17 +32,20 @@ https://drive.google.com/file/d/10GBNGBfMGCEAaAXK3sY68W4eCYcUS0mP/view?usp=shari
 
 https://drive.google.com/file/d/14swnAaInBR1eZcOl2V3lMdHzLVuF5LdU/view?usp=sharing
 
+## Install
+
+Simfarm is now a python package and you can run it from anyfolder as long as it is installed. 
+
+To install
+```
+pip install -e <simfarm-folder>
+```
+
 ## Running the model
 
-To run the latest version of the model, clone this repo and from that directory:
+You will need to add the following folders locally for input and output files to be stored. These folders need to be created at the simfarm root directory.
 
-``` 
-cd simfarm
-python main_daily_3d.py All     # to train and validate on all datasets within example_data or...
-python main_daily_3d.py Claire  # to train and validate on the Claire cultivar, this can be any cultivar contained in example_data
-```
-You will need to add a folders in the below structure (if they don't already exist in order to run the model):
-Climate_Data
+Climate_Data (*no longer used)
 model_performance
   Chains
   Validation
@@ -50,22 +53,48 @@ model_performance
   Corners
 cultivar_models
 
+```
+python -m simfarm.cli
+```
+cli.py has three main commands:
+* `extract`: currently for extracting weather per cultivar, as a model input.
+* `run`: run the model to generate params, `extract` must have been run first, .pck created as an ouput.
+* `plot`: plot output graphs using .pck file from `run`
+
+For a list of command options use `--help`. e.g `python -m simfarm.cli extract --help`.
+
+### Legacy
+To run the previous versions of the model, clone this repo and from that directory:
+
+```
+cd simfarm
+python main_daily_3d.py All     # to train and validate on all datasets within example_data or...
+python main_daily_3d.py Claire  # to train and validate on the Claire cultivar, this can be any cultivar contained in example_data
+```
 
 ## Running the tests
 
-cd tests
-pytest .
+Some tests have been marked as skipped, to run these comment out `@pytest.mark.skip(...` line. An then run `pytest tests/<test_file.py>`
 
-or (from anywhere)
-
-PYTHONPATH=simfarm pytest tests
-PYTHONPATH=simfarm pytest --ignore=tests/archive
+```
+pytest tests
+```
 
 
 ## Plotting figures
 
+```
+python -m simfarm.cli plot cultivar_models/<cultivar.pck>
+```
+Comment out any plots that you don't want to create in plots.py. chains
+in particular, may take a long time to run.
+
+
+### Legacy
+
 * First - run the main_daily_3d.py
 * Then locate the .pck file in simfarm/culivar_models to copy path to terminal
-* Hash out any plots that you don't want to create in create_figures.py
+* Hash out any plots that you don't want to create in plots.py
 
-PYTHONPATH=simfarm python create_figures.py /home/anisa/Code/SimFarm2030/cultivar_models/Skyfall_Yield_model_daily_3d.pck
+PYTHONPATH=simfarm python plots.py /home/anisa/Code/SimFarm2030/cultivar_models/Skyfall_Yield_model_daily_3d.pck
+
