@@ -2,7 +2,7 @@ import click
 from model import cultivarModel
 from simfarm.extract.weather import fetch_weather, extract_all_weather
 from utils.pandas import extract_cultivar
-from create_figures import create_all_plots
+from .plots import create_all_plots
 
 import numpy as np
 import time
