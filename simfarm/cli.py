@@ -1,7 +1,7 @@
 import click
-from model import cultivarModel
-from simfarm.extract.weather import fetch_weather, extract_all_weather
-from utils.pandas import extract_cultivar
+from .model import cultivarModel
+from .extract.weather import fetch_weather, extract_all_weather
+from .utils.pandas import extract_cultivar
 from .plots import create_all_plots
 
 import numpy as np
