@@ -2,6 +2,7 @@ import corner
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
+from simfarm.stats import gauss3d, gauss2d_resp
 from scipy.optimize import curve_fit
 from os.path import abspath, dirname, join
 
@@ -11,7 +12,7 @@ PARENT_DIR = dirname(dirname(abspath(__file__)))
 
 def create_all_plots(simfarm):
     plot_validation(simfarm)
-    print('validation plot in model_performance')
+    print('validation plot in model_performance/Validation')
     plot_walkers(simfarm)
     print('walkers plot in model_performance/Chains')
     plot_response(simfarm)
@@ -77,7 +78,7 @@ def plot_response(simfarm):
     ps_pp, ps_ss = np.meshgrid(eval_p, eval_s)
 
     # Compute temperature response
-    t_resp = simfarm.gauss3d(simfarm.norm, eval_t, simfarm.mean_params["mu_t"],
+    t_resp = gauss3d(simfarm.norm, eval_t, simfarm.mean_params["mu_t"],
                             simfarm.mean_params["sig_t"], 0,
                             simfarm.mean_params["mu_p"],
                             simfarm.mean_params["sig_p"], 0,
@@ -88,7 +89,7 @@ def plot_response(simfarm):
                             simfarm.mean_params["rho_ps"])
 
     # Compute precipitation response
-    p_resp = simfarm.gauss3d(simfarm.norm, 0, simfarm.mean_params["mu_t"],
+    p_resp = gauss3d(simfarm.norm, 0, simfarm.mean_params["mu_t"],
                             simfarm.mean_params["sig_t"], eval_p,
                             simfarm.mean_params["mu_p"],
                             simfarm.mean_params["sig_p"], 0,
@@ -99,7 +100,7 @@ def plot_response(simfarm):
                             simfarm.mean_params["rho_ps"])
 
     # Compute sunshine response
-    s_resp = simfarm.gauss3d(simfarm.norm, 0, simfarm.mean_params["mu_t"],
+    s_resp = gauss3d(simfarm.norm, 0, simfarm.mean_params["mu_t"],
                             simfarm.mean_params["sig_t"], 0,
                             simfarm.mean_params["mu_p"],
                             simfarm.mean_params["sig_p"], eval_s,
@@ -110,19 +111,19 @@ def plot_response(simfarm):
                             simfarm.mean_params["rho_ps"])
 
     # Compute the response grids
-    resp_grid_tp = simfarm.gauss2d_resp(tp_tt, simfarm.norm,
+    resp_grid_tp = gauss2d_resp(tp_tt, simfarm.norm,
                                         simfarm.mean_params["mu_t"],
                                         simfarm.mean_params["sig_t"], tp_pp,
                                         simfarm.mean_params["mu_p"],
                                         simfarm.mean_params["sig_p"],
                                         simfarm.mean_params["rho_tp"])
-    resp_grid_ts = simfarm.gauss2d_resp(ts_tt, simfarm.norm,
+    resp_grid_ts = gauss2d_resp(ts_tt, simfarm.norm,
                                         simfarm.mean_params["mu_t"],
                                         simfarm.mean_params["sig_t"], ts_ss,
                                         simfarm.mean_params["mu_s"],
                                         simfarm.mean_params["sig_s"],
                                         simfarm.mean_params["rho_ts"])
-    resp_grid_ps = simfarm.gauss2d_resp(ps_pp, simfarm.norm,
+    resp_grid_ps = gauss2d_resp(ps_pp, simfarm.norm,
                                         simfarm.mean_params["mu_p"],
                                         simfarm.mean_params["sig_p"], ps_ss,
                                         simfarm.mean_params["mu_s"],
