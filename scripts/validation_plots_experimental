@@ -1,0 +1,24 @@
+
+import numpy as np
+from simfarm.stats import gauss3d, gauss2d_resp
+from scipy.optimize import curve_fit
+from os.path import abspath, dirname, join
+
+
+PARENT_DIR = dirname(dirname(abspath(__file__)))
+
+
+
+def plot_validation(simfarm):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    ax.scatter(np.arange(simfarm.preds.size), simfarm.resi, marker="+", label="Regions")
+    ax.axhline(np.mean(simfarm.resi), linestyle="-", color="k", label="Mean")
+    ax.axhline(np.median(simfarm.resi), linestyle="--", color="k", label="Median")
+
+    ax.set_xlabel("Region")
+    ax.set_ylabel("$1 - Y_{\mathrm{Pred}} / Y_{\mathrm{True}}$ (%)")
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels)
