@@ -45,7 +45,7 @@ pip install -e <simfarm-folder>
 
 You will need to add the following folders locally for input and output files to be stored. These folders need to be created at the simfarm root directory.
 
-Climate_Data (*no longer used)
+Climate_Data (used for weather extract)
 model_performance
   Chains
   Validation

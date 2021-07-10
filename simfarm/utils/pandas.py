@@ -64,7 +64,7 @@ def extract_data(path):
     # by the number of sow days to calculate the sow year??
     data["Sow Year"] = data["Year"] - 1
 
-    print("Training on", data.shape[0], "Regions (data points)")
+    print("Putting the all_cultivars.cvs into pandas df containing ", data.shape[0], "Regions (data points)")
     # The order of records in the weather extraction data (temp, sun, rain)
     # have to be consistent with those in the cultivar data (yield)
     # both use this function, so we sort here.
