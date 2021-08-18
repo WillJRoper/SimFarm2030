@@ -9,3 +9,4 @@ Climate_Data/*
 *.png
 *.vscode
 *.hdf*
+*.DS_Store
