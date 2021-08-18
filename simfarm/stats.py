@@ -47,7 +47,8 @@ def gauss2d(t, norm, mu_t, sig_t, p, mu_p, sig_p, rho):
 
 def gauss3d(norm, t, mu_t, sig_t, p, mu_p, sig_p, s, mu_s, sig_s, rho_tp,
             rho_ts, rho_ps):
-
+    '''t, p, s are the validation 30%(split/size) self.predict_temp/self.predict_rain/self.predict_sun
+    of size (34,0) (skyfalls case) so although mean_params are scalar output is now matrix'''
     dy = norm * np.exp(-(0.5 * 1 / (
                 1 - np.square(rho_tp) - np.square(rho_ts) - np.square(
                     rho_ps)

@@ -81,22 +81,22 @@ class cultivarModel:
 
     def train_and_validate_model(self, split=0.7, nsample=5000, nwalkers=500):
 
-        # Compute the ratio to split by
+        # Compute the ratio to split train/validate data by
         size = self.therm_days.shape[0]
-        predict_size = int(size * (1 - split))
+        predict_size = int(size * (1 - split)) #
 
-        rand_inds = np.random.choice(np.arange(size), predict_size)
-        okinds = np.zeros(size, dtype=bool)
-        okinds[rand_inds] = True
+        rand_inds = np.random.choice(np.arange(size), predict_size) # given list of values, choose a new np range of given size 30%
+        okinds = np.zeros(size, dtype=bool) # boolean(T/F) mask - block out the values in a matrix that you don't want kindof. (partition into 2 set)
+        okinds[rand_inds] = True # randomindex - 30% of random places set to ture ~okinds is the inverse ie 70%
 
         self.train_temp = self.therm_days[~okinds]
         self.train_rain = self.tot_precip[~okinds]
         self.train_sun = self.tot_sun[~okinds]
-        self.train_yields = self.yield_data[~okinds]
+        self.train_yields = self.yield_data[~okinds] # 70%
         self.predict_temp = self.therm_days[okinds]
         self.predict_rain = self.tot_precip[okinds]
         self.predict_sun = self.tot_sun[okinds]
-        self.predict_yields = self.yield_data[okinds]
+        self.historic_yields = self.yield_data[okinds] # 30% used to be called predict_yields
         self.yerr = np.std(self.yield_data)
 
         self.predict_years = self.reg_yrs[okinds]
@@ -144,22 +144,22 @@ class cultivarModel:
 
         print(af_msg)
 
-        flat_samples = sampler.get_chain(discard=1000, thin=100, flat=True)
+        flat_samples = sampler.get_chain(discard=1000, thin=100, flat=True) # results from running the model/mcmc see 154
         self.flat_samples = flat_samples
 
         # Extract fitted parameters
         d = self.mean_params
         maxprob_indice = np.argmax(prob)
         self.maxprob_params = pos[maxprob_indice]
-        self.fitted_params = np.median(flat_samples, axis=0)
+        self.fitted_params = np.median(flat_samples, axis=0) # see 156
         d["mu_t"], d["sig_t"], d["mu_p"], d["sig_p"], d["mu_s"], d["sig_s"], d[
-            "rho_tp"], d["rho_ts"], d["rho_ps"] = self.fitted_params
+            "rho_tp"], d["rho_ts"], d["rho_ps"] = self.fitted_params # d ==self.mean_params!!!
 
         # Extract the samples
         d = self.samples
         d["mu_t"], d["sig_t"], d["mu_p"], d["sig_p"], d["mu_s"], d["sig_s"], d[
             "rho_tp"], d["rho_ts"], d["rho_ps"] = [flat_samples[:, i] for i in
-                                                   range(ndim)]
+                                                   range(ndim)] # d== self.samples!!
 
         # Extract the errors on the fitted parameters
         self.param_errors = np.std(flat_samples, axis=0)
@@ -179,7 +179,7 @@ class cultivarModel:
         print("rho_ps (precipitation and sunshine correlation +/- error) = %.3f +/- %.3f" % (
             self.mean_params["rho_ps"], rho_ps_err))
 
-        # Calculate the predicted results
+        # Calculate the predicted yield result
         preds = gauss3d(self.norm, self.predict_temp,
                              self.mean_params["mu_t"],
                              self.mean_params["sig_t"], self.predict_rain,
@@ -194,7 +194,7 @@ class cultivarModel:
         self.preds = preds
 
         # Calculate the percentage residual
-        resi = (1 - (preds / self.predict_yields)) * 100
+        resi = (1 - (preds / self.historic_yields)) * 100
         print(f'{[f"{r:.3f}" for r in resi]} percent residual')
         print(f'Residual Mean: {np.mean(resi):.3f}')
         print(f'Residual Median: {np.median(resi):.3f}')
