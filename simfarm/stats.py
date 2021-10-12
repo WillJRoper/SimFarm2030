@@ -3,19 +3,19 @@ import numpy as np
 
 def gdd_calc(tempmin, tempmax):
 
-    gdd = np.zeros(tempmin.shape[0])
-    for ind in range(tempmin.shape[1]):
+    gdd = np.zeros(tempmin.shape[0]) # shape of zeros
+    for ind in range(tempmin.shape[1]): # why 2 axis, is one location
 
-        tmaxs = tempmax[:, ind]
+        tmaxs = tempmax[:, ind] # every index for each day/location
         tmins = tempmin[:, ind]
 
         if np.sum(tmaxs) == np.sum(tmins) == 0:
             break
 
-        tmaxs[np.logical_and(gdd < 395, tmaxs > 21)] = 21
-        tmaxs[np.logical_and(gdd >= 395, tmaxs > 35)] = 35
+        tmaxs[np.logical_and(gdd < 395, tmaxs > 21)] = 21  # will return a boolean, if gdd days under 395 and tmax above 21 then set to 21? why?
+        tmaxs[np.logical_and(gdd >= 395, tmaxs > 35)] = 35 # why do you care what gdd is? when is 395 gdd
 
-        gdd += (tmaxs - tmins) / 2
+        gdd += (tmaxs - tmins) / 2 # can this work for value only or array
 
     return gdd
 

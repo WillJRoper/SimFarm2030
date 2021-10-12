@@ -47,6 +47,9 @@ def extract_regional_weather(weather, region_filter):
 
 
 def extract_rainfall(all_cultivars_df, hdf, tol):
+    # End structure
+    # {"Cultivar": {"Rainfall": [for each (Lat,Lng,Year)[rainfall-on-day]]}
+    #              {"Rainfall_Anomoly": [[]]}}
     dataset = defaultdict(lambda: defaultdict(list))
     # Get the mean weather data for each month of the year
     uk_monthly_mean = hdf["all_years_mean"][...]

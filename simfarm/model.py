@@ -66,7 +66,7 @@ class cultivarModel:
 
         self.fit = None
         self.resi = None
-        self.norm = 16
+        self.norm = 16 # should this be fixed????? TODO can put a prior to bound the values
 
         # Internal variables for speed
         self.norm_coeff = np.log(1 / ((2 * np.pi) ** (1 / 2)))
